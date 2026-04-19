@@ -281,6 +281,8 @@
     }
 
     .right-panel {
+      position: relative;
+      /* Added for absolute positioning inside */
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -289,6 +291,192 @@
       background: linear-gradient(160deg, rgba(255, 255, 255, 0.025) 0%, transparent 100%);
       gap: 0;
     }
+
+    /* ── PROFILE CHANGER (NEW) ── */
+    .profile-wrap {
+      position: absolute;
+      top: 32px;
+      right: 32px;
+      z-index: 50;
+    }
+
+    .profile-trigger {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 14px 6px 6px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .profile-trigger:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .profile-trigger:active {
+      transform: translateY(1px);
+    }
+
+    .profile-head-img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      image-rendering: pixelated;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+      background: var(--muted);
+    }
+
+    .profile-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .profile-chevron {
+      font-size: 0.6rem;
+      color: var(--muted);
+      transition: transform 0.3s ease;
+    }
+
+    .profile-wrap.open .profile-chevron {
+      transform: rotate(180deg);
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      width: 260px;
+      background: rgba(10, 10, 15, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px) scale(0.96);
+      transform-origin: top right;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      backdrop-filter: blur(16px);
+    }
+
+    .profile-wrap.open .profile-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+
+    .profile-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .profile-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .profile-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .profile-item.active {
+      background: rgba(232, 98, 42, 0.1);
+      border-color: rgba(232, 98, 42, 0.25);
+    }
+
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .profile-item-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .profile-item-type {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 2px;
+    }
+
+    .profile-check {
+      font-size: 0.9rem;
+      color: var(--accent);
+      opacity: 0;
+      transform: scale(0.5);
+      transition: all 0.2s;
+    }
+
+    .profile-item.active .profile-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .profile-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 10px 0;
+    }
+
+    .add-account-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .add-account-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--accent2);
+    }
+
+    .add-icon-wrap {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+      font-size: 1.1rem;
+      font-weight: 400;
+      color: inherit;
+      transition: all 0.2s;
+    }
+
+    .add-account-btn:hover .add-icon-wrap {
+      background: rgba(240, 168, 66, 0.15);
+      color: var(--accent2);
+    }
+
+    /* ── END PROFILE CHANGER ── */
 
     .game-label {
       font-family: 'Space Mono', monospace;
@@ -326,15 +514,6 @@
       background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
       margin-bottom: 36px;
       opacity: 0.4;
-    }
-
-    .field-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.58rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 8px;
     }
 
     /* ── PLAY BUTTON ── */
@@ -383,13 +562,13 @@
       height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
       transition: left 0.55s ease;
+      pointer-events: none;
     }
 
     .play-btn:hover .play-btn-main::before {
       left: 150%;
     }
 
-    /* ── VERSION SIDE of the button ── */
     .play-btn-version {
       display: flex;
       flex-direction: column;
@@ -403,13 +582,26 @@
       padding: 0 8px;
       cursor: pointer;
       height: 100%;
+      position: relative;
+      z-index: 2;
+    }
+
+    .play-btn-version:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .play-btn:hover .play-btn-main::before {
+      left: 150%;
+    }
+
+    .play-btn-version:hover ~ .play-btn-main::before {
+      display: none;
     }
 
     .play-btn-version:hover {
       background: rgba(255, 255, 255, 0.1);
     }
 
-    /* Version number shown inside the button */
     .play-btn-ver-label {
       font-family: 'Space Mono', monospace;
       font-size: 0.52rem;
@@ -418,7 +610,6 @@
       line-height: 1;
     }
 
-    /* Chevron icon */
     .play-btn-ver-icon {
       font-size: 0.6rem;
       color: rgba(255, 255, 255, 0.5);
@@ -606,8 +797,58 @@
 
   <div class="layout" id="layout">
 
-    <!-- Left: Controls -->
+    <!-- Left: Planet Display -->
+    <div class="left-panel">
+      <div class="planet-wrap">
+        <div class="orbit">
+          <div class="moon"></div>
+        </div>
+        <div class="planet"></div>
+        <div class="planet-ring"></div>
+      </div>
+      <div class="planet-label">Sector VII — Aetheria System</div>
+    </div>
+    
+    <!-- Right: Controls -->
     <div class="right-panel">
+<!-- Profile Changer / Mockup -->
+<div class="profile-wrap" id="profileWrap">
+  <div class="profile-trigger" id="profileTrigger">
+    <img src="https://mc-heads.net/avatar/Notch/64" alt="Head" class="profile-head-img" id="activeProfileImg">
+    <span class="profile-name" id="activeProfileName">AstroCreator</span>
+    <span class="profile-chevron">&#x25BE;</span>
+  </div>
+
+  <div class="profile-dropdown" id="profileDropdown">
+    <div class="profile-list" id="profileList">
+      <div class="profile-item active" data-name="AstroCreator" data-head="Notch" onclick="selectProfile(this)">
+        <img src="https://mc-heads.net/avatar/Notch/64" alt="Head" class="profile-head-img">
+        <div class="profile-info">
+          <span class="profile-item-name">AstroCreator</span>
+          <span class="profile-item-type">Microsoft</span>
+        </div>
+        <span class="profile-check">&#x2713;</span>
+      </div>
+      <div class="profile-item" data-name="StarDust" data-head="Alex" onclick="selectProfile(this)">
+        <img src="https://mc-heads.net/avatar/Alex/64" alt="Head" class="profile-head-img">
+        <div class="profile-info">
+          <span class="profile-item-name">StarDust</span>
+          <span class="profile-item-type">Mojang</span>
+        </div>
+        <span class="profile-check">&#x2713;</span>
+      </div>
+    </div>
+
+    <div class="profile-divider"></div>
+
+    <div class="add-account-btn" onclick="addAccount()">
+      <div class="add-icon-wrap">+</div>
+      <span>Add Mojang Account</span>
+    </div>
+  </div>
+</div>
+<!-- End Profile Changer -->
+
       <div class="game-title">Cosmic<br>Launcher</div>
       <div class="game-subtitle">A beautiful lightweight launcher</div>
 
@@ -616,12 +857,6 @@
       <div class="play-wrap">
         <button class="play-btn" id="playBtn">
           <div class="play-btn-main" id="playBtnLabel">&#x25B6; &nbsp; Launch</div>
-          <!--
-            FIX 1: replaced the raw ⋮ dots button with a version display panel.
-            Now shows the active version number + a chevron, so the right section
-            feels semantically connected to the version picker instead of being a
-            mysterious three-dot menu.
-          -->
           <div class="play-btn-version" id="playBtnDots">
             <span class="play-btn-ver-label" id="playBtnVerLabel">1.20.4</span>
             <span class="play-btn-ver-icon">&#x25BE;</span>
@@ -629,6 +864,7 @@
         </button>
       </div>
 
+      <!-- Version Popup -->
       <div class="version-popup" id="versionPopup" onclick="handlePopupBackdropClick(event)">
         <div class="version-popup-inner">
           <div class="version-close" onclick="closeVersionPopup()">&times;</div>
@@ -652,18 +888,8 @@
           </div>
         </div>
       </div>
-    </div>
+      <!-- End Version Popup -->
 
-    <!-- Right: Planet -->
-    <div class="left-panel">
-      <div class="planet-wrap">
-        <div class="orbit">
-          <div class="moon"></div>
-        </div>
-        <div class="planet"></div>
-        <div class="planet-ring"></div>
-      </div>
-      <div class="planet-label">Sector VII — Aetheria System</div>
     </div>
 
   </div>
@@ -763,7 +989,42 @@
       })();
     })();
 
-    /* ── VERSION POPUP ── */
+      /* ── PROFILE CHANGER LOGIC ── */
+      const profileWrap = document.getElementById('profileWrap');
+      const profileTrigger = document.getElementById('profileTrigger');
+      const profileDropdown = document.getElementById('profileDropdown');
+
+      profileTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileWrap.classList.toggle('open');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!profileDropdown.contains(e.target) && !profileTrigger.contains(e.target)) {
+          profileWrap.classList.remove('open');
+        }
+      });
+
+      function selectProfile(el) {
+        document.querySelectorAll('.profile-item').forEach(o => o.classList.remove('active'));
+        el.classList.add('active');
+
+        const headName = el.dataset.head;
+        const username = el.dataset.name;
+
+        document.getElementById('activeProfileName').textContent = username;
+        document.getElementById('activeProfileImg').src = `https://mc-heads.net/avatar/${headName}/64`;
+
+        profileWrap.classList.remove('open');
+      }
+
+      function addAccount() {
+        // Mockup function for adding a new account
+        profileWrap.classList.remove('open');
+        setTimeout(() => alert('Initializing Mojang/Microsoft Authentication Flow...'), 100);
+      }
+
+      /* ── VERSION POPUP LOGIC ── */
     let selectedVersion = '1.20.4';
     let popupVisible = false;
 
@@ -782,7 +1043,6 @@
       document.querySelectorAll('.version-card').forEach(o => o.classList.remove('selected'));
       el.classList.add('selected');
       selectedVersion = el.dataset.v;
-      // FIX 2: update the version label inside the button when a new version is chosen
       document.getElementById('playBtnVerLabel').textContent = selectedVersion;
       setTimeout(closeVersionPopup, 300);
     }
@@ -813,7 +1073,7 @@
       dots.style.display = 'none';
       btn.disabled = true;
       setTimeout(() => {
-        try { new Audio('sounds/launch.mp3').play(); } catch (_) {}
+        try { new Audio('sounds/launch.mp3').play(); } catch (_) { }
         if (window.triggerStarExplosion) window.triggerStarExplosion();
         const layout = document.getElementById('layout');
         layout.classList.add('closing');
