@@ -1,0 +1,13 @@
+{
+  "name": "cosmic-launcher",
+  "version": "1.0.0",
+  "description": "Cosmic Launcher - A beautiful Minecraft launcher",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron ."
+  },
+  "dependencies": {
+    "electron": "^28.0.0"
+  }
+}
