@@ -543,6 +543,20 @@
       align-items: center;
     }
 
+    .btn-spinner {
+      width: 22px;
+      height: 22px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: btn-spin 0.8s linear infinite;
+      margin-right: 4px;
+    }
+
+    @keyframes btn-spin {
+      to { transform: rotate(360deg); }
+    }
+
     .play-btn-main {
       flex: 1;
       display: flex;
@@ -1069,7 +1083,7 @@
       btn.classList.remove('launching');
       void btn.offsetWidth;
       btn.classList.add('launching');
-      label.innerHTML = '&#x27F3; &nbsp; Loading...';
+      label.innerHTML = '<span class="btn-spinner"></span> &nbsp; Loading...';
       dots.style.display = 'none';
       btn.disabled = true;
       setTimeout(() => {
