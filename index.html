@@ -646,7 +646,7 @@
     }
 
     .play-btn.launching {
-      animation: launch-pulse 0.4s ease;
+      animation: launch-pulse 0.4s ease, btn-blink 1.5s ease-in-out infinite;
     }
 
     @keyframes launch-pulse {
@@ -661,6 +661,11 @@
       100% {
         box-shadow: 0 4px 24px rgba(232, 98, 42, 0.3);
       }
+    }
+
+    @keyframes btn-blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
     }
 
     /* ── VERSION POPUP ── */
