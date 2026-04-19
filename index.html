@@ -522,6 +522,19 @@
       margin-bottom: 28px;
     }
 
+    .version-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 10px;
+      letter-spacing: 0.05em;
+    }
+
+    .version-label span {
+      color: var(--accent);
+    }
+
     .play-btn {
       width: 100%;
       height: 54px;
@@ -625,7 +638,7 @@
     }
 
     .play-btn-ver-icon {
-      font-size: 0.6rem;
+      font-size: 1.1rem;
       color: rgba(255, 255, 255, 0.5);
       line-height: 1;
     }
@@ -877,10 +890,10 @@
         <button class="play-btn" id="playBtn">
           <div class="play-btn-main" id="playBtnLabel">&#x25B6; &nbsp; Launch</div>
           <div class="play-btn-version" id="playBtnDots">
-            <span class="play-btn-ver-label" id="playBtnVerLabel">1.20.4</span>
             <span class="play-btn-ver-icon">&#x25BE;</span>
           </div>
         </button>
+        <div class="version-label" id="versionLabel">Version: <span id="versionLabelText">1.20.4</span></div>
       </div>
 
       <!-- Version Popup -->
@@ -1062,7 +1075,7 @@
       document.querySelectorAll('.version-card').forEach(o => o.classList.remove('selected'));
       el.classList.add('selected');
       selectedVersion = el.dataset.v;
-      document.getElementById('playBtnVerLabel').textContent = selectedVersion;
+      document.getElementById('versionLabelText').textContent = selectedVersion;
       setTimeout(closeVersionPopup, 300);
     }
 
