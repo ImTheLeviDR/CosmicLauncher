@@ -388,6 +388,7 @@
       cursor: pointer;
       transition: all 0.2s;
       border: 1px solid transparent;
+      position: relative;
     }
 
     .profile-item:hover {
@@ -433,10 +434,97 @@
       transform: scale(1);
     }
 
+    .profile-delete {
+      position: absolute;
+      right: 8px;
+      font-size: 0.75rem;
+      color: #ff4444;
+      opacity: 0;
+      transition: all 0.2s;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .profile-item:hover .profile-delete {
+      opacity: 1;
+    }
+
+    .profile-delete:hover {
+      color: #ff6666;
+    }
+
     .profile-divider {
       height: 1px;
       background: var(--border);
       margin: 10px 0;
+    }
+
+    /* Custom Modal */
+    .custom-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .custom-modal {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      min-width: 300px;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .custom-modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .custom-modal-message {
+      color: var(--text);
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .custom-modal-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .custom-modal-btn {
+      padding: 8px 24px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .custom-modal-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .custom-modal-btn.confirm {
+      background: #ff4444;
+      border-color: #ff4444;
+    }
+
+    .custom-modal-btn.confirm:hover {
+      background: #ff6666;
+    }
+
+    .custom-modal-btn.cancel {
+      opacity: 0.7;
     }
 
     .add-account-btn {
@@ -853,29 +941,13 @@
 
   <div class="profile-dropdown" id="profileDropdown">
     <div class="profile-list" id="profileList">
-      <div class="profile-item active" data-name="AstroCreator" data-head="Notch" onclick="selectProfile(this)">
-        <img src="https://mc-heads.net/avatar/Notch/64" alt="Head" class="profile-head-img">
-        <div class="profile-info">
-          <span class="profile-item-name">AstroCreator</span>
-          <span class="profile-item-type">Microsoft</span>
-        </div>
-        <span class="profile-check">&#x2713;</span>
-      </div>
-      <div class="profile-item" data-name="StarDust" data-head="Alex" onclick="selectProfile(this)">
-        <img src="https://mc-heads.net/avatar/Alex/64" alt="Head" class="profile-head-img">
-        <div class="profile-info">
-          <span class="profile-item-name">StarDust</span>
-          <span class="profile-item-type">Mojang</span>
-        </div>
-        <span class="profile-check">&#x2713;</span>
-      </div>
     </div>
 
     <div class="profile-divider"></div>
 
-    <div class="add-account-btn" onclick="addAccount()">
+    <div class="add-account-btn" id="addAccountBtn">
       <div class="add-icon-wrap">+</div>
-      <span>Add Mojang Account</span>
+      <span>Add Microsoft Account</span>
     </div>
   </div>
 </div>
@@ -1047,14 +1119,122 @@
         document.getElementById('activeProfileName').textContent = username;
         document.getElementById('activeProfileImg').src = `https://mc-heads.net/avatar/${headName}/64`;
 
+        const uuid = el.dataset.uuid;
+        if (uuid) {
+            ipcRenderer.invoke('setSelectedAccount', uuid);
+        }
+
         profileWrap.classList.remove('open');
       }
 
-      function addAccount() {
-        // Mockup function for adding a new account
+      // Use ipcRenderer from preload
+      const ipcRenderer = window.ipcRenderer;
+      const MSFT_OPCODE = {
+        OPEN_LOGIN: 'MSFT_AUTH_OPEN_LOGIN',
+        REPLY_LOGIN: 'MSFT_AUTH_REPLY_LOGIN',
+        REPLY_TYPE: { SUCCESS: 'MSFT_AUTH_REPLY_SUCCESS', ERROR: 'MSFT_AUTH_REPLY_ERROR' },
+        ERROR: { ALREADY_OPEN: 'MSFT_AUTH_ERR_ALREADY_OPEN', NOT_FINISHED: 'MSFT_AUTH_ERR_NOT_FINISHED' }
+      };
+
+      // Bind add account button
+      const addBtn = document.getElementById('addAccountBtn');
+      addBtn.onclick = function() {
+        console.log('Button clicked, ipcRenderer:', ipcRenderer);
+        addMicrosoftAccount();
+      };
+
+      function addMicrosoftAccount() {
+        console.log('addMicrosoftAccount called', ipcRenderer);
         profileWrap.classList.remove('open');
-        setTimeout(() => alert('Initializing Mojang/Microsoft Authentication Flow...'), 100);
+        
+        if (!ipcRenderer) {
+          console.error('ipcRenderer not available');
+          showModal('Error', 'Cannot access Electron. Check console.', true);
+          return;
+        }
+        
+        ipcRenderer.send('openMicrosoftLogin');
       }
+
+      // Listen for account added
+      ipcRenderer.on('accountAdded', async (event, data) => {
+        if (data.success) {
+          showModal('Success', 'Logged in as ' + data.account.displayName);
+          refreshProfileList();
+        } else {
+          console.error('Login failed:', data.error);
+          showModal('Login Failed', data.error.desc || 'An unknown error occurred', true);
+        }
+      });
+
+      async function deleteAccount(uuid) {
+        const confirmed = await showModal('Remove Account', 'Are you sure you want to remove this account?', false, true);
+        if (!confirmed) return;
+        
+        ipcRenderer.invoke('removeAccount', uuid).then(result => {
+          if (result.success) {
+            refreshProfileList();
+          } else {
+            showModal('Error', 'Failed to remove account', true);
+          }
+        });
+      }
+
+      async function refreshProfileList() {
+        try {
+          const accounts = await ipcRenderer.invoke('getAccounts');
+          const profileList = document.getElementById('profileList');
+          if (!profileList) return;
+          
+          profileList.innerHTML = '';
+          
+          const keys = Object.keys(accounts.database || {});
+          if (keys.length === 0) {
+            profileList.innerHTML = '<div class="profile-item"><span class="profile-info">No accounts</span></div>';
+            document.getElementById('activeProfileName').textContent = 'Select Account';
+            document.getElementById('activeProfileImg').src = 'https://mc-heads.net/avatar/Steve/64';
+            return;
+          }
+          
+          keys.forEach(uuid => {
+            const acc = accounts.database[uuid];
+            const item = document.createElement('div');
+            item.className = 'profile-item' + (uuid === accounts.selectedAccount ? ' active' : '');
+            item.dataset.name = acc.displayName;
+            item.dataset.head = acc.displayName;
+            item.dataset.uuid = uuid;
+            item.innerHTML = `
+              <img src="https://mc-heads.net/avatar/${encodeURIComponent(acc.displayName)}/64" alt="Head" class="profile-head-img">
+              <div class="profile-info">
+                <span class="profile-item-name">${acc.displayName}</span>
+                <span class="profile-item-type">${acc.type === 'microsoft' ? 'Microsoft' : 'Mojang'}</span>
+              </div>
+              <span class="profile-check">&#x2713;</span>
+              <span class="profile-delete" title="Remove account">&#x2715;</span>
+            `;
+            item.onclick = (e) => {
+              if (e.target.classList.contains('profile-delete')) {
+                deleteAccount(uuid);
+              } else {
+                selectProfile(item);
+              }
+            };
+            profileList.appendChild(item);
+          });
+          
+          if (accounts.selectedAccount) {
+            const selected = accounts.database[accounts.selectedAccount];
+            if (selected) {
+              document.getElementById('activeProfileName').textContent = selected.displayName;
+              document.getElementById('activeProfileImg').src = `https://mc-heads.net/avatar/${encodeURIComponent(selected.displayName)}/64`;
+            }
+          }
+        } catch (err) {
+          console.error('Error refreshing profile list:', err);
+        }
+      }
+
+      refreshProfileList();
 
       /* ── VERSION POPUP LOGIC ── */
     let selectedVersion = '1.20.4';
@@ -1116,6 +1296,35 @@
     /* ── WINDOW CONTROLS ── */
     function minimize() { try { window.require('electron').ipcRenderer.send('minimize'); } catch (_) { } }
     function closeLauncher() { try { window.require('electron').ipcRenderer.send('close'); } catch (_) { } }
+
+    /* ── CUSTOM MODAL ── */
+    function showModal(title, message, isError = false, isConfirm = false) {
+      return new Promise((resolve) => {
+        const modal = document.createElement('div');
+        modal.className = 'custom-modal-overlay';
+        modal.innerHTML = `
+          <div class="custom-modal">
+            <div class="custom-modal-title" style="color: ${isError ? '#ff4444' : 'var(--accent)'}">${title}</div>
+            <div class="custom-modal-message">${message}</div>
+            <div class="custom-modal-buttons">
+              ${isConfirm 
+                ? `<button class="custom-modal-btn cancel" id="modalCancel">Cancel</button>
+                   <button class="custom-modal-btn confirm" id="modalConfirm">Remove</button>`
+                : `<button class="custom-modal-btn" id="modalOk">OK</button>`
+              }
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        
+        if (isConfirm) {
+          document.getElementById('modalCancel').onclick = () => { modal.remove(); resolve(false); };
+          document.getElementById('modalConfirm').onclick = () => { modal.remove(); resolve(true); };
+        } else {
+          document.getElementById('modalOk').onclick = () => { modal.remove(); resolve(); };
+        }
+      });
+    }
   </script>
 </body>
 
