@@ -127,6 +127,13 @@
       display: grid;
       grid-template-columns: 420px 1fr;
       padding-top: 44px;
+      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .layout.closing {
+      transform: scale(1.1);
+      opacity: 0;
+      filter: blur(20px);
     }
 
     .left-panel {
@@ -597,7 +604,7 @@
 
   <canvas class="particles-canvas" id="particles"></canvas>
 
-  <div class="layout">
+  <div class="layout" id="layout">
 
     <!-- Left: Controls -->
     <div class="right-panel">
@@ -675,37 +682,59 @@
         speed: (Math.random() - 0.5) * 0.15, vy: (Math.random() - 0.5) * 0.08,
         phase: Math.random() * Math.PI * 2, alpha: 0.04 + Math.random() * 0.07,
       }));
-      const stars = Array.from({ length: 200 }, () => ({
-        x: Math.random() * 2000, y: Math.random() * 1200,
-        r: Math.random() * 1.5, a: 0.2 + Math.random() * 0.8, phase: Math.random() * Math.PI * 2,
-      }));
+      const starfield = [];
+      for (let i = 0; i < 400; i++) {
+        starfield.push({
+          x: (Math.random() - 0.5) * 2000,
+          y: (Math.random() - 0.5) * 2000,
+          z: Math.random() * 400 + 50,
+          a: 0.3 + Math.random() * 0.7,
+        });
+      }
       let t = 0;
+      let closing = false;
+      let warpSpeed = 0;
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         t += 0.006;
-        stars.forEach(s => {
-          const twinkle = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin(t * 1.5 + s.phase));
-          ctx.beginPath();
-          ctx.arc(s.x % canvas.width, s.y % canvas.height, s.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(255,245,220,${s.a * twinkle})`; ctx.fill();
+        if (closing) warpSpeed = Math.min(warpSpeed + 2, 80);
+        if (!closing) starfield.forEach(s => { s.z -= 0.5; if (s.z <= 30) s.z = 450; });
+        const cx = canvas.width / 2, cy = canvas.height / 2;
+        starfield.forEach(s => {
+          if (closing) s.z -= warpSpeed;
+          if (s.z <= 10) s.z = 500;
+          const scale = 200 / s.z;
+          const px = cx + s.x * scale;
+          const py = cy + s.y * scale;
+          const size = Math.max(1, (200 - s.z) / 80) * (closing ? 2.5 : 1);
+          const alpha = Math.min(1, (450 - s.z) / 200) * s.a * (closing ? 1.5 : 1);
+          if (px > -10 && px < canvas.width + 10 && py > -10 && py < canvas.height + 10) {
+            ctx.beginPath();
+            ctx.arc(px, py, size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255,245,220,${alpha})`;
+            ctx.fill();
+          }
         });
-        blobs.forEach(b => {
-          b.x += b.speed; b.y += b.vy;
-          if (b.x > canvas.width + b.r) b.x = -b.r;
-          if (b.x < -b.r) b.x = canvas.width + b.r;
-          if (b.y > canvas.height + b.r) b.y = -b.r;
-          if (b.y < -b.r) b.y = canvas.height + b.r;
-          const pulse = 1 + 0.05 * Math.sin(t + b.phase);
-          const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r * pulse);
-          grad.addColorStop(0, `hsla(${b.hue},80%,55%,${b.alpha * 1.5})`);
-          grad.addColorStop(0.5, `hsla(${b.hue},70%,40%,${b.alpha * 0.5})`);
-          grad.addColorStop(1, `hsla(${b.hue},60%,20%,0)`);
-          ctx.beginPath(); ctx.arc(b.x, b.y, b.r * pulse, 0, Math.PI * 2);
-          ctx.fillStyle = grad; ctx.fill();
-        });
+        if (!closing) {
+          blobs.forEach(b => {
+            b.x += b.speed; b.y += b.vy;
+            if (b.x > canvas.width + b.r) b.x = -b.r;
+            if (b.x < -b.r) b.x = canvas.width + b.r;
+            if (b.y > canvas.height + b.r) b.y = -b.r;
+            if (b.y < -b.r) b.y = canvas.height + b.r;
+            const pulse = 1 + 0.05 * Math.sin(t + b.phase);
+            const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r * pulse);
+            grad.addColorStop(0, `hsla(${b.hue},80%,55%,${b.alpha * 1.5})`);
+            grad.addColorStop(0.5, `hsla(${b.hue},70%,40%,${b.alpha * 0.5})`);
+            grad.addColorStop(1, `hsla(${b.hue},60%,20%,0)`);
+            ctx.beginPath(); ctx.arc(b.x, b.y, b.r * pulse, 0, Math.PI * 2);
+            ctx.fillStyle = grad; ctx.fill();
+          });
+        }
         requestAnimationFrame(draw);
       }
       draw();
+      window.triggerStarExplosion = () => { closing = true; };
     })();
 
     /* ── PARTICLES ── */
@@ -784,8 +813,12 @@
       dots.style.display = 'none';
       btn.disabled = true;
       setTimeout(() => {
-        closeLauncher();
-      }, 2200);
+        try { new Audio('sounds/launch.mp3').play(); } catch (_) {}
+        if (window.triggerStarExplosion) window.triggerStarExplosion();
+        const layout = document.getElementById('layout');
+        layout.classList.add('closing');
+        setTimeout(() => closeLauncher(), 600);
+      }, 2500);
     }
 
     /* ── WINDOW CONTROLS ── */
