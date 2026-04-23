@@ -1413,7 +1413,7 @@
       refreshProfileList();
 
 /* ── VERSION POPUP LOGIC ── */
-    let selectedVersion = '1.21.4';
+    let selectedVersion = '';
     let popupVisible = false;
     let availableVersions = [];
     let tickSound = null;
@@ -1448,10 +1448,20 @@
     }
 
     async function loadVersions() {
+      let savedVersion = null;
+      try {
+        savedVersion = await ipcRenderer.invoke('getSelectedVersion');
+      } catch (e) {}
+      
       try {
         const result = await ipcRenderer.invoke('getAvailableVersions');
         if (result.success) {
           availableVersions = result.versions.filter(v => v.type === 'release').slice(0, 20);
+          if (savedVersion && availableVersions.some(v => v.id === savedVersion)) {
+            selectedVersion = savedVersion;
+          } else if (availableVersions.length > 0) {
+            selectedVersion = availableVersions[0].id;
+          }
           updateVersionCards();
         }
       } catch (err) {
@@ -1463,6 +1473,7 @@
           { id: '1.19.4', type: 'release' },
           { id: '1.18.2', type: 'release' }
         ];
+        selectedVersion = savedVersion && availableVersions.some(v => v.id === savedVersion) ? savedVersion : availableVersions[0].id;
         updateVersionCards();
       }
     }
@@ -1526,6 +1537,9 @@ function openVersionPopup() {
       el.classList.add('selected');
       selectedVersion = el.dataset.v;
       document.getElementById('versionLabelText').textContent = selectedVersion;
+      if (window.ipcRenderer) {
+        window.ipcRenderer.invoke('saveSelectedVersion', selectedVersion);
+      }
       setTimeout(closeVersionPopup, 300);
     }
 

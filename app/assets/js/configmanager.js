@@ -10,7 +10,8 @@ const configPath = path.join(dataPath, 'config.json')
 
 const DEFAULT_CONFIG = {
     selectedAccount: null,
-    authenticationDatabase: {}
+    authenticationDatabase: {},
+    selectedVersion: null
 }
 
 let config = null
@@ -118,4 +119,13 @@ exports.getAuthDatabase = function(){
 
 exports.getSelectedUuid = function(){
     return config.selectedAccount
+}
+
+exports.getSelectedVersion = function(){
+    return config.selectedVersion
+}
+
+exports.setSelectedVersion = function(versionId){
+    config.selectedVersion = versionId
+    exports.save()
 }

@@ -216,6 +216,16 @@ ipcMain.handle('setSelectedAccount', async (event, uuid) => {
     }
 })
 
+ipcMain.handle('getSelectedVersion', () => {
+    return ConfigManager.getSelectedVersion()
+})
+
+ipcMain.handle('saveSelectedVersion', (event, versionId) => {
+    ConfigManager.setSelectedVersion(versionId)
+    ConfigManager.save()
+    return { success: true }
+})
+
 ipcMain.handle('removeAccount', async (event, uuid) => {
     try {
         ConfigManager.removeAuthAccount(uuid)
@@ -245,6 +255,9 @@ ipcMain.handle('launchGame', async (event, versionId) => {
         })
 
         await LaunchManager.launchVanilla(versionId, account)
+        
+        ConfigManager.setSelectedVersion(versionId)
+        ConfigManager.save()
         
         if (mainWindowRef) {
             mainWindowRef.webContents.send('launchLog', '=== Game launched! Minimize launcher to tray ===')
