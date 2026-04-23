@@ -47,21 +47,24 @@ class LaunchManager {
         this.emit('log', message)
     }
 
-    async downloadFile(url, destPath, onProgress) {
+    async downloadFile(url, destPath, onProgress, options = {}) {
+        const { logStart = true, logComplete = true } = options
         return new Promise((resolve, reject) => {
             fs.ensureDirSync(path.dirname(destPath))
             
             const file = fs.createWriteStream(destPath)
             const request = url.startsWith('https') ? https : http
             
-            this.log(`Downloading: ${url}`)
-            this.log(`Destination: ${destPath}`)
+            if (logStart) {
+                this.log(`Downloading: ${url}`)
+                this.log(`Destination: ${destPath}`)
+            }
             
             request.get(url, (response) => {
                 if (response.statusCode === 301 || response.statusCode === 302) {
                     file.close()
                     fs.unlinkSync(destPath)
-                    this.downloadFile(response.headers.location, destPath, onProgress).then(resolve).catch(reject)
+                    this.downloadFile(response.headers.location, destPath, onProgress, options).then(resolve).catch(reject)
                     return
                 }
 
@@ -78,7 +81,9 @@ class LaunchManager {
                 response.pipe(file)
                 file.on('finish', () => {
                     file.close()
-                    this.log(`Download complete: ${destPath}`)
+                    if (logComplete) {
+                        this.log(`Download complete: ${destPath}`)
+                    }
                     resolve()
                 })
             }).on('error', (err) => {
@@ -180,6 +185,90 @@ class LaunchManager {
             })
         }
         this.log(`Libraries download complete: ${downloaded}/${total}`)
+    }
+
+    async downloadAssets(versionData) {
+        const assetIndex = versionData.assetIndex
+        if (!assetIndex?.url || !assetIndex?.id) {
+            this.log('No asset index found for this version, skipping assets download')
+            return
+        }
+
+        const assetsDir = this.getAssetsDirectory()
+        const indexesDir = path.join(assetsDir, 'indexes')
+        const objectsDir = path.join(assetsDir, 'objects')
+        const assetIndexPath = path.join(indexesDir, `${assetIndex.id}.json`)
+
+        fs.ensureDirSync(indexesDir)
+        fs.ensureDirSync(objectsDir)
+
+        let assetIndexData
+        if (fs.existsSync(assetIndexPath)) {
+            this.log(`Asset index already exists: ${assetIndexPath}`)
+            assetIndexData = JSON.parse(fs.readFileSync(assetIndexPath, 'utf-8'))
+        } else {
+            this.log(`Downloading asset index: ${assetIndex.url}`)
+            await this.downloadFile(assetIndex.url, assetIndexPath)
+            assetIndexData = JSON.parse(fs.readFileSync(assetIndexPath, 'utf-8'))
+        }
+
+        const objects = Object.entries(assetIndexData.objects || {})
+        let processed = 0
+        let downloaded = 0
+        const concurrency = 64
+
+        this.log(`Checking ${objects.length} assets...`)
+        const missingAssets = objects.filter(([, asset]) => {
+            if (!asset?.hash) {
+                return false
+            }
+            const hash = asset.hash
+            const hashPrefix = hash.substring(0, 2)
+            const destPath = path.join(objectsDir, hashPrefix, hash)
+            return !fs.existsSync(destPath)
+        })
+
+        processed = objects.length - missingAssets.length
+        this.log(`Missing assets: ${missingAssets.length}/${objects.length}`)
+        this.log(`Downloading assets with concurrency ${concurrency}`)
+
+        const updateProgress = () => {
+            if (processed % 50 === 0 || processed === objects.length) {
+                this.emit('progress', {
+                    task: 'Downloading assets',
+                    progress: processed / objects.length,
+                    detail: `${processed}/${objects.length}`
+                })
+            }
+        }
+
+        const processAsset = async (asset) => {
+            const hash = asset.hash
+            const hashPrefix = hash.substring(0, 2)
+            const destPath = path.join(objectsDir, hashPrefix, hash)
+            const assetUrl = `https://resources.download.minecraft.net/${hashPrefix}/${hash}`
+            try {
+                await this.downloadFile(assetUrl, destPath, null, {
+                    logStart: false,
+                    logComplete: false
+                })
+                downloaded++
+            } catch (e) {
+                this.log(`Failed to download asset ${hash}: ${e.message}`)
+            }
+
+            processed++
+            updateProgress()
+        }
+
+        updateProgress()
+
+        for (let i = 0; i < missingAssets.length; i += concurrency) {
+            const batch = missingAssets.slice(i, i + concurrency)
+            await Promise.all(batch.map(([, asset]) => processAsset(asset)))
+        }
+
+        this.log(`Assets check complete: ${processed}/${objects.length}, downloaded ${downloaded}`)
     }
 
     shouldDownloadLibrary(lib) {
@@ -351,6 +440,7 @@ class LaunchManager {
         
         await this.downloadLibraries(versionData)
         await this.downloadClientJar(versionData)
+        await this.downloadAssets(versionData)
         
         this.emit('progress', { task: 'Extracting natives', progress: 0 })
         const nativesDir = await this.extractNatives(versionData)
