@@ -328,10 +328,15 @@ function createTray() {
                         }
                     });
                     mainWindowRef.loadFile('index.html');
+                    mainWindowRef.webContents.once('did-finish-load', () => {
+                        mainWindowRef.webContents.send('triggerOpenAnimation');
+                    });
                     createTray();
+                } else {
+                    mainWindowRef.show();
+                    mainWindowRef.focus();
+                    mainWindowRef.webContents.send('triggerOpenAnimation');
                 }
-                mainWindowRef.show();
-                mainWindowRef.focus();
             }
         }
     });
@@ -371,6 +376,11 @@ ipcMain.on('minimize', () => win.minimize());
 ipcMain.on('close', () => {
     if (mainWindowRef) {
         mainWindowRef.hide()
+    }
+});
+ipcMain.on('showFromTray', () => {
+    if (mainWindowRef && !mainWindowRef.isDestroyed()) {
+        mainWindowRef.webContents.send('triggerOpenAnimation');
     }
 });
 

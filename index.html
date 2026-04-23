@@ -1203,14 +1203,25 @@
       let t = 0;
       let closing = false;
       let warpSpeed = 0;
+      let openZoom = 0;
+      let wasOpening = false;
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         t += 0.006;
         if (closing) warpSpeed = Math.min(warpSpeed + 2, 80);
-        if (!closing) starfield.forEach(s => { s.z -= 0.5; if (s.z <= 30) s.z = 450; });
+        if (openZoom > 0) {
+          openZoom -= 0.8;
+          wasOpening = true;
+        }
+        if (openZoom <= 0 && wasOpening) {
+          starfield.forEach(s => { s.z = Math.random() * 400 + 50; });
+          wasOpening = false;
+        }
+        if (!closing && openZoom <= 0) starfield.forEach(s => { s.z -= 0.5; if (s.z <= 30) s.z = 450; });
         const cx = canvas.width / 2, cy = canvas.height / 2;
         starfield.forEach(s => {
           if (closing) s.z -= warpSpeed;
+          if (openZoom > 0) s.z -= openZoom;
           if (s.z <= 10) s.z = 500;
           const scale = 200 / s.z;
           const px = cx + s.x * scale;
@@ -1224,7 +1235,7 @@
             ctx.fill();
           }
         });
-        if (!closing) {
+        if (!closing && openZoom <= 0) {
           blobs.forEach(b => {
             b.x += b.speed; b.y += b.vy;
             if (b.x > canvas.width + b.r) b.x = -b.r;
@@ -1244,7 +1255,8 @@
       }
       draw();
       window.triggerStarExplosion = () => { closing = true; };
-      window.resetStars = () => { closing = false; warpSpeed = 0; };
+      window.triggerOpenAnimation = () => { if (openZoom <= 0) openZoom = 30; };
+      window.resetStars = () => { closing = false; warpSpeed = 0; openZoom = 0; wasOpening = false; starfield.forEach(s => { s.z = Math.random() * 400 + 50; }); };
     })();
 
     /* ── PARTICLES ── */
@@ -1551,6 +1563,13 @@ function openVersionPopup() {
 
     loadVersions();
     loadTickSound();
+    setTimeout(() => { if (window.triggerOpenAnimation) window.triggerOpenAnimation(); }, 100);
+    
+    if (window.ipcRenderer) {
+      window.ipcRenderer.on('triggerOpenAnimation', () => {
+        if (window.triggerOpenAnimation) window.triggerOpenAnimation();
+      });
+    }
 
     /* ── WIRE UP BUTTONS ── */
     document.getElementById('playBtnDots').addEventListener('click', function (e) {
