@@ -7,7 +7,7 @@ const http = require('http')
 const crypto = require('crypto')
 const ConfigManager = require('./configmanager')
 
-const MINECRAFT_VERSION_MANIFEST = 'https://launchermeta.mojang.com/mc/game/version_manifest_v2.json'
+const MINECRAFT_VERSION_MANIFEST = 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
 
 class LaunchManager {
     constructor() {
