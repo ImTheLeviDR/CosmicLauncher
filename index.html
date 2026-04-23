@@ -1244,6 +1244,7 @@
       }
       draw();
       window.triggerStarExplosion = () => { closing = true; };
+      window.resetStars = () => { closing = false; warpSpeed = 0; };
     })();
 
     /* ── PARTICLES ── */
@@ -1610,7 +1611,15 @@ function openVersionPopup() {
         if (result.success) {
           status.textContent = 'Launching...';
           addLog('=== Launch successful! Game should be running ===');
-          // Keep launcher open but keep the fade effect
+          await new Promise(r => setTimeout(r, 500));
+          layout.classList.remove('launching');
+          overlay.classList.remove('fading');
+          btn.classList.remove('launching');
+          icon.innerHTML = '&#x25B6;';
+          status.textContent = 'Launch';
+          dots.style.display = '';
+          btn.disabled = false;
+          if (window.resetStars) window.resetStars();
         } else {
           // Revert animation on failure
           layout.classList.remove('launching');

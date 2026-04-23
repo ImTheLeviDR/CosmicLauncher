@@ -314,6 +314,22 @@ function createTray() {
             if (mainWindowRef.isVisible()) {
                 mainWindowRef.hide();
             } else {
+                if (mainWindowRef.isDestroyed()) {
+                    mainWindowRef = new BrowserWindow({
+                        width: 960,
+                        height: 640,
+                        frame: false,
+                        transparent: false,
+                        backgroundColor: '#0a0a1a',
+                        webPreferences: {
+                            nodeIntegration: true,
+                            contextIsolation: false,
+                            preload: path.join(__dirname, 'preload.js')
+                        }
+                    });
+                    mainWindowRef.loadFile('index.html');
+                    createTray();
+                }
                 mainWindowRef.show();
                 mainWindowRef.focus();
             }
