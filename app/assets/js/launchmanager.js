@@ -30,6 +30,44 @@ class LaunchManager {
         return minecraftPath
     }
 
+    getVanillaMinecraftDirectory() {
+        const minecraftPath = path.join(os.homedir(), 'AppData', 'Roaming', '.minecraft')
+        if (process.platform === 'darwin') {
+            return path.join(os.homedir(), 'Library', 'Application Support', '.minecraft')
+        }
+        if (process.platform === 'linux') {
+            return path.join(os.homedir(), '.minecraft')
+        }
+        return minecraftPath
+    }
+
+    migrateOptions() {
+        const vanillaDir = this.getVanillaMinecraftDirectory()
+        const cosmicDir = this.getMinecraftDirectory()
+
+        try {
+            const vanillaOptions = path.join(vanillaDir, 'options.txt')
+            const cosmicOptions = path.join(cosmicDir, 'options.txt')
+
+            if (fs.existsSync(vanillaOptions) && !fs.existsSync(cosmicOptions)) {
+                this.log(`Migrating options.txt from vanilla Minecraft`)
+                fs.ensureDirSync(cosmicDir)
+                fs.copyFileSync(vanillaOptions, cosmicOptions)
+            }
+
+            const resourcePacksDir = path.join(cosmicDir, 'resourcepacks')
+            const vanillaResourcePacks = path.join(vanillaDir, 'resourcepacks')
+            
+            if (fs.existsSync(vanillaResourcePacks) && !fs.existsSync(resourcePacksDir)) {
+                this.log(`Linking resourcepacks from vanilla Minecraft`)
+                fs.ensureDirSync(cosmicDir)
+                fs.symlinkSync(vanillaResourcePacks, resourcePacksDir, 'junction')
+            }
+        } catch (err) {
+            this.log(`Migration warning: ${err.message}`)
+        }
+    }
+
     getVersionsDirectory() {
         return path.join(this.getMinecraftDirectory(), 'versions')
     }
@@ -434,6 +472,8 @@ class LaunchManager {
         this.log(`=== Starting launchVanilla for ${versionId} ===`)
         this.log(`Account: ${account.displayName} (${account.uuid})`)
         this.emit('launch', { versionId, account })
+
+        this.migrateOptions()
 
         const versionData = await this.ensureVersion(versionId)
         this.log(`Version data loaded: ${JSON.stringify(versionData).substring(0, 500)}...`)
