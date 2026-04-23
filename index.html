@@ -861,22 +861,6 @@
       overflow: hidden;
     }
 
-    .version-card.middle {
-      transform: scale(1.08);
-      background: rgba(232, 98, 42, 0.12);
-      border-color: var(--accent);
-      box-shadow: 0 0 24px rgba(232, 98, 42, 0.25), 0 6px 16px rgba(0, 0, 0, 0.4);
-    }
-
-    .version-card.middle::before {
-      content: none;
-    }
-
-    .version-card.middle:hover {
-      transform: scale(1.08);
-      translate: none;
-    }
-
     .version-card::before {
       content: '';
       position: absolute;
@@ -1503,31 +1487,32 @@
     }
 
     let scrollTimeout = null;
+    let lastScrollTop = 0;
     function handleVersionScroll(e) {
       const cardsContainer = document.querySelector('.version-cards');
       if (!cardsContainer) return;
       
+      const currentScrollTop = cardsContainer.scrollTop;
+      const maxScrollTop = cardsContainer.scrollHeight - cardsContainer.clientHeight;
+      
       if (scrollTimeout) return;
+      
+      const isScrollDown = e.deltaY > 0;
+      const isScrollUp = e.deltaY < 0;
+      
+      if ((isScrollUp && currentScrollTop <= 0) || (isScrollDown && currentScrollTop >= maxScrollTop)) {
+        return;
+      }
+      
       scrollTimeout = setTimeout(() => { scrollTimeout = null; }, 150);
       playTick();
       
-      const cardHeight = 60;
-      const scrollTop = cardsContainer.scrollTop;
-      const centerOffset = scrollTop + cardsContainer.clientHeight / 2 - cardHeight / 2;
-      const middleIndex = Math.round(centerOffset / cardHeight);
-      
-      cardsContainer.querySelectorAll('.version-card').forEach((card, i) => {
-        card.classList.remove('middle');
-        if (i === middleIndex) {
-          card.classList.add('middle');
-        }
-      });
+      lastScrollTop = currentScrollTop;
     }
 
 function openVersionPopup() {
       popupVisible = true;
       document.getElementById('versionPopup').classList.add('show');
-      setTimeout(updateMiddleCard, 50);
     }
     function closeVersionPopup() {
       popupVisible = false;
@@ -1542,23 +1527,6 @@ function openVersionPopup() {
       selectedVersion = el.dataset.v;
       document.getElementById('versionLabelText').textContent = selectedVersion;
       setTimeout(closeVersionPopup, 300);
-    }
-
-    function updateMiddleCard() {
-      const cardsContainer = document.querySelector('.version-cards');
-      if (!cardsContainer) return;
-      const cards = cardsContainer.querySelectorAll('.version-card');
-      const cardHeight = 60;
-      const scrollTop = cardsContainer.scrollTop;
-      const centerOffset = scrollTop + cardsContainer.clientHeight / 2 - cardHeight / 2;
-      const middleIndex = Math.max(0, Math.min(Math.round(centerOffset / cardHeight), cards.length - 1));
-      
-      cards.forEach((card, i) => {
-        card.classList.remove('middle');
-        if (i === middleIndex) {
-          card.classList.add('middle');
-        }
-      });
     }
 
     loadVersions();
