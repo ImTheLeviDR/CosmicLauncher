@@ -491,40 +491,18 @@ class LaunchManager {
 
         this.emit('progress', { task: 'Launching Minecraft', progress: 1 })
 
-        this.proc = spawn(javaExe, [...jvmArgs, ...gameArgs], {
+this.proc = spawn(javaExe, [...jvmArgs, ...gameArgs], {
             cwd: gameDir,
-            stdio: ['ignore', 'pipe', 'pipe'],
-            shell: false
+            shell: false,
+            detached: true,
+            stdio: 'ignore'
         })
 
-        this.proc.stdout.on('data', (data) => {
-            const msg = data.toString().trim()
-            this.log('[JAVA STDOUT] ' + msg)
-        })
+        this.proc.unref()
 
-        this.proc.stderr.on('data', (data) => {
-            const msg = data.toString().trim()
-            this.log('[JAVA STDERR] ' + msg)
-        })
-
-        this.proc.on('error', (err) => {
-            this.log(`Spawn error: ${err.message}`)
-        })
-
-        this.proc.on('close', (code) => {
-            this.log(`Process exited with code: ${code}`)
-            this._exitCode = code
-        })
-
-        this.log(`=== Process spawned ===`)
+        this.log(`=== Game launched! (PID: ${this.proc.pid}) ===`)
         
-        // Wait briefly to check for immediate exit
-        await new Promise(r => setTimeout(r, 3000))
-        
-        if (this._exitCode !== null && this._exitCode !== 0) {
-            this.log(`ERROR: Java process exited immediately with code ${this._exitCode}`)
-            throw new Error(`Java process exited with code ${this._exitCode}. Check logs for details.`)
-        }
+        await new Promise(r => setTimeout(r, 2000))
         
         return true
     }

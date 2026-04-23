@@ -238,25 +238,27 @@ ipcMain.handle('launchGame', async (event, versionId) => {
             return { success: false, error: 'No account selected' }
         }
 
-        const launchLogs = []
         LaunchManager.on('progress', (data) => {
             if (mainWindowRef) {
                 mainWindowRef.webContents.send('launchProgress', data)
             }
         })
 
-        LaunchManager.on('log', (message) => {
-            launchLogs.push(message)
-            console.log('[LAUNCH_LOG]', message)
-            if (mainWindowRef) {
-                mainWindowRef.webContents.send('launchLog', message)
-            }
-        })
-
         await LaunchManager.launchVanilla(versionId, account)
         
-        // Return logs for debugging
-        return { success: true, logs: launchLogs }
+        if (mainWindowRef) {
+            mainWindowRef.webContents.send('launchLog', '=== Game launched! Closing launcher... ===')
+        }
+        
+        await new Promise(r => setTimeout(r, 5000))
+        
+        if (mainWindowRef) {
+            mainWindowRef.destroy()
+        }
+        
+        app.quit()
+        
+        return { success: true }
     } catch(error) {
         console.error('Launch error:', error)
         return { success: false, error: error.message || 'Failed to launch game' }
@@ -302,8 +304,12 @@ mainWindowRef = win;
         });
     });
 
-    ipcMain.on('minimize', () => win.minimize());
-    ipcMain.on('close', () => win.close());
+ipcMain.on('minimize', () => win.minimize());
+ipcMain.on('close', () => {
+    if (mainWindowRef) {
+        mainWindowRef.hide()
+    }
+});
 }
 
 app.whenReady().then(createWindow);

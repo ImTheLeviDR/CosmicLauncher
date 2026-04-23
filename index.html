@@ -890,36 +890,36 @@
     }
 
     .log-container {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      right: 20px;
-      height: 150px;
-      background: rgba(0, 0, 0, 0.8);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
+      position: fixed;
+      top: 44px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 150;
       display: none;
+      flex-direction: column;
     }
 
     .log-container.show {
-      display: block;
+      display: flex;
     }
 
     .log-header {
       background: rgba(232, 98, 42, 0.3);
-      padding: 8px 12px;
+      padding: 10px 16px;
       font-family: 'Space Mono', monospace;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       color: var(--accent);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-bottom: 1px solid var(--border);
     }
 
     .log-content {
-      padding: 8px 12px;
-      height: calc(100% - 36px);
+      flex: 1;
+      padding: 12px 16px;
       overflow-y: auto;
       font-family: 'Space Mono', monospace;
       font-size: 0.65rem;
@@ -989,6 +989,11 @@
     
     <!-- Right: Controls -->
     <div class="right-panel">
+      <!-- Logs Button -->
+      <div style="position: absolute; bottom: 20px; right: 24px; z-index: 50;">
+        <button class="tb-btn" onclick="toggleLogContainer()" title="Logs">&#x2630;</button>
+      </div>
+
 <!-- Profile Changer / Mockup -->
 <div class="profile-wrap" id="profileWrap">
   <div class="profile-trigger" id="profileTrigger">
@@ -1036,10 +1041,9 @@
       </div>
       <!-- End Version Popup -->
 
-      <!-- Debug Log Container -->
       <div class="log-container" id="logContainer">
         <div class="log-header">
-          <span>Launch Logs</span>
+          <span>Logs</span>
           <span class="log-close" onclick="closeLogContainer()">Close</span>
         </div>
         <div class="log-content" id="logContent"></div>
@@ -1378,10 +1382,6 @@
       const dots = document.getElementById('playBtnDots');
       if (btn.disabled) return;
       
-      // Show log container for debugging
-      document.getElementById('logContainer').classList.add('show');
-      document.getElementById('logContent').innerHTML = '';
-      
       const rect = btn.getBoundingClientRect();
       window.spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
       btn.classList.remove('launching');
@@ -1426,6 +1426,11 @@
       line.textContent = new Date().toLocaleTimeString() + ' ' + message;
       logContent.appendChild(line);
       logContent.scrollTop = logContent.scrollHeight;
+    }
+
+    function toggleLogContainer() {
+      const container = document.getElementById('logContainer');
+      container.classList.toggle('show');
     }
 
     function closeLogContainer() {
