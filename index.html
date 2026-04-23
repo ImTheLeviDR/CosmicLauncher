@@ -817,6 +817,25 @@
       gap: 8px;
       transform: scale(0.92);
       transition: transform 0.25s ease;
+      max-height: 340px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 8px;
+      scroll-behavior: smooth;
+    }
+    
+    .version-cards::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .version-cards::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.05);
+      border-radius: 3px;
+    }
+    
+    .version-cards::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 3px;
     }
 
     .version-popup.show .version-cards {
@@ -837,8 +856,25 @@
       align-items: center;
       justify-content: space-between;
       min-width: 280px;
-      position: relative;
+      width: 100%;
+      box-sizing: border-box;
       overflow: hidden;
+    }
+
+    .version-card.middle {
+      transform: scale(1.08);
+      background: rgba(232, 98, 42, 0.12);
+      border-color: var(--accent);
+      box-shadow: 0 0 24px rgba(232, 98, 42, 0.25), 0 6px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .version-card.middle::before {
+      content: none;
+    }
+
+    .version-card.middle:hover {
+      transform: scale(1.08);
+      translate: none;
     }
 
     .version-card::before {
@@ -1383,6 +1419,36 @@
     let selectedVersion = '1.21.4';
     let popupVisible = false;
     let availableVersions = [];
+    let tickSound = null;
+
+    async function loadTickSound() {
+      try {
+        const response = await fetch('./sounds/tick.mp3');
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        tickSound = new Audio(url);
+      } catch (e) {
+        console.log('Tick sound not found, using fallback');
+      }
+    }
+
+    function playTick() {
+      if (tickSound) {
+        tickSound.currentTime = 0;
+        tickSound.play().catch(() => {});
+      } else {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = 800;
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.1);
+      }
+    }
 
     async function loadVersions() {
       try {
@@ -1414,11 +1480,41 @@
         </div>
       `).join('');
       document.getElementById('versionLabelText').textContent = selectedVersion;
+      if (!cardsContainer._hasScrollListener) {
+        cardsContainer._hasScrollListener = true;
+        cardsContainer.addEventListener('wheel', handleVersionScroll, { passive: true });
+      }
+      cardsContainer.querySelectorAll('.version-card').forEach(card => {
+        card.addEventListener('mouseenter', () => playTick());
+      });
     }
 
-    function openVersionPopup() {
+    let scrollTimeout = null;
+    function handleVersionScroll(e) {
+      const cardsContainer = document.querySelector('.version-cards');
+      if (!cardsContainer) return;
+      
+      if (scrollTimeout) return;
+      scrollTimeout = setTimeout(() => { scrollTimeout = null; }, 150);
+      playTick();
+      
+      const cardHeight = 60;
+      const scrollTop = cardsContainer.scrollTop;
+      const centerOffset = scrollTop + cardsContainer.clientHeight / 2 - cardHeight / 2;
+      const middleIndex = Math.round(centerOffset / cardHeight);
+      
+      cardsContainer.querySelectorAll('.version-card').forEach((card, i) => {
+        card.classList.remove('middle');
+        if (i === middleIndex) {
+          card.classList.add('middle');
+        }
+      });
+    }
+
+function openVersionPopup() {
       popupVisible = true;
       document.getElementById('versionPopup').classList.add('show');
+      setTimeout(updateMiddleCard, 50);
     }
     function closeVersionPopup() {
       popupVisible = false;
@@ -1433,23 +1529,27 @@
       selectedVersion = el.dataset.v;
       document.getElementById('versionLabelText').textContent = selectedVersion;
       setTimeout(closeVersionPopup, 300);
+    }
+
+    function updateMiddleCard() {
+      const cardsContainer = document.querySelector('.version-cards');
+      if (!cardsContainer) return;
+      const cards = cardsContainer.querySelectorAll('.version-card');
+      const cardHeight = 60;
+      const scrollTop = cardsContainer.scrollTop;
+      const centerOffset = scrollTop + cardsContainer.clientHeight / 2 - cardHeight / 2;
+      const middleIndex = Math.max(0, Math.min(Math.round(centerOffset / cardHeight), cards.length - 1));
+      
+      cards.forEach((card, i) => {
+        card.classList.remove('middle');
+        if (i === middleIndex) {
+          card.classList.add('middle');
+        }
+      });
     }
 
     loadVersions();
-    function closeVersionPopup() {
-      popupVisible = false;
-      document.getElementById('versionPopup').classList.remove('show');
-    }
-    function handlePopupBackdropClick(event) {
-      if (event.target === document.getElementById('versionPopup')) closeVersionPopup();
-    }
-    function selectVersion(el) {
-      document.querySelectorAll('.version-card').forEach(o => o.classList.remove('selected'));
-      el.classList.add('selected');
-      selectedVersion = el.dataset.v;
-      document.getElementById('versionLabelText').textContent = selectedVersion;
-      setTimeout(closeVersionPopup, 300);
-    }
+    loadTickSound();
 
     /* ── WIRE UP BUTTONS ── */
     document.getElementById('playBtnDots').addEventListener('click', function (e) {

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, Tray, Menu, nativeImage } = require('electron');
 const path = require('path');
 const ConfigManager = require('./app/assets/js/configmanager');
 const AuthManager = require('./app/assets/js/authmanager');
@@ -247,16 +247,9 @@ ipcMain.handle('launchGame', async (event, versionId) => {
         await LaunchManager.launchVanilla(versionId, account)
         
         if (mainWindowRef) {
-            mainWindowRef.webContents.send('launchLog', '=== Game launched! Closing launcher... ===')
+            mainWindowRef.webContents.send('launchLog', '=== Game launched! Minimize launcher to tray ===')
+            mainWindowRef.hide()
         }
-        
-        await new Promise(r => setTimeout(r, 1000))
-        
-        if (mainWindowRef) {
-            mainWindowRef.destroy()
-        }
-        
-        app.quit()
         
         return { success: true }
     } catch(error) {
@@ -276,6 +269,57 @@ ipcMain.handle('getAvailableVersions', async () => {
 })
 
 let win
+let tray
+
+function createTray() {
+    const iconPath = path.join(__dirname, 'template', 'build', 'icon.png');
+    let trayIcon;
+    try {
+        trayIcon = nativeImage.createFromPath(iconPath);
+        if (trayIcon.isEmpty()) {
+            trayIcon = nativeImage.createEmpty();
+        }
+    } catch(e) {
+        trayIcon = nativeImage.createEmpty();
+    }
+    
+    tray = new Tray(trayIcon.resize({ width: 16, height: 16 }));
+    tray.setToolTip('Cosmic Launcher');
+    
+    const contextMenu = Menu.buildFromTemplate([
+        {
+            label: 'Show',
+            click: () => {
+                if (mainWindowRef) {
+                    mainWindowRef.show();
+                    mainWindowRef.focus();
+                }
+            }
+        },
+        {
+            label: 'Quit',
+            click: () => {
+                if (mainWindowRef) {
+                    mainWindowRef.destroy();
+                }
+                app.quit();
+            }
+        }
+    ]);
+    
+    tray.setContextMenu(contextMenu);
+    
+    tray.on('click', () => {
+        if (mainWindowRef) {
+            if (mainWindowRef.isVisible()) {
+                mainWindowRef.hide();
+            } else {
+                mainWindowRef.show();
+                mainWindowRef.focus();
+            }
+        }
+    });
+}
 
 function createWindow() {
     win = new BrowserWindow({
@@ -291,7 +335,7 @@ function createWindow() {
         }
     });
 
-mainWindowRef = win;
+    mainWindowRef = win;
     console.log('Main window created');
 
     win.loadFile('index.html');
@@ -304,13 +348,15 @@ mainWindowRef = win;
         });
     });
 
+    createTray();
+}
+
 ipcMain.on('minimize', () => win.minimize());
 ipcMain.on('close', () => {
     if (mainWindowRef) {
         mainWindowRef.hide()
     }
 });
-}
 
 app.whenReady().then(createWindow);
 
