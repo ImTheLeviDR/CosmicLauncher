@@ -250,7 +250,7 @@ ipcMain.handle('launchGame', async (event, versionId) => {
             mainWindowRef.webContents.send('launchLog', '=== Game launched! Closing launcher... ===')
         }
         
-        await new Promise(r => setTimeout(r, 5000))
+        await new Promise(r => setTimeout(r, 1000))
         
         if (mainWindowRef) {
             mainWindowRef.destroy()

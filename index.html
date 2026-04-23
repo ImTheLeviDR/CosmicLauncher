@@ -965,6 +965,79 @@
       pointer-events: none;
       z-index: 5;
     }
+
+    .launch-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #1a0e06 0%, #04040d 100%);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    .launch-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .launch-overlay.fading {
+      opacity: 1;
+      visibility: visible;
+      animation: fadeIntoGame 1.5s ease-in-out forwards;
+    }
+
+    @keyframes fadeIntoGame {
+      0% {
+        opacity: 0;
+      }
+      20% {
+        opacity: 0.3;
+      }
+      50% {
+        opacity: 0.7;
+        background: #1a120a;
+      }
+      80% {
+        opacity: 0.9;
+        background: #0d0906;
+      }
+      100% {
+        opacity: 1;
+        background: #04040d;
+      }
+    }
+
+    .layout.launching {
+      animation: layoutFade 1.3s ease-in-out forwards;
+    }
+
+    @keyframes layoutFade {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+        filter: blur(0px) brightness(1);
+      }
+      40% {
+        transform: scale(1.02);
+        opacity: 0.6;
+        filter: blur(1px) brightness(1.2);
+      }
+      70% {
+        transform: scale(1.04);
+        opacity: 0.3;
+        filter: blur(4px) brightness(1.5);
+      }
+      100% {
+        transform: scale(1.05);
+        opacity: 0;
+        filter: blur(8px) brightness(2);
+      }
+    }
   </style>
 </head>
 
@@ -972,6 +1045,8 @@
 
   <canvas id="nebula"></canvas>
   <div class="grain"></div>
+  <div class="launch-overlay" id="launchOverlay"></div>
+  <audio id="launchSound" src="sounds/launch.mp3" preload="auto"></audio>
 
   <div class="titlebar">
     <div class="tb-left">
@@ -1408,13 +1483,38 @@
       dots.style.display = 'none';
       btn.disabled = true;
 
+      // Play launch sound
+      const launchSound = document.getElementById('launchSound');
+      if (launchSound) {
+        launchSound.currentTime = 0;
+        launchSound.volume = 0.4;
+        launchSound.play().catch(() => {});
+      }
+
+      // Trigger fade animation
+      const layout = document.getElementById('layout');
+      const overlay = document.getElementById('launchOverlay');
+      layout.classList.add('launching');
+      overlay.classList.add('fading');
+
+      // Trigger star warp effect
+      if (window.triggerStarExplosion) {
+        window.triggerStarExplosion();
+      }
+
+      // Wait for fade animation before actually launching
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
       try {
         const result = await ipcRenderer.invoke('launchGame', selectedVersion);
         if (result.success) {
           status.textContent = 'Launching...';
           addLog('=== Launch successful! Game should be running ===');
-          // Don't close launcher anymore - keep for debugging
+          // Keep launcher open but keep the fade effect
         } else {
+          // Revert animation on failure
+          layout.classList.remove('launching');
+          overlay.classList.remove('fading');
           btn.disabled = false;
           btn.classList.remove('launching');
           icon.innerHTML = '&#x25B6;';
@@ -1423,6 +1523,9 @@
           showModal('Launch Failed', result.error || 'Failed to launch the game', true);
         }
       } catch (err) {
+        // Revert animation on error
+        layout.classList.remove('launching');
+        overlay.classList.remove('fading');
         btn.disabled = false;
         btn.classList.remove('launching');
         icon.innerHTML = '&#x25B6;';
