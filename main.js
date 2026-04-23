@@ -279,8 +279,8 @@ let win
 
 function createWindow() {
     win = new BrowserWindow({
-        width: 900,
-        height: 600,
+        width: 960,
+        height: 640,
         frame: false,
         transparent: false,
         backgroundColor: '#0a0a1a',

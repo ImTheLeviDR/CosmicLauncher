@@ -631,9 +631,9 @@
       border-radius: 10px;
       color: #fff;
       font-family: 'Syne', sans-serif;
-      font-size: 1rem;
+      font-size: 0.85rem;
       font-weight: 800;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
       cursor: pointer;
       position: relative;
@@ -645,13 +645,19 @@
     }
 
     .btn-spinner {
-      width: 22px;
-      height: 22px;
+      width: 16px;
+      height: 16px;
       border: 2px solid rgba(255, 255, 255, 0.3);
       border-top-color: #fff;
       border-radius: 50%;
       animation: btn-spin 0.8s linear infinite;
-      margin-right: 4px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    #playBtnIcon {
+      display: inline-block;
+      vertical-align: middle;
     }
 
     @keyframes btn-spin {
@@ -663,9 +669,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding-left: 24px;
+      padding: 0 12px;
       position: relative;
       height: 100%;
+    }
+
+    .play-status-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .play-btn-main::before {
@@ -1023,7 +1035,7 @@
 
       <div class="play-wrap">
         <button class="play-btn" id="playBtn">
-          <div class="play-btn-main" id="playBtnLabel">&#x25B6; &nbsp; Launch</div>
+          <div class="play-btn-main" id="playBtnLabel"><span id="playBtnIcon">&#x25B6;</span>&nbsp;<span class="play-status-text" id="playBtnStatus">Launch</span></div>
           <div class="play-btn-version" id="playBtnDots">
             <span class="play-btn-ver-icon">&#x25BE;</span>
           </div>
@@ -1378,7 +1390,8 @@
     /* ── PLAY ── */
     async function play() {
       const btn = document.getElementById('playBtn');
-      const label = document.getElementById('playBtnLabel');
+      const status = document.getElementById('playBtnStatus');
+      const icon = document.getElementById('playBtnIcon');
       const dots = document.getElementById('playBtnDots');
       if (btn.disabled) return;
       
@@ -1387,28 +1400,33 @@
       btn.classList.remove('launching');
       void btn.offsetWidth;
       btn.classList.add('launching');
-      label.innerHTML = '<span class="btn-spinner"></span> &nbsp; Preparing...';
+      
+      // Change icon to spinner and set initial text
+      icon.innerHTML = '<span class="btn-spinner"></span>';
+      status.textContent = 'Preparing...';
+      
       dots.style.display = 'none';
       btn.disabled = true;
 
       try {
         const result = await ipcRenderer.invoke('launchGame', selectedVersion);
         if (result.success) {
-          label.innerHTML = '<span class="btn-spinner"></span> &nbsp; Launching...';
+          status.textContent = 'Launching...';
           addLog('=== Launch successful! Game should be running ===');
-          addLog('Launcher will stay open for debugging. Close manually.');
           // Don't close launcher anymore - keep for debugging
         } else {
           btn.disabled = false;
           btn.classList.remove('launching');
-          label.innerHTML = '&#x25B6; &nbsp; Launch';
+          icon.innerHTML = '&#x25B6;';
+          status.textContent = 'Launch';
           dots.style.display = '';
           showModal('Launch Failed', result.error || 'Failed to launch the game', true);
         }
       } catch (err) {
         btn.disabled = false;
         btn.classList.remove('launching');
-        label.innerHTML = '&#x25B6; &nbsp; Launch';
+        icon.innerHTML = '&#x25B6;';
+        status.textContent = 'Launch';
         dots.style.display = '';
         showModal('Error', 'Failed to launch: ' + err.message, true);
       }
@@ -1438,9 +1456,10 @@
     }
 
     ipcRenderer.on('launchProgress', (event, data) => {
-      const label = document.getElementById('playBtnLabel');
-      if (data.task && label) {
-        label.innerHTML = '<span class="btn-spinner"></span> &nbsp; ' + data.task + '...';
+      const status = document.getElementById('playBtnStatus');
+      if (data.task && status) {
+        const pct = data.progress ? Math.round(data.progress * 100) + '%' : '';
+        status.textContent = data.task + (pct ? ' ' + pct : '...');
         addLog('Progress: ' + data.task + ' (' + Math.round((data.progress || 0) * 100) + '%)');
       }
     });
