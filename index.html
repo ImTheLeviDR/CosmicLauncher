@@ -889,6 +889,64 @@
       color: var(--text);
     }
 
+    .log-container {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      height: 150px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .log-container.show {
+      display: block;
+    }
+
+    .log-header {
+      background: rgba(232, 98, 42, 0.3);
+      padding: 8px 12px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .log-content {
+      padding: 8px 12px;
+      height: calc(100% - 36px);
+      overflow-y: auto;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: #88ff88;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .log-content .error {
+      color: #ff6666;
+    }
+
+    .log-content .warn {
+      color: #ffcc00;
+    }
+
+    .log-close {
+      cursor: pointer;
+      padding: 2px 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+    }
+
+    .log-close:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
     .particles-canvas {
       position: absolute;
       inset: 0;
@@ -972,25 +1030,19 @@
       <div class="version-popup" id="versionPopup" onclick="handlePopupBackdropClick(event)">
         <div class="version-popup-inner">
           <div class="version-close" onclick="closeVersionPopup()">&times;</div>
-          <div class="version-cards">
-            <div class="version-card selected" data-v="1.20.4" onclick="selectVersion(this)">
-              <span>1.20.4</span>
-              <span class="version-card-check">&#x2713;</span>
-            </div>
-            <div class="version-card" data-v="1.20.1" onclick="selectVersion(this)">
-              <span>1.20.1</span>
-              <span class="version-card-check">&#x2713;</span>
-            </div>
-            <div class="version-card" data-v="1.19.4" onclick="selectVersion(this)">
-              <span>1.19.4</span>
-              <span class="version-card-check">&#x2713;</span>
-            </div>
-            <div class="version-card" data-v="1.18.2" onclick="selectVersion(this)">
-              <span>1.18.2</span>
-              <span class="version-card-check">&#x2713;</span>
-            </div>
+          <div class="version-cards" id="versionCardsContainer">
           </div>
         </div>
+      </div>
+      <!-- End Version Popup -->
+
+      <!-- Debug Log Container -->
+      <div class="log-container" id="logContainer">
+        <div class="log-header">
+          <span>Launch Logs</span>
+          <span class="log-close" onclick="closeLogContainer()">Close</span>
+        </div>
+        <div class="log-content" id="logContent"></div>
       </div>
       <!-- End Version Popup -->
 
@@ -1236,14 +1288,63 @@
 
       refreshProfileList();
 
-      /* ── VERSION POPUP LOGIC ── */
-    let selectedVersion = '1.20.4';
+/* ── VERSION POPUP LOGIC ── */
+    let selectedVersion = '1.21.4';
     let popupVisible = false;
+    let availableVersions = [];
+
+    async function loadVersions() {
+      try {
+        const result = await ipcRenderer.invoke('getAvailableVersions');
+        if (result.success) {
+          availableVersions = result.versions.filter(v => v.type === 'release').slice(0, 20);
+          updateVersionCards();
+        }
+      } catch (err) {
+        console.error('Failed to load versions:', err);
+        availableVersions = [
+          { id: '1.21.4', type: 'release' },
+          { id: '1.20.4', type: 'release' },
+          { id: '1.20.1', type: 'release' },
+          { id: '1.19.4', type: 'release' },
+          { id: '1.18.2', type: 'release' }
+        ];
+        updateVersionCards();
+      }
+    }
+
+    function updateVersionCards() {
+      const cardsContainer = document.querySelector('.version-cards');
+      if (!cardsContainer) return;
+      cardsContainer.innerHTML = availableVersions.map(v => `
+        <div class="version-card ${v.id === selectedVersion ? 'selected' : ''}" data-v="${v.id}" onclick="selectVersion(this)">
+          <span>${v.id}</span>
+          <span class="version-card-check">&#x2713;</span>
+        </div>
+      `).join('');
+      document.getElementById('versionLabelText').textContent = selectedVersion;
+    }
 
     function openVersionPopup() {
       popupVisible = true;
       document.getElementById('versionPopup').classList.add('show');
     }
+    function closeVersionPopup() {
+      popupVisible = false;
+      document.getElementById('versionPopup').classList.remove('show');
+    }
+    function handlePopupBackdropClick(event) {
+      if (event.target === document.getElementById('versionPopup')) closeVersionPopup();
+    }
+    function selectVersion(el) {
+      document.querySelectorAll('.version-card').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedVersion = el.dataset.v;
+      document.getElementById('versionLabelText').textContent = selectedVersion;
+      setTimeout(closeVersionPopup, 300);
+    }
+
+    loadVersions();
     function closeVersionPopup() {
       popupVisible = false;
       document.getElementById('versionPopup').classList.remove('show');
@@ -1271,27 +1372,77 @@
     });
 
     /* ── PLAY ── */
-    function play() {
+    async function play() {
       const btn = document.getElementById('playBtn');
       const label = document.getElementById('playBtnLabel');
       const dots = document.getElementById('playBtnDots');
       if (btn.disabled) return;
+      
+      // Show log container for debugging
+      document.getElementById('logContainer').classList.add('show');
+      document.getElementById('logContent').innerHTML = '';
+      
       const rect = btn.getBoundingClientRect();
       window.spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
       btn.classList.remove('launching');
       void btn.offsetWidth;
       btn.classList.add('launching');
-      label.innerHTML = '<span class="btn-spinner"></span> &nbsp; Loading...';
+      label.innerHTML = '<span class="btn-spinner"></span> &nbsp; Preparing...';
       dots.style.display = 'none';
       btn.disabled = true;
-      setTimeout(() => {
-        try { new Audio('sounds/launch.mp3').play(); } catch (_) { }
-        if (window.triggerStarExplosion) window.triggerStarExplosion();
-        const layout = document.getElementById('layout');
-        layout.classList.add('closing');
-        setTimeout(() => closeLauncher(), 600);
-      }, 2500);
+
+      try {
+        const result = await ipcRenderer.invoke('launchGame', selectedVersion);
+        if (result.success) {
+          label.innerHTML = '<span class="btn-spinner"></span> &nbsp; Launching...';
+          addLog('=== Launch successful! Game should be running ===');
+          addLog('Launcher will stay open for debugging. Close manually.');
+          // Don't close launcher anymore - keep for debugging
+        } else {
+          btn.disabled = false;
+          btn.classList.remove('launching');
+          label.innerHTML = '&#x25B6; &nbsp; Launch';
+          dots.style.display = '';
+          showModal('Launch Failed', result.error || 'Failed to launch the game', true);
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.classList.remove('launching');
+        label.innerHTML = '&#x25B6; &nbsp; Launch';
+        dots.style.display = '';
+        showModal('Error', 'Failed to launch: ' + err.message, true);
+      }
     }
+
+    function addLog(message) {
+      const logContent = document.getElementById('logContent');
+      if (!logContent) return;
+      const line = document.createElement('div');
+      if (message.includes('ERROR') || message.includes('error') || message.includes('Failed')) {
+        line.className = 'error';
+      } else if (message.includes('WARN') || message.includes('warn')) {
+        line.className = 'warn';
+      }
+      line.textContent = new Date().toLocaleTimeString() + ' ' + message;
+      logContent.appendChild(line);
+      logContent.scrollTop = logContent.scrollHeight;
+    }
+
+    function closeLogContainer() {
+      document.getElementById('logContainer').classList.remove('show');
+    }
+
+    ipcRenderer.on('launchProgress', (event, data) => {
+      const label = document.getElementById('playBtnLabel');
+      if (data.task && label) {
+        label.innerHTML = '<span class="btn-spinner"></span> &nbsp; ' + data.task + '...';
+        addLog('Progress: ' + data.task + ' (' + Math.round((data.progress || 0) * 100) + '%)');
+      }
+    });
+
+    ipcRenderer.on('launchLog', (event, message) => {
+      addLog(message);
+    });
 
     /* ── WINDOW CONTROLS ── */
     function minimize() { try { window.require('electron').ipcRenderer.send('minimize'); } catch (_) { } }

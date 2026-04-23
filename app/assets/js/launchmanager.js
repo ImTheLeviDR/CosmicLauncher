@@ -1,0 +1,731 @@
+const { spawn } = require('child_process')
+const fs = require('fs-extra')
+const path = require('path')
+const os = require('os')
+const https = require('https')
+const http = require('http')
+const crypto = require('crypto')
+const ConfigManager = require('./configmanager')
+
+const MINECRAFT_VERSION_MANIFEST = 'https://launchermeta.mojang.com/mc/game/version_manifest_v2.json'
+
+class LaunchManager {
+    constructor() {
+        this.javaPath = 'java'
+        this.proc = null
+        this._exitCode = null
+        this.on('progress', () => {})
+        this.on('launch', () => {})
+        this.on('log', () => {})
+    }
+
+    getMinecraftDirectory() {
+        const minecraftPath = path.join(os.homedir(), 'AppData', 'Roaming', '.cosmiclauncher', 'minecraft')
+        if (process.platform === 'darwin') {
+            return path.join(os.homedir(), 'Library', 'Application Support', '.cosmiclauncher', 'minecraft')
+        }
+        if (process.platform === 'linux') {
+            return path.join(os.homedir(), '.cosmiclauncher', 'minecraft')
+        }
+        return minecraftPath
+    }
+
+    getVersionsDirectory() {
+        return path.join(this.getMinecraftDirectory(), 'versions')
+    }
+
+    getAssetsDirectory() {
+        return path.join(this.getMinecraftDirectory(), 'assets')
+    }
+
+    getLibrariesDirectory() {
+        return path.join(this.getMinecraftDirectory(), 'libraries')
+    }
+
+    log(message) {
+        console.log('[LaunchManager] ' + message)
+        this.emit('log', message)
+    }
+
+    async downloadFile(url, destPath, onProgress) {
+        return new Promise((resolve, reject) => {
+            fs.ensureDirSync(path.dirname(destPath))
+            
+            const file = fs.createWriteStream(destPath)
+            const request = url.startsWith('https') ? https : http
+            
+            this.log(`Downloading: ${url}`)
+            this.log(`Destination: ${destPath}`)
+            
+            request.get(url, (response) => {
+                if (response.statusCode === 301 || response.statusCode === 302) {
+                    file.close()
+                    fs.unlinkSync(destPath)
+                    this.downloadFile(response.headers.location, destPath, onProgress).then(resolve).catch(reject)
+                    return
+                }
+
+                const total = parseInt(response.headers['content-length'], 10)
+                let downloaded = 0
+
+                response.on('data', (chunk) => {
+                    downloaded += chunk.length
+                    if (onProgress && total) {
+                        onProgress(downloaded / total)
+                    }
+                })
+
+                response.pipe(file)
+                file.on('finish', () => {
+                    file.close()
+                    this.log(`Download complete: ${destPath}`)
+                    resolve()
+                })
+            }).on('error', (err) => {
+                this.log(`Download error: ${err.message}`)
+                if (fs.existsSync(destPath)) {
+                    fs.unlinkSync(destPath)
+                }
+                reject(err)
+            })
+        })
+    }
+
+    async fetchJson(url) {
+        this.log(`Fetching JSON: ${url}`)
+        return new Promise((resolve, reject) => {
+            const request = url.startsWith('https') ? https : http
+            request.get(url, (response) => {
+                let data = ''
+                response.on('data', chunk => data += chunk)
+                response.on('end', () => {
+                    try {
+                        this.log(`JSON fetched successfully from ${url}`)
+                        resolve(JSON.parse(data))
+                    } catch (e) {
+                        this.log(`JSON parse error: ${e.message}`)
+                        reject(e)
+                    }
+                })
+            }).on('error', reject)
+        })
+    }
+
+    async getVersionManifest() {
+        return this.fetchJson(MINECRAFT_VERSION_MANIFEST)
+    }
+
+    async ensureVersion(versionId) {
+        this.log(`Ensuring version: ${versionId}`)
+        const versionDir = path.join(this.getVersionsDirectory(), versionId)
+        const versionJson = path.join(versionDir, `${versionId}.json`)
+        
+        if (fs.existsSync(versionJson)) {
+            this.log(`Version JSON already exists: ${versionJson}`)
+            return JSON.parse(fs.readFileSync(versionJson, 'utf-8'))
+        }
+
+        const manifest = await this.getVersionManifest()
+        const versionInfo = manifest.versions.find(v => v.id === versionId)
+        
+        if (!versionInfo) {
+            this.log(`Version ${versionId} not found in manifest`)
+            throw new Error(`Version ${versionId} not found`)
+        }
+
+        this.log(`Found version info: ${JSON.stringify(versionInfo)}`)
+        
+        this.emit('progress', { task: 'Fetching version info', progress: 0 })
+        
+        const versionData = await this.fetchJson(versionInfo.url)
+        this.log(`Version data fetched, mainClass: ${versionData.mainClass}`)
+        
+        fs.ensureDirSync(versionDir)
+        fs.writeFileSync(versionJson, JSON.stringify(versionData, null, 4))
+        
+        return versionData
+    }
+
+    async downloadLibraries(versionData) {
+        const libs = versionData.libraries || []
+        let downloaded = 0
+        const total = libs.length
+
+        this.log(`Downloading ${total} libraries...`)
+
+        for (const lib of libs) {
+            if (!this.shouldDownloadLibrary(lib)) {
+                this.log(`Skipping library (rule mismatch): ${lib.name}`)
+                continue
+            }
+
+            const url = this.getLibraryUrl(lib)
+            const dest = path.join(this.getLibrariesDirectory(), this.getLibraryPath(lib))
+            
+            if (fs.existsSync(dest)) {
+                this.log(`Library already exists: ${dest}`)
+            } else {
+                try {
+                    await this.downloadFile(url, dest)
+                } catch (e) {
+                    this.log(`Failed to download library: ${lib.name} - ${e.message}`)
+                }
+            }
+
+            downloaded++
+            this.emit('progress', { 
+                task: 'Downloading libraries', 
+                progress: downloaded / total,
+                detail: lib.name
+            })
+        }
+        this.log(`Libraries download complete: ${downloaded}/${total}`)
+    }
+
+    shouldDownloadLibrary(lib) {
+        if (lib.rules) {
+            let allowed = false
+            for (const rule of lib.rules) {
+                if (!this.matchesRuleOS(rule.os)) {
+                    continue
+                }
+                allowed = rule.action === 'allow'
+            }
+            if (!allowed) {
+                return false
+            }
+        }
+        return true
+    }
+
+    getLibraryPath(lib) {
+        if (lib.downloads?.artifact?.path) {
+            return lib.downloads.artifact.path
+        }
+
+        const classifierDownload = this.getNativeClassifierDownload(lib)
+        if (classifierDownload?.path) {
+            return classifierDownload.path
+        }
+
+        const parts = lib.name.split(':')
+        const group = parts[0].replace(/\./g, '/')
+        const artifact = parts[1]
+        const version = parts[2]
+        const classifier = parts[3]
+        
+        if (classifier) {
+            return `${group}/${artifact}/${version}/${artifact}-${version}-${classifier}.jar`
+        }
+        
+        return `${group}/${artifact}/${version}/${artifact}-${version}.jar`
+    }
+
+    getLibraryUrl(lib) {
+        if (lib.downloads?.artifact?.url) {
+            return lib.downloads.artifact.url
+        }
+
+        const classifierDownload = this.getNativeClassifierDownload(lib)
+        if (classifierDownload?.url) {
+            return classifierDownload.url
+        }
+
+        const base = 'https://libraries.minecraft.net'
+        return `${base}/${this.getLibraryPath(lib).replace(/\\/g, '/')}`
+    }
+
+    async downloadClientJar(versionData) {
+        this.log(`Checking client JAR for ${versionData.id}`)
+        const clientUrl = versionData.downloads.client.url
+        const versionDir = path.join(this.getVersionsDirectory(), versionData.id)
+        const clientPath = path.join(versionDir, `${versionData.id}.jar`)
+
+        if (fs.existsSync(clientPath)) {
+            this.log(`Client JAR already exists: ${clientPath}`)
+        } else {
+            this.log(`Downloading client JAR from: ${clientUrl}`)
+            this.emit('progress', { task: 'Downloading Minecraft client', progress: 0 })
+            await this.downloadFile(clientUrl, clientPath)
+        }
+    }
+
+    async extractNatives(versionData) {
+        const versionDir = path.join(this.getVersionsDirectory(), versionData.id)
+        const nativesDir = path.join(versionDir, 'natives')
+        
+        if (fs.existsSync(nativesDir) && fs.readdirSync(nativesDir).length > 0) {
+            this.log(`Natives already extracted: ${nativesDir}`)
+            return nativesDir
+        }
+
+        this.log(`Extracting natives to: ${nativesDir}`)
+        fs.ensureDirSync(nativesDir)
+
+        const libs = versionData.libraries || []
+        
+        for (const lib of libs) {
+            if (!lib.downloads || !lib.downloads.classifiers) continue
+
+            const classifierDownload = this.getNativeClassifierDownload(lib)
+            if (!classifierDownload) continue
+
+            const libPath = path.join(this.getLibrariesDirectory(), this.getLibraryPath(lib))
+            this.log(`Extracting native: ${lib.name}`)
+            
+            if (fs.existsSync(libPath)) {
+                try {
+                    await this.extractZip(libPath, nativesDir)
+                } catch (e) {
+                    this.log(`Failed to extract native: ${lib.name} - ${e.message}`)
+                }
+            } else {
+                this.log(`Native file not found: ${libPath}`)
+            }
+        }
+
+        return nativesDir
+    }
+
+    async extractZip(zipPath, destDir) {
+        const yauzl = require('yauzl')
+        return new Promise((resolve, reject) => {
+            yauzl.open(zipPath, { lazyEntries: true }, (err, zipfile) => {
+                if (err) return reject(err)
+                
+                zipfile.readEntry()
+                zipfile.on('entry', (entry) => {
+                    if (entry.fileName.endsWith('/')) {
+                        zipfile.readEntry()
+                        return
+                    }
+                    
+                    const safePath = entry.fileName.replace(/[^a-zA-Z0-9._\-/]/g, '_')
+                    const outputPath = path.join(destDir, safePath)
+                    fs.ensureDirSync(path.dirname(outputPath))
+                    
+                    zipfile.openReadStream(entry, (err, readStream) => {
+                        if (err) {
+                            zipfile.readEntry()
+                            return
+                        }
+                        
+                        const writeStream = fs.createWriteStream(outputPath)
+                        readStream.pipe(writeStream)
+                        writeStream.on('close', () => zipfile.readEntry())
+                    })
+                })
+                zipfile.on('end', resolve)
+                zipfile.on('error', reject)
+            })
+        })
+    }
+
+    getLauncherProfiles(account) {
+        return {
+            "authenticationDatabase": {
+                [account.uuid]: {
+                    "id": account.uuid,
+                    "accessToken": account.accessToken,
+                    "displayName": account.displayName,
+                    "legacy": false,
+                    "type": "msa",
+                    "profileId": account.uuid,
+                    "expiresAt": account.expiresAt,
+                    "microsoft": account.microsoft
+                }
+            },
+            "selectedProfile": account.uuid,
+            "version": 3
+        }
+    }
+
+    async launchVanilla(versionId, account) {
+        this._exitCode = null
+        this.log(`=== Starting launchVanilla for ${versionId} ===`)
+        this.log(`Account: ${account.displayName} (${account.uuid})`)
+        this.emit('launch', { versionId, account })
+
+        const versionData = await this.ensureVersion(versionId)
+        this.log(`Version data loaded: ${JSON.stringify(versionData).substring(0, 500)}...`)
+        
+        await this.downloadLibraries(versionData)
+        await this.downloadClientJar(versionData)
+        
+        this.emit('progress', { task: 'Extracting natives', progress: 0 })
+        const nativesDir = await this.extractNatives(versionData)
+        this.log(`Natives dir: ${nativesDir}`)
+        
+        this.emit('progress', { task: 'Preparing game', progress: 0 })
+        
+        const launcherProfiles = this.getLauncherProfiles(account)
+        const profilesPath = path.join(this.getMinecraftDirectory(), 'launcher_profiles.json')
+        this.log(`Writing launcher_profiles.json to: ${profilesPath}`)
+        fs.ensureDirSync(this.getMinecraftDirectory())
+        fs.writeFileSync(profilesPath, JSON.stringify(launcherProfiles, null, 4))
+
+        const gameDir = this.getMinecraftDirectory()
+        const assetsDir = this.getAssetsDirectory()
+        const versionDir = path.join(this.getVersionsDirectory(), versionId)
+        const clientJar = path.join(versionDir, `${versionId}.jar`)
+
+        this.log(`Game directory: ${gameDir}`)
+        this.log(`Client JAR: ${clientJar}`)
+
+        const classPath = await this.buildClassPath(versionData)
+        this.log(`ClassPath: ${classPath.substring(0, 500)}...`)
+
+        const jvmArgs = this.buildJvmArguments(versionData, {
+            nativesPath: nativesDir,
+            classPath,
+            gameDir
+        })
+        
+        this.log(`JVM Args: ${JSON.stringify(jvmArgs)}`)
+
+        const gameArgs = this.buildGameArguments(versionData, {
+            gameDir,
+            assetsDir,
+            nativesPath: nativesDir,
+            versionDir,
+            account
+        })
+        
+        this.log(`Game Args: ${JSON.stringify(gameArgs)}`)
+
+        const javaExe = this.findJava()
+        this.log(`Java executable: ${javaExe}`)
+
+        const fullCommand = [javaExe, ...jvmArgs, ...gameArgs]
+        this.log(`Full command: ${fullCommand.join(' ')}`)
+
+        this.emit('progress', { task: 'Launching Minecraft', progress: 1 })
+
+        this.proc = spawn(javaExe, [...jvmArgs, ...gameArgs], {
+            cwd: gameDir,
+            stdio: ['ignore', 'pipe', 'pipe'],
+            shell: false
+        })
+
+        this.proc.stdout.on('data', (data) => {
+            const msg = data.toString().trim()
+            this.log('[JAVA STDOUT] ' + msg)
+        })
+
+        this.proc.stderr.on('data', (data) => {
+            const msg = data.toString().trim()
+            this.log('[JAVA STDERR] ' + msg)
+        })
+
+        this.proc.on('error', (err) => {
+            this.log(`Spawn error: ${err.message}`)
+        })
+
+        this.proc.on('close', (code) => {
+            this.log(`Process exited with code: ${code}`)
+            this._exitCode = code
+        })
+
+        this.log(`=== Process spawned ===`)
+        
+        // Wait briefly to check for immediate exit
+        await new Promise(r => setTimeout(r, 3000))
+        
+        if (this._exitCode !== null && this._exitCode !== 0) {
+            this.log(`ERROR: Java process exited immediately with code ${this._exitCode}`)
+            throw new Error(`Java process exited with code ${this._exitCode}. Check logs for details.`)
+        }
+        
+        return true
+    }
+
+    buildGameArguments(versionData, opts) {
+        const { gameDir, assetsDir, versionDir, account } = opts
+        
+        const args = []
+        const argData = versionData.arguments || {}
+        const gameArgsList = argData.game || []
+        const features = {
+            is_demo_user: false,
+            has_custom_resolution: true,
+            has_quick_plays_support: false,
+            is_quick_play_singleplayer: false,
+            is_quick_play_multiplayer: false,
+            is_quick_play_realms: false
+        }
+        
+        // Fallback for older versions
+        if (gameArgsList.length === 0 && versionData.minecraftArguments) {
+            const legacyArgs = versionData.minecraftArguments.split(' ')
+            for (const arg of legacyArgs) {
+                args.push(arg
+                    .replace('${auth_access_token}', account.accessToken)
+                    .replace('${auth_player_name}', account.displayName)
+                    .replace('${auth_uuid}', account.uuid)
+                    .replace('${auth_session}', account.accessToken)
+                    .replace('${version_name}', versionData.id)
+                    .replace('${game_directory}', gameDir)
+                    .replace('${assets_root}', assetsDir)
+                    .replace('${assets_index_name}', versionData.assetIndex?.id || versionData.id)
+                    .replace('${user_type}', 'MSA')
+                    .replace('${version_type}', versionData.type || 'release'))
+            }
+            args.push('--width', '854')
+            args.push('--height', '480')
+            return args
+        }
+        
+        for (const arg of gameArgsList) {
+            if (typeof arg === 'string') {
+                args.push(arg
+                    .replace('${auth_access_token}', account.accessToken)
+                    .replace('${auth_player_name}', account.displayName)
+                    .replace('${auth_uuid}', account.uuid)
+                    .replace('${auth_session}', account.accessToken)
+                    .replace('${version_name}', versionData.id)
+                    .replace('${game_directory}', gameDir)
+                    .replace('${assets_root}', assetsDir)
+                    .replace('${assets_index_name}', versionData.assetIndex?.id || versionData.id)
+                    .replace('${user_type}', 'MSA')
+                    .replace('${version_type}', versionData.type || 'release'))
+            } else if (arg.rules && arg.value) {
+                if (this.checkRule(arg.rules, 'allow', features)) {
+                    for (const val of this.getArgumentValues(arg.value)) {
+                        if (typeof val === 'string') {
+                            args.push(val
+                                .replace('${auth_access_token}', account.accessToken)
+                                .replace('${auth_player_name}', account.displayName)
+                                .replace('${auth_uuid}', account.uuid)
+                                .replace('${auth_session}', account.accessToken)
+                                .replace('${version_name}', versionData.id)
+                                .replace('${game_directory}', gameDir)
+                                .replace('${assets_root}', assetsDir)
+                                .replace('${assets_index_name}', versionData.assetIndex?.id || versionData.id)
+                                .replace('${user_type}', 'MSA')
+                                .replace('${version_type}', versionData.type || 'release'))
+                        }
+                    }
+                }
+            }
+        }
+
+        args.push('--width', '854')
+        args.push('--height', '480')
+
+        return args
+    }
+
+    buildJvmArguments(versionData, opts) {
+        const { nativesPath, classPath, gameDir } = opts
+        
+        const args = []
+        const argData = versionData.arguments || {}
+        const jvmArgs = argData.jvm || []
+
+        const maxMem = 2048
+        const minMem = 512
+
+        args.push(`-Xmx${maxMem}M`)
+        args.push(`-Xms${minMem}M`)
+        let hasExplicitClasspath = false
+
+        for (const arg of jvmArgs) {
+            if (typeof arg === 'string') {
+                const resolvedArg = this.resolveJvmPlaceholder(arg, versionData, {
+                    nativesPath,
+                    classPath,
+                    gameDir
+                })
+                hasExplicitClasspath = hasExplicitClasspath || resolvedArg === '-cp' || resolvedArg === '-classpath'
+                args.push(resolvedArg)
+            } else if (arg.rules && arg.value) {
+                if (this.checkRule(arg.rules, 'allow')) {
+                    for (const val of this.getArgumentValues(arg.value)) {
+                        if (typeof val === 'string') {
+                            const resolvedArg = this.resolveJvmPlaceholder(val, versionData, {
+                                nativesPath,
+                                classPath,
+                                gameDir
+                            })
+                            hasExplicitClasspath = hasExplicitClasspath || resolvedArg === '-cp' || resolvedArg === '-classpath'
+                            args.push(resolvedArg)
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!hasExplicitClasspath) {
+            args.push('-cp')
+            args.push(classPath)
+        }
+        args.push(versionData.mainClass)
+
+        this.log(`JVM command: java ${args.slice(0, 5).join(' ')} ... ${versionData.mainClass}`)
+
+        return args
+    }
+
+    checkRule(rules, action, features = {}) {
+        let matched = false
+        for (const rule of rules) {
+            if (!this.matchesRule(rule, features)) {
+                continue
+            }
+            matched = rule.action === action
+        }
+        return matched
+    }
+
+    matchesRule(rule, features = {}) {
+        if (!this.matchesRuleOS(rule.os)) {
+            return false
+        }
+
+        if (rule.features) {
+            for (const [featureName, expectedValue] of Object.entries(rule.features)) {
+                if ((features[featureName] ?? false) !== expectedValue) {
+                    return false
+                }
+            }
+        }
+
+        return true
+    }
+
+    getArgumentValues(value) {
+        return Array.isArray(value) ? value : [value]
+    }
+
+    getMinecraftOSName() {
+        if (process.platform === 'win32') return 'windows'
+        if (process.platform === 'darwin') return 'osx'
+        if (process.platform === 'linux') return 'linux'
+        return process.platform
+    }
+
+    matchesRuleOS(ruleOS) {
+        if (!ruleOS) {
+            return true
+        }
+
+        if (ruleOS.name && ruleOS.name !== this.getMinecraftOSName()) {
+            return false
+        }
+
+        if (ruleOS.arch && ruleOS.arch !== process.arch) {
+            return false
+        }
+
+        return true
+    }
+
+    getNativeClassifierKey() {
+        const osName = this.getMinecraftOSName()
+        if (osName === 'windows') {
+            return process.arch === 'x64' ? 'natives-windows' : 'natives-windows-32'
+        }
+        if (osName === 'osx') {
+            return process.arch === 'arm64' ? 'natives-macos-arm64' : 'natives-macos'
+        }
+        if (osName === 'linux') {
+            if (process.arch === 'arm64') return 'natives-linux-arm64'
+            return 'natives-linux'
+        }
+        return null
+    }
+
+    getNativeClassifierDownload(lib) {
+        const classifiers = lib.downloads?.classifiers
+        if (!classifiers) {
+            return null
+        }
+
+        const preferredKeys = [this.getNativeClassifierKey(), 'natives-windows', 'natives-macos', 'natives-linux'].filter(Boolean)
+        for (const key of preferredKeys) {
+            if (classifiers[key]) {
+                return classifiers[key]
+            }
+        }
+
+        return null
+    }
+
+    resolveJvmPlaceholder(arg, versionData, opts) {
+        const { nativesPath, classPath, gameDir } = opts
+        return arg
+            .replace('${natives_directory}', nativesPath)
+            .replace('${classpath}', classPath)
+            .replace('${game_directory}', gameDir)
+            .replace('${launcher_name}', 'CosmicLauncher')
+            .replace('${launcher_version}', versionData?.launcherVersion || 'dev')
+    }
+
+    async buildClassPath(versionData) {
+        const classPath = []
+        
+        const versionDir = path.join(this.getVersionsDirectory(), versionData.id)
+        const clientJar = path.join(versionDir, `${versionData.id}.jar`)
+        classPath.push(clientJar)
+
+        const libs = versionData.libraries || []
+        for (const lib of libs) {
+            if (!this.shouldDownloadLibrary(lib)) continue
+            const libPath = path.join(this.getLibrariesDirectory(), this.getLibraryPath(lib))
+            if (fs.existsSync(libPath)) {
+                classPath.push(libPath)
+            }
+        }
+
+        return classPath.join(process.platform === 'win32' ? ';' : ':')
+    }
+
+    findJava() {
+        const javaHome = process.env.JAVA_HOME
+        if (javaHome) {
+            const javaExe = path.join(javaHome, 'bin', 'java' + (process.platform === 'windows' ? '.exe' : ''))
+            this.log(`Using JAVA_HOME: ${javaExe}`)
+            return javaExe
+        }
+        
+        if (process.platform === 'win32') {
+            const programFiles = [
+                process.env['ProgramFiles'],
+                process.env['ProgramFiles(x86)']
+            ].filter(Boolean)
+            
+            for (const pf of programFiles) {
+                const javaPath = path.join(pf, 'Java', 'jre8', 'bin', 'java.exe')
+                if (fs.existsSync(javaPath)) return javaPath
+                
+                const javaPath2 = path.join(pf, 'Java', 'bin', 'java.exe')
+                if (fs.existsSync(javaPath2)) return javaPath2
+            }
+        }
+        
+        this.log('Using system java command')
+        return 'java'
+    }
+
+    on(event, callback) {
+        if (event === 'progress') {
+            this._progressCallback = callback
+        } else if (event === 'launch') {
+            this._launchCallback = callback
+        } else if (event === 'log') {
+            this._logCallback = callback
+        }
+    }
+
+    emit(event, data) {
+        if (event === 'progress' && this._progressCallback) {
+            this._progressCallback(data)
+        } else if (event === 'launch' && this._launchCallback) {
+            this._launchCallback(data)
+        } else if (event === 'log' && this._logCallback) {
+            this._logCallback(data)
+        }
+    }
+}
+
+module.exports = new LaunchManager()

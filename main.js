@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
 const ConfigManager = require('./app/assets/js/configmanager');
 const AuthManager = require('./app/assets/js/authmanager');
+const LaunchManager = require('./app/assets/js/launchmanager');
 const { AZURE_CLIENT_ID, MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR, SHELL_OPCODE } = require('./app/assets/js/ipcconstants');
 
 ConfigManager.load();
@@ -222,6 +223,53 @@ ipcMain.handle('removeAccount', async (event, uuid) => {
         return { success: true }
     } catch(error) {
         return { success: false, error: error }
+    }
+})
+
+ipcMain.handle('launchGame', async (event, versionId) => {
+    try {
+        const isValid = await AuthManager.validateSelected()
+        if (!isValid) {
+            return { success: false, error: 'Account validation failed. Please re-login.' }
+        }
+
+        const account = ConfigManager.getSelectedAccount()
+        if (!account) {
+            return { success: false, error: 'No account selected' }
+        }
+
+        const launchLogs = []
+        LaunchManager.on('progress', (data) => {
+            if (mainWindowRef) {
+                mainWindowRef.webContents.send('launchProgress', data)
+            }
+        })
+
+        LaunchManager.on('log', (message) => {
+            launchLogs.push(message)
+            console.log('[LAUNCH_LOG]', message)
+            if (mainWindowRef) {
+                mainWindowRef.webContents.send('launchLog', message)
+            }
+        })
+
+        await LaunchManager.launchVanilla(versionId, account)
+        
+        // Return logs for debugging
+        return { success: true, logs: launchLogs }
+    } catch(error) {
+        console.error('Launch error:', error)
+        return { success: false, error: error.message || 'Failed to launch game' }
+    }
+})
+
+ipcMain.handle('getAvailableVersions', async () => {
+    try {
+        const manifest = await LaunchManager.getVersionManifest()
+        return { success: true, versions: manifest.versions }
+    } catch(error) {
+        console.error('Version manifest error:', error)
+        return { success: false, error: error.message }
     }
 })
 
