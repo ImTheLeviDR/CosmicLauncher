@@ -23,7 +23,7 @@ async function openMicrosoftLogin() {
         width: 520,
         height: 600,
         frame: true,
-        icon: path.join(__dirname, 'template', 'build', 'icon.png')
+        icon: path.join(__dirname, 'app', 'assets', 'logo.png')
     })
 
     msftAuthWindow.on('closed', () => {
@@ -95,7 +95,7 @@ ipcMain.on(MSFT_OPCODE.OPEN_LOGIN, (ipcEvent, ...arguments_) => {
         width: 520,
         height: 600,
         frame: true,
-        icon: path.join(__dirname, 'template', 'build', 'icon.png')
+        icon: path.join(__dirname, 'app', 'assets', 'logo.png')
     })
 
     msftAuthWindow.on('closed', () => {
@@ -145,7 +145,7 @@ ipcMain.on(MSFT_OPCODE.OPEN_LOGOUT, (ipcEvent, uuid, isLastAccount) => {
         width: 520,
         height: 600,
         frame: true,
-        icon: path.join(__dirname, 'template', 'build', 'icon.png')
+        icon: path.join(__dirname, 'app', 'assets', 'logo.png')
     })
 
     msftLogoutWindow.on('closed', () => {
@@ -285,18 +285,28 @@ let win
 let tray
 
 function createTray() {
-    const iconPath = path.join(__dirname, 'template', 'build', 'icon.png');
+    let iconPath
+    if (process.platform === 'darwin') {
+        iconPath = path.join(__dirname, 'app', 'assets', 'logo.png')
+    } else {
+        iconPath = path.join(__dirname, 'app', 'assets', 'logo.png')
+    }
     let trayIcon;
     try {
         trayIcon = nativeImage.createFromPath(iconPath);
         if (trayIcon.isEmpty()) {
-            trayIcon = nativeImage.createEmpty();
+            if (process.platform === 'darwin') {
+                trayIcon = nativeImage.createEmpty()
+            } else {
+                trayIcon = nativeImage.createEmpty()
+            }
         }
     } catch(e) {
         trayIcon = nativeImage.createEmpty();
     }
     
-    tray = new Tray(trayIcon.resize({ width: 16, height: 16 }));
+    const iconSize = process.platform === 'darwin' ? 22 : 16
+    tray = new Tray(trayIcon.resize({ width: iconSize, height: iconSize }))
     tray.setToolTip('Cosmic Launcher');
     
     const contextMenu = Menu.buildFromTemplate([
@@ -362,6 +372,7 @@ function createWindow() {
         frame: false,
         transparent: false,
         backgroundColor: '#0a0a1a',
+        icon: path.join(__dirname, 'app', 'assets', 'logo.png'),
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
