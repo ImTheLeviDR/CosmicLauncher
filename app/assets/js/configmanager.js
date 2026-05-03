@@ -12,6 +12,7 @@ if (process.platform === 'win32') {
 }
 
 const configPath = path.join(dataPath, 'config.json')
+const versionCachePath = path.join(dataPath, 'version-cache.json')
 
 const DEFAULT_CONFIG = {
     selectedAccount: null,
@@ -51,6 +52,15 @@ exports.load = function(){
             exports.save()
         }
     }
+    
+    // Pre-load cached version manifest
+    try {
+        if (fs.existsSync(versionCachePath)) {
+            cachedVersionManifest = JSON.parse(fs.readFileSync(versionCachePath, 'UTF-8'))
+            versionCacheTime = Date.now()
+        }
+    } catch (err) {}
+    
     console.log('Config loaded')
 }
 
@@ -133,4 +143,38 @@ exports.getSelectedVersion = function(){
 exports.setSelectedVersion = function(versionId){
     config.selectedVersion = versionId
     exports.save()
+}
+
+let cachedVersionManifest = null
+let versionCacheTime = 0
+const VERSION_CACHE_TTL = 30 * 60 * 1000 // 30 minutes
+
+exports.cacheVersionManifest = function(manifest) {
+    cachedVersionManifest = manifest
+    versionCacheTime = Date.now()
+    try {
+        fs.ensureDirSync(dataPath)
+        fs.writeFileSync(versionCachePath, JSON.stringify(manifest), 'UTF-8')
+    } catch (err) {
+        console.error('Error caching version manifest:', err)
+    }
+}
+
+exports.getCachedVersionManifest = function() {
+    if (cachedVersionManifest && Date.now() - versionCacheTime < VERSION_CACHE_TTL) {
+        return cachedVersionManifest
+    }
+    
+    try {
+        if (fs.existsSync(versionCachePath)) {
+            const data = fs.readFileSync(versionCachePath, 'UTF-8')
+            cachedVersionManifest = JSON.parse(data)
+            versionCacheTime = Date.now()
+            return cachedVersionManifest
+        }
+    } catch (err) {
+        console.error('Error loading cached version manifest:', err)
+    }
+    
+    return null
 }

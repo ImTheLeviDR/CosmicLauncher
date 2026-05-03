@@ -7,6 +7,21 @@ const { AZURE_CLIENT_ID, MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR, SHELL_OPCODE 
 
 ConfigManager.load();
 
+// Single instance lock - prevent multiple instances
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+    app.quit();
+} else {
+    app.on('second-instance', () => {
+        if (mainWindowRef) {
+            if (mainWindowRef.isMinimized()) mainWindowRef.restore();
+            mainWindowRef.show();
+            mainWindowRef.focus();
+        }
+    });
+}
+
 // Store reference to main window
 let mainWindowRef = null
 

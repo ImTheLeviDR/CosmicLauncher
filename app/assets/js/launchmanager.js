@@ -155,7 +155,14 @@ class LaunchManager {
     }
 
     async getVersionManifest() {
-        return this.fetchJson(MINECRAFT_VERSION_MANIFEST)
+        const cached = ConfigManager.getCachedVersionManifest()
+        if (cached) {
+            this.log('Using cached version manifest')
+            return cached
+        }
+        const manifest = await this.fetchJson(MINECRAFT_VERSION_MANIFEST)
+        ConfigManager.cacheVersionManifest(manifest)
+        return manifest
     }
 
     async ensureVersion(versionId) {
