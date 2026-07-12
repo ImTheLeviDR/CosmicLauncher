@@ -1563,16 +1563,33 @@
         <button class="tb-btn" onclick="openSettings()" title="Settings">&#x2699;</button>
       </div>
 
-<!-- Profile Changer / Mockup -->
+<!-- Profile Changer -->
 <div class="profile-wrap" id="profileWrap">
   <div class="profile-trigger" id="profileTrigger">
-    <img src="https://mc-heads.net/avatar/Notch/64" alt="Head" class="profile-head-img" id="activeProfileImg">
-    <span class="profile-name" id="activeProfileName">AstroCreator</span>
+    <img src="https://mc-heads.net/avatar/<%= (selectedUuid && accounts[selectedUuid]) ? encodeURIComponent(accounts[selectedUuid].displayName) : 'Steve' %>/64" alt="Head" class="profile-head-img" id="activeProfileImg">
+    <span class="profile-name" id="activeProfileName"><%= (selectedUuid && accounts[selectedUuid]) ? accounts[selectedUuid].displayName : 'Select Account' %></span>
     <span class="profile-chevron">&#x25BE;</span>
   </div>
 
   <div class="profile-dropdown" id="profileDropdown">
     <div class="profile-list" id="profileList">
+      <% const accountKeys = Object.keys(accounts); %>
+      <% if (accountKeys.length === 0) { %>
+        <div class="profile-item"><span class="profile-info">No accounts</span></div>
+      <% } else { %>
+        <% accountKeys.forEach(function(uuid) { %>
+          <% const acc = accounts[uuid]; %>
+          <div class="profile-item<%= uuid === selectedUuid ? ' active' : '' %>" data-name="<%= acc.displayName %>" data-head="<%= acc.displayName %>" data-uuid="<%= uuid %>">
+            <img src="https://mc-heads.net/avatar/<%= encodeURIComponent(acc.displayName) %>/64" alt="Head" class="profile-head-img">
+            <div class="profile-info">
+              <span class="profile-item-name"><%= acc.displayName %></span>
+              <span class="profile-item-type"><%= acc.type === 'microsoft' ? 'Microsoft' : 'Mojang' %></span>
+            </div>
+            <span class="profile-check">&#x2713;</span>
+            <span class="profile-delete" title="Remove account">&#x2715;</span>
+          </div>
+        <% }); %>
+      <% } %>
     </div>
 
     <div class="profile-divider"></div>
@@ -1597,7 +1614,7 @@
             <span class="play-btn-ver-icon">&#x25BE;</span>
           </div>
         </button>
-        <div class="version-label" id="versionLabel">Version: <span id="versionLabelText">1.20.4</span></div>
+        <div class="version-label" id="versionLabel">Version: <span id="versionLabelText"><%= selectedVersion %></span></div>
       </div>
 
       <!-- Version Popup -->
@@ -1648,16 +1665,16 @@
               <div class="loader-toggle" id="loaderToggle">
                 <div class="loader-toggle-left">
                   <div>
-                    <div class="loader-toggle-label">Loader: <span id="loaderToggleValue">Vanilla</span></div>
-                    <div class="loader-toggle-sublabel" id="loaderToggleDesc">Unmodified Minecraft</div>
+                    <div class="loader-toggle-label">Loader: <span id="loaderToggleValue"><%= loader === 'fabric' ? 'Fabric' : 'Vanilla' %></span></div>
+                    <div class="loader-toggle-sublabel" id="loaderToggleDesc"><%= loader === 'fabric' ? 'Mod loader for running mods' : 'Unmodified Minecraft' %></div>
                   </div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                  <span class="loader-label active" id="loaderVanilla">Vanilla</span>
-                  <div class="loader-switch" id="loaderSwitch" onclick="toggleLoader()">
+                  <span class="loader-label<%= loader !== 'fabric' ? ' active' : '' %>" id="loaderVanilla">Vanilla</span>
+                  <div class="loader-switch<%= loader === 'fabric' ? ' fabric' : '' %>" id="loaderSwitch" onclick="toggleLoader()">
                     <div class="loader-knob" id="loaderKnob"></div>
                   </div>
-                  <span class="loader-label" id="loaderFabric">Fabric</span>
+                  <span class="loader-label<%= loader === 'fabric' ? ' active' : '' %>" id="loaderFabric">Fabric</span>
                 </div>
               </div>
             </div>
@@ -1684,7 +1701,32 @@
             <!-- Installed View -->
             <div id="modsViewInstalled" class="mods-view active">
               <div id="installedModsList" class="mods-grid">
-                <div class="mods-empty">Loading installed mods...</div>
+                <% const modEntries = Object.entries(installedMods); %>
+                <% if (modEntries.length === 0) { %>
+                  <div class="mods-empty">No mods currently installed.<br>Head over to Browse to find some!</div>
+                <% } else { %>
+                  <% modEntries.forEach(function([id, mod]) { %>
+                    <% const isCompatible = mod.gameVersions && mod.gameVersions.includes(selectedVersion); %>
+                    <% const iconUrl = mod.icon_url || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect fill="%236b6860" width="32" height="32"/><text x="16" y="22" text-anchor="middle" font-size="18" fill="%23f0ece4">?</text></svg>'; %>
+                    <div class="mod-card">
+                      <div class="mod-card-top">
+                        <img class="mod-icon" src="<%= iconUrl %>" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
+                        <div class="mod-info-main">
+                          <div class="mod-title" style="<%= !isCompatible ? 'color:var(--muted);text-decoration:line-through' : '' %>"><%= mod.title %></div>
+                          <div class="mod-author-tag"><%= mod.loaders ? mod.loaders.join(', ') : 'Unknown' %></div>
+                        </div>
+                      </div>
+                      <div class="mod-desc">Supports: <%= mod.gameVersions ? mod.gameVersions.join(', ') : 'Unknown versions' %></div>
+                      <div class="mod-actions">
+                        <div class="mod-toggle-wrap <%= mod.enabled ? 'on' : '' %>" data-id="<%= id %>" data-enabled="<%= mod.enabled %>">
+                          <div class="mod-switch"></div>
+                          <span><%= mod.enabled ? 'Enabled' : 'Disabled' %></span>
+                        </div>
+                        <button class="mod-btn remove" data-id="<%= id %>">&#x1F5D1; Remove</button>
+                      </div>
+                    </div>
+                  <% }); %>
+                <% } %>
               </div>
             </div>
 
@@ -1828,7 +1870,76 @@
       })();
     })();
 
-      /* ── PROFILE CHANGER LOGIC ── */
+    /* ── TEMPLATE HELPERS (mirror EJS logic for dynamic refresh) ── */
+    function renderProfileItem(uuid, acc, isSelected) {
+      return `<div class="profile-item${isSelected ? ' active' : ''}" data-name="${acc.displayName}" data-head="${acc.displayName}" data-uuid="${uuid}">
+        <img src="https://mc-heads.net/avatar/${encodeURIComponent(acc.displayName)}/64" alt="Head" class="profile-head-img">
+        <div class="profile-info">
+          <span class="profile-item-name">${acc.displayName}</span>
+          <span class="profile-item-type">${acc.type === 'microsoft' ? 'Microsoft' : 'Mojang'}</span>
+        </div>
+        <span class="profile-check">&#x2713;</span>
+        <span class="profile-delete" title="Remove account">&#x2715;</span>
+      </div>`;
+    }
+
+    function renderModCard(id, mod) {
+      const isCompatible = mod.gameVersions && mod.gameVersions.includes(selectedVersion);
+      const iconUrl = mod.icon_url || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect fill="%236b6860" width="32" height="32"/><text x="16" y="22" text-anchor="middle" font-size="18" fill="%23f0ece4">?</text></svg>';
+      return `<div class="mod-card">
+        <div class="mod-card-top">
+          <img class="mod-icon" src="${iconUrl}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
+          <div class="mod-info-main">
+            <div class="mod-title" style="${!isCompatible ? 'color:var(--muted);text-decoration:line-through' : ''}">${mod.title}</div>
+            <div class="mod-author-tag">${mod.loaders ? mod.loaders.join(', ') : 'Unknown'}</div>
+          </div>
+        </div>
+        <div class="mod-desc">Supports: ${mod.gameVersions ? mod.gameVersions.join(', ') : 'Unknown versions'}</div>
+        <div class="mod-actions">
+          <div class="mod-toggle-wrap ${mod.enabled ? 'on' : ''}" data-id="${id}" data-enabled="${mod.enabled}">
+            <div class="mod-switch"></div>
+            <span>${mod.enabled ? 'Enabled' : 'Disabled'}</span>
+          </div>
+          <button class="mod-btn remove" data-id="${id}">&#x1F5D1; Remove</button>
+        </div>
+      </div>`;
+    }
+
+    /* ── INIT CLICK HANDLERS (for EJS pre-rendered elements) ── */
+    function initProfileHandlers() {
+      document.querySelectorAll('.profile-item[data-uuid]').forEach(item => {
+        item.onclick = (e) => {
+          if (e.target.classList.contains('profile-delete')) {
+            deleteAccount(item.dataset.uuid);
+          } else {
+            selectProfile(item);
+          }
+        };
+      });
+    }
+
+    function initModHandlers() {
+      document.querySelectorAll('.mod-toggle-wrap').forEach(wrap => {
+        wrap.onclick = async () => {
+          const pid = wrap.dataset.id;
+          const newState = wrap.dataset.enabled === 'true' ? false : true;
+          await ipcRenderer.invoke('mods:setEnabled', pid, newState);
+          await refreshInstalledMods();
+        };
+      });
+      document.querySelectorAll('.mod-btn.remove').forEach(btn => {
+        btn.onclick = async () => {
+          const card = btn.closest('.mod-card');
+          const title = card ? card.querySelector('.mod-title').textContent : 'this mod';
+          const confirmed = await showModal('Remove Mod', `Are you sure you want to remove ${title}?`, false, true);
+          if (!confirmed) return;
+          await ipcRenderer.invoke('mods:remove', btn.dataset.id);
+          await refreshInstalledMods();
+        };
+      });
+    }
+
+    /* ── PROFILE CHANGER LOGIC ── */
       const profileWrap = document.getElementById('profileWrap');
       const profileTrigger = document.getElementById('profileTrigger');
       const profileDropdown = document.getElementById('profileDropdown');
@@ -1921,8 +2032,6 @@
           const profileList = document.getElementById('profileList');
           if (!profileList) return;
           
-          profileList.innerHTML = '';
-          
           const keys = Object.keys(accounts.database || {});
           if (keys.length === 0) {
             profileList.innerHTML = '<div class="profile-item"><span class="profile-info">No accounts</span></div>';
@@ -1931,31 +2040,7 @@
             return;
           }
           
-          keys.forEach(uuid => {
-            const acc = accounts.database[uuid];
-            const item = document.createElement('div');
-            item.className = 'profile-item' + (uuid === accounts.selectedAccount ? ' active' : '');
-            item.dataset.name = acc.displayName;
-            item.dataset.head = acc.displayName;
-            item.dataset.uuid = uuid;
-            item.innerHTML = `
-              <img src="https://mc-heads.net/avatar/${encodeURIComponent(acc.displayName)}/64" alt="Head" class="profile-head-img">
-              <div class="profile-info">
-                <span class="profile-item-name">${acc.displayName}</span>
-                <span class="profile-item-type">${acc.type === 'microsoft' ? 'Microsoft' : 'Mojang'}</span>
-              </div>
-              <span class="profile-check">&#x2713;</span>
-              <span class="profile-delete" title="Remove account">&#x2715;</span>
-            `;
-            item.onclick = (e) => {
-              if (e.target.classList.contains('profile-delete')) {
-                deleteAccount(uuid);
-              } else {
-                selectProfile(item);
-              }
-            };
-            profileList.appendChild(item);
-          });
+          profileList.innerHTML = keys.map(uuid => renderProfileItem(uuid, accounts.database[uuid], uuid === accounts.selectedAccount)).join('');
           
           if (accounts.selectedAccount) {
             const selected = accounts.database[accounts.selectedAccount];
@@ -1964,15 +2049,16 @@
               document.getElementById('activeProfileImg').src = `https://mc-heads.net/avatar/${encodeURIComponent(selected.displayName)}/64`;
             }
           }
+          initProfileHandlers();
         } catch (err) {
           console.error('Error refreshing profile list:', err);
         }
       }
 
-      refreshProfileList();
+      initProfileHandlers();
 
 /* ── LOADER TOGGLE LOGIC ── */
-    let selectedLoader = 'vanilla';
+    let selectedLoader = '<%= loader %>';
 
     function toggleLoader() {
       selectedLoader = selectedLoader === 'vanilla' ? 'fabric' : 'vanilla';
@@ -2159,60 +2245,15 @@
           return;
         }
 
-        grid.innerHTML = '';
-
-        for (const [id, mod] of entries) {
-          const isCompatible = mod.gameVersions && mod.gameVersions.includes(selectedVersion);
-          const card = document.createElement('div');
-          card.className = 'mod-card';
-
-          const iconUrl = mod.icon_url || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect fill="%236b6860" width="32" height="32"/><text x="16" y="22" text-anchor="middle" font-size="18" fill="%23f0ece4">?</text></svg>';
-          
-          card.innerHTML = `
-            <div class="mod-card-top">
-              <img class="mod-icon" src="${iconUrl}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
-              <div class="mod-info-main">
-                <div class="mod-title" style="${!isCompatible ? 'color:var(--muted);text-decoration:line-through' : ''}">${mod.title}</div>
-                <div class="mod-author-tag">${mod.loaders ? mod.loaders.join(', ') : 'Unknown'}</div>
-              </div>
-            </div>
-            <div class="mod-desc">Supports: ${mod.gameVersions ? mod.gameVersions.join(', ') : 'Unknown versions'}</div>
-            <div class="mod-actions">
-              <div class="mod-toggle-wrap ${mod.enabled ? 'on' : ''}" data-id="${id}" data-enabled="${mod.enabled}">
-                <div class="mod-switch"></div>
-                <span>${mod.enabled ? 'Enabled' : 'Disabled'}</span>
-              </div>
-              <button class="mod-btn remove" data-id="${id}">&#x1F5D1; Remove</button>
-            </div>
-          `;
-
-          // Custom Toggle Click
-          card.querySelector('.mod-toggle-wrap').onclick = async (e) => {
-            const wrap = e.currentTarget;
-            const pid = wrap.dataset.id;
-            const newState = wrap.dataset.enabled === 'true' ? false : true;
-            await ipcRenderer.invoke('mods:setEnabled', pid, newState);
-            await refreshInstalledMods();
-          };
-
-          // Remove Button
-          card.querySelector('.mod-btn.remove').onclick = async (e) => {
-            const confirmed = await showModal('Remove Mod', `Are you sure you want to remove ${mod.title}?`, false, true);
-            if (!confirmed) return;
-            const pid = e.currentTarget.dataset.id;
-            await ipcRenderer.invoke('mods:remove', pid);
-            await refreshInstalledMods();
-          };
-
-          grid.appendChild(card);
-        }
+        grid.innerHTML = entries.map(([id, mod]) => renderModCard(id, mod)).join('');
+        initModHandlers();
       } catch (err) {
         grid.innerHTML = `<div class="mods-empty" style="color:#ff6666">${err.message}</div>`;
       }
     }
 
 /* ── VERSION POPUP LOGIC ── */
-    let selectedVersion = '';
+    let selectedVersion = '<%= selectedVersion %>';
     let popupVisible = false;
     let availableVersions = [];
     let tickSound = null;
@@ -2344,7 +2385,7 @@ function openVersionPopup() {
 
     loadVersions();
     loadTickSound();
-    loadLoaderPreference();
+    initModHandlers();
     setTimeout(() => { if (window.triggerOpenAnimation) window.triggerOpenAnimation(); }, 100);
     
     if (window.ipcRenderer) {

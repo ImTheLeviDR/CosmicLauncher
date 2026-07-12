@@ -1,10 +1,28 @@
 const { app, BrowserWindow, ipcMain, shell, Tray, Menu, nativeImage } = require('electron');
 const path = require('path');
+const fs = require('fs');
+const ejs = require('ejs');
 const ConfigManager = require('./app/assets/js/configmanager');
 const AuthManager = require('./app/assets/js/authmanager');
 const LaunchManager = require('./app/assets/js/launchmanager');
 const ModManager = require('./app/assets/js/modmanager');
 const { AZURE_CLIENT_ID, MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR, SHELL_OPCODE } = require('./app/assets/js/ipcconstants');
+
+const EJS_FILE = path.join(__dirname, 'index.ejs');
+const COMPILED_HTML = path.join(__dirname, 'index_compiled.html');
+
+function compileTemplate() {
+    const template = fs.readFileSync(EJS_FILE, 'utf-8');
+    const accounts = ConfigManager.getAuthDatabase() || {};
+    const selectedUuid = ConfigManager.getSelectedUuid();
+    const selectedVersion = ConfigManager.getSelectedVersion() || '1.20.4';
+    const loader = ConfigManager.getSelectedLoader() || 'vanilla';
+    let installedMods = {};
+    try { installedMods = ModManager.getInstalledMods() || {}; } catch(e) { console.error('Failed to load mods for template:', e); }
+
+    const html = ejs.render(template, { accounts, selectedUuid, selectedVersion, loader, installedMods }, { filename: EJS_FILE });
+    fs.writeFileSync(COMPILED_HTML, html, 'utf-8');
+}
 
 ConfigManager.load();
 
@@ -467,7 +485,8 @@ function createTray() {
                             preload: path.join(__dirname, 'preload.js')
                         }
                     });
-                    mainWindowRef.loadFile('index.html');
+                    compileTemplate();
+                    mainWindowRef.loadFile('index_compiled.html');
                     mainWindowRef.webContents.once('did-finish-load', () => {
                         mainWindowRef.webContents.send('triggerOpenAnimation');
                     });
@@ -500,7 +519,8 @@ function createWindow() {
     mainWindowRef = win;
     console.log('Main window created');
 
-    win.loadFile('index.html');
+    compileTemplate();
+    win.loadFile('index_compiled.html');
 
     win.webContents.on('did-finish-load', () => {
         win.webContents.on('before-input-event', (event, input) => {
