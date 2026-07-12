@@ -436,15 +436,28 @@ class LaunchManager {
     const versionDir = path.join(this.getVersionsDirectory(), versionData.id);
     const nativesDir = path.join(versionDir, "natives");
 
-    if (fs.existsSync(nativesDir) && fs.readdirSync(nativesDir).length > 0) {
+    const nativeExtensions = process.platform === 'win32' ? ['.dll'] : process.platform === 'darwin' ? ['.dylib', '.jnilib'] : ['.so'];
+    const hasRealNatives = (dir) => {
+      if (!fs.existsSync(dir)) return false;
+      const files = fs.readdirSync(dir);
+      return files.some(f => nativeExtensions.some(ext => f.endsWith(ext)));
+    };
+
+    if (hasRealNatives(nativesDir)) {
       this.log(`Natives already extracted: ${nativesDir}`);
+      this.log(`Natives files: ${fs.readdirSync(nativesDir).join(', ')}`);
       return nativesDir;
+    }
+
+    if (fs.existsSync(nativesDir)) {
+      fs.removeSync(nativesDir);
     }
 
     this.log(`Extracting natives to: ${nativesDir}`);
     fs.ensureDirSync(nativesDir);
 
     const libs = versionData.libraries || [];
+    let extractedCount = 0;
 
     for (const lib of libs) {
       if (!lib.downloads || !lib.downloads.classifiers) continue;
@@ -452,22 +465,28 @@ class LaunchManager {
       const classifierDownload = this.getNativeClassifierDownload(lib);
       if (!classifierDownload) continue;
 
-      const libPath = path.join(
-        this.getLibrariesDirectory(),
-        this.getLibraryPath(lib),
-      );
-      this.log(`Extracting native: ${lib.name}`);
+      let nativePath;
+      if (classifierDownload.path) {
+        nativePath = path.join(this.getLibrariesDirectory(), classifierDownload.path);
+      } else {
+        nativePath = path.join(this.getLibrariesDirectory(), this.getLibraryPath(lib));
+      }
+      this.log(`Extracting native: ${lib.name} from ${nativePath}`);
 
-      if (fs.existsSync(libPath)) {
+      if (fs.existsSync(nativePath)) {
         try {
-          await this.extractZip(libPath, nativesDir);
+          await this.extractZip(nativePath, nativesDir);
+          extractedCount++;
         } catch (e) {
           this.log(`Failed to extract native: ${lib.name} - ${e.message}`);
         }
       } else {
-        this.log(`Native file not found: ${libPath}`);
+        this.log(`Native file not found: ${nativePath}`);
       }
     }
+
+    this.log(`Native extraction complete: ${extractedCount} JARs extracted`);
+    this.log(`Natives directory contents: ${fs.readdirSync(nativesDir).join(', ')}`);
 
     return nativesDir;
   }
@@ -782,8 +801,23 @@ class LaunchManager {
         if (typeof arg === "string") {
           this.log(`Adding Fabric JVM arg: ${arg}`);
           jvmArgs.splice(jvmArgs.length - 3, 0, arg);
+        } else if (arg.rules && arg.value) {
+          if (this.checkRule(arg.rules, "allow")) {
+            const values = this.getArgumentValues(arg.value);
+            for (const val of values) {
+              if (typeof val === "string") {
+                this.log(`Adding Fabric JVM arg (rule): ${val}`);
+                jvmArgs.splice(jvmArgs.length - 3, 0, val);
+              }
+            }
+          }
         }
       }
+    }
+
+    const hasNativeLibPath = jvmArgs.some(a => typeof a === 'string' && a.includes('java.library.path'));
+    if (!hasNativeLibPath) {
+      jvmArgs.splice(jvmArgs.length - 3, 0, `-Djava.library.path=${nativesDir}`);
     }
 
     this.log(`Final JVM Args: ${JSON.stringify(jvmArgs)}`);
@@ -858,10 +892,29 @@ class LaunchManager {
 
   async buildFabricClassPath(versionData, fabricLibs) {
     const classPath = [];
+    const seenArtifacts = new Set();
 
     const versionDir = path.join(this.getVersionsDirectory(), versionData.id);
     const clientJar = path.join(versionDir, `${versionData.id}.jar`);
     classPath.push(clientJar);
+
+    const extractArtifactKey = (libPath) => {
+      const normalized = libPath.replace(/\\/g, '/');
+      const parts = normalized.split('/');
+      if (parts.length >= 4) {
+        const group = parts.slice(0, -3).join('/');
+        const artifact = parts[parts.length - 3];
+        const version = parts[parts.length - 2];
+        const filename = parts[parts.length - 1];
+        const baseName = `${artifact}-${version}`;
+        if (filename.startsWith(baseName + '-') && filename.endsWith('.jar')) {
+          const classifier = filename.slice(baseName.length + 1, -4);
+          return `${group}:${artifact}:${classifier}`;
+        }
+        return `${group}:${artifact}`;
+      }
+      return normalized;
+    };
 
     const allLibs = [...(versionData.libraries || [])];
     for (const lib of allLibs) {
@@ -871,7 +924,11 @@ class LaunchManager {
         this.getLibraryPath(lib),
       );
       if (fs.existsSync(libPath)) {
-        classPath.push(libPath);
+        const key = extractArtifactKey(libPath);
+        if (!seenArtifacts.has(key)) {
+          seenArtifacts.add(key);
+          classPath.push(libPath);
+        }
       }
     }
 
@@ -881,7 +938,16 @@ class LaunchManager {
         this.getFabricLibraryPath(lib),
       );
       if (fs.existsSync(libPath)) {
-        classPath.push(libPath);
+        const key = extractArtifactKey(libPath);
+        if (!seenArtifacts.has(key)) {
+          seenArtifacts.add(key);
+          classPath.push(libPath);
+        } else {
+          const idx = classPath.findIndex(p => extractArtifactKey(p) === key);
+          if (idx !== -1) {
+            classPath[idx] = libPath;
+          }
+        }
       }
     }
 

@@ -361,8 +361,8 @@ ipcMain.handle('mods:search', async (event, query) => {
 
 ipcMain.handle('mods:install', async (event, projectId, versionId, gameVersion, loader) => {
     try {
-        const mod = await ModManager.installMod(projectId, versionId, gameVersion, loader)
-        return { success: true, mod }
+        const result = await ModManager.installMod(projectId, versionId, gameVersion, loader)
+        return { success: true, data: result }
     } catch (error) {
         return { success: false, error: error.message }
     }
@@ -417,6 +417,54 @@ ipcMain.handle('mods:getVersions', async (event, projectId, gameVersions, loader
     try {
         const versions = await ModManager.getProjectVersions(projectId, gameVersions, loaders)
         return { success: true, versions }
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('mods:checkCompatibility', async (event, gameVersion, loader) => {
+    try {
+        const result = await ModManager.checkModsCompatibility(gameVersion, loader)
+        return { success: true, ...result }
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('mods:autoUpdateForVersion', async (event, gameVersion, loader) => {
+    try {
+        const compat = await ModManager.checkModsCompatibility(gameVersion, loader)
+        const results = { updated: [], failed: [], installedDeps: [], depConflicts: compat.depConflicts || [] }
+
+        for (const mod of compat.updatable) {
+            try {
+                const res = await ModManager.updateMod(mod.projectId, gameVersion, loader)
+                results.updated.push({ projectId: mod.projectId, title: mod.title, newVersion: res.mod.versionNumber })
+                if (res.deps && res.deps.length > 0) {
+                    results.installedDeps.push(...res.deps.filter(Boolean).map(d => ({ projectId: d.projectId, title: d.title })))
+                }
+                if (res.depConflicts) {
+                    results.depConflicts.push(...res.depConflicts)
+                }
+            } catch (e) {
+                results.failed.push({ projectId: mod.projectId, title: mod.title, error: e.message })
+            }
+        }
+
+        for (const mod of compat.incompatible) {
+            ModManager.setModEnabled(mod.projectId, false)
+        }
+
+        return { success: true, ...results }
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('mods:validateConflicts', async () => {
+    try {
+        const conflicts = await ModManager.validateAllModConflicts()
+        return { success: true, conflicts }
     } catch (error) {
         return { success: false, error: error.message }
     }

@@ -1757,6 +1757,7 @@
                   <div class="settings-section-title">Launcher Console</div>
                   <div class="settings-section-description" style="margin-bottom:0">View real-time launcher and game output events.</div>
                 </div>
+                <span class="settings-log-clear" onclick="copyLogs()">Copy Logs</span>
                 <span class="settings-log-clear" onclick="clearLogs()">Clear Logs</span>
               </div>
               <div class="settings-log-content" id="settingsLogContent"></div>
@@ -2217,9 +2218,21 @@
       try {
         const result = await ipcRenderer.invoke('mods:install', projectId, null, selectedVersion, 'fabric');
         if (result.success) {
+          const data = result.data || {};
+          let msg = 'Installed successfully';
+          if (data.installedDeps && data.installedDeps.length > 0) {
+            msg += '. Auto-installed ' + data.installedDeps.length + ' dependency(ies)';
+          }
           btn.textContent = 'Installed';
           btn.style.background = 'rgba(100,200,100,0.2)';
           btn.style.color = '#66dd66';
+          await refreshInstalledMods();
+          if (data.conflicts && data.conflicts.length > 0) {
+            const conflictMsg = data.conflicts.map(c => c.reason).join('<br>');
+            showModal('Compatibility Warnings', 'Mod installed but has conflicts:<br><br>' + conflictMsg, true);
+          } else if (data.installedDeps && data.installedDeps.length > 0) {
+            showToast('Dependencies installed', data.installedDeps.map(d => d.title).join(', '));
+          }
         } else {
           btn.textContent = 'Failed';
           showModal('Install Failed', result.error, true);
@@ -2381,12 +2394,123 @@ function openVersionPopup() {
     function selectVersion(el) {
       document.querySelectorAll('.version-card').forEach(o => o.classList.remove('selected'));
       el.classList.add('selected');
-      selectedVersion = el.dataset.v;
+      const newVersion = el.dataset.v;
+      const oldVersion = selectedVersion;
+      selectedVersion = newVersion;
       document.getElementById('versionLabelText').textContent = selectedVersion;
       if (window.ipcRenderer) {
         window.ipcRenderer.invoke('saveSelectedVersion', selectedVersion);
       }
       setTimeout(closeVersionPopup, 300);
+      checkModCompatibilityOnVersionChange(newVersion, oldVersion);
+    }
+
+    let _versionChangePending = false;
+    async function checkModCompatibilityOnVersionChange(newVersion, oldVersion) {
+      if (_versionChangePending) return;
+      const installedModsResult = await ipcRenderer.invoke('mods:list');
+      if (!installedModsResult.success) return;
+      const modCount = Object.keys(installedModsResult.mods).length;
+      if (modCount === 0) return;
+
+      _versionChangePending = true;
+      try {
+        const result = await ipcRenderer.invoke('mods:checkCompatibility', newVersion, selectedLoader);
+        if (!result.success) { _versionChangePending = false; return; }
+
+        if (result.updatable.length > 0 && result.incompatible.length === 0 && (result.depConflicts || []).length === 0) {
+          const statusEl = document.getElementById('playBtnStatus');
+          if (statusEl) statusEl.textContent = 'Updating mods...';
+          const updateResult = await ipcRenderer.invoke('mods:autoUpdateForVersion', newVersion, selectedLoader);
+          if (updateResult.success) {
+            let msg = '';
+            if (updateResult.updated.length > 0) msg += updateResult.updated.length + ' mod(s) updated';
+            if (updateResult.installedDeps.length > 0) msg += (msg ? ', ' : '') + updateResult.installedDeps.length + ' dependency(ies) installed';
+            if (msg) showToast('Mods updated for ' + newVersion, msg);
+            if (statusEl) statusEl.textContent = 'Launch';
+          }
+          _versionChangePending = false;
+          return;
+        }
+
+        if (result.incompatible.length > 0) {
+          const compatResult = await showIncompatibleModsDialog(result.incompatible, result.updatable, newVersion);
+          if (compatResult.action === 'disable') {
+            for (const mod of result.incompatible) {
+              await ipcRenderer.invoke('mods:setEnabled', mod.projectId, false);
+            }
+            if (result.updatable.length > 0) {
+              const statusEl = document.getElementById('playBtnStatus');
+              if (statusEl) statusEl.textContent = 'Updating mods...';
+              await ipcRenderer.invoke('mods:autoUpdateForVersion', newVersion, selectedLoader);
+              if (statusEl) statusEl.textContent = 'Launch';
+            }
+            showToast('Mods synced', result.incompatible.length + ' mod(s) disabled, ' + result.updatable.length + ' updated');
+          } else {
+            selectedVersion = oldVersion;
+            document.getElementById('versionLabelText').textContent = oldVersion;
+            if (window.ipcRenderer) window.ipcRenderer.invoke('saveSelectedVersion', oldVersion);
+            document.querySelectorAll('.version-card').forEach(c => {
+              if (c.dataset.v === oldVersion) c.classList.add('selected');
+            });
+          }
+          _versionChangePending = false;
+          return;
+        }
+
+        if (result.updatable.length > 0) {
+          const statusEl = document.getElementById('playBtnStatus');
+          if (statusEl) statusEl.textContent = 'Updating mods...';
+          const updateResult = await ipcRenderer.invoke('mods:autoUpdateForVersion', newVersion, selectedLoader);
+          if (updateResult.success) {
+            let msg = '';
+            if (updateResult.updated.length > 0) msg += updateResult.updated.length + ' mod(s) updated';
+            if (updateResult.installedDeps.length > 0) msg += (msg ? ', ' : '') + updateResult.installedDeps.length + ' dependency(ies) installed';
+            if (msg) showToast('Mods updated for ' + newVersion, msg);
+            if (statusEl) statusEl.textContent = 'Launch';
+          }
+        }
+
+        _versionChangePending = false;
+      } catch (e) {
+        console.error('Mod compatibility check failed:', e);
+        _versionChangePending = false;
+      }
+    }
+
+    function showIncompatibleModsDialog(incompatible, updatable, newVersion) {
+      return new Promise((resolve) => {
+        const modal = document.createElement('div');
+        modal.className = 'custom-modal-overlay';
+        const modListHtml = incompatible.map(m => `<div style="padding:4px 0;color:#ff8888;">${m.title} <span style="color:#888;font-size:12px;">(v${m.currentVersion})</span></div>`).join('');
+        const updateInfo = updatable.length > 0 ? `<div style="margin-top:8px;color:#88cc88;font-size:13px;">${updatable.length} other mod(s) can be auto-updated.</div>` : '';
+        modal.innerHTML = `
+          <div class="custom-modal">
+            <div class="custom-modal-title" style="color:#ff6644">Incompatible Mods</div>
+            <div class="custom-modal-message">
+              The following mods have no compatible version for ${newVersion}:
+              <div style="margin-top:8px;max-height:200px;overflow-y:auto;">${modListHtml}</div>
+              ${updateInfo}
+            </div>
+            <div class="custom-modal-buttons">
+              <button class="custom-modal-btn cancel" id="modalCancel">Cancel</button>
+              <button class="custom-modal-btn confirm" id="modalConfirm">Disable & Continue</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        document.getElementById('modalCancel').onclick = () => { modal.remove(); resolve({ action: 'cancel' }); };
+        document.getElementById('modalConfirm').onclick = () => { modal.remove(); resolve({ action: 'disable' }); };
+      });
+    }
+
+    function showToast(title, message) {
+      const toast = document.createElement('div');
+      toast.style.cssText = 'position:fixed;top:20px;right:20px;background:rgba(15,15,30,0.95);border:1px solid var(--accent);border-radius:8px;padding:12px 18px;z-index:10000;animation:fadeIn .3s;max-width:350px;';
+      toast.innerHTML = `<div style="font-weight:600;color:var(--accent);margin-bottom:4px;">${title}</div><div style="color:#aaa;font-size:13px;">${message}</div>`;
+      document.body.appendChild(toast);
+      setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .5s'; }, 3000);
+      setTimeout(() => toast.remove(), 3500);
     }
 
     loadVersions();
@@ -2418,7 +2542,28 @@ function openVersionPopup() {
       const icon = document.getElementById('playBtnIcon');
       const dots = document.getElementById('playBtnDots');
       if (btn.disabled) return;
-      
+
+      const modsCheck = await ipcRenderer.invoke('mods:list');
+      if (modsCheck.success) {
+        const enabledMods = Object.values(modsCheck.mods).filter(m => m.enabled);
+        const incompatibleMods = enabledMods.filter(m => !m.gameVersions.includes(selectedVersion) || !m.loaders.includes(selectedLoader));
+        if (incompatibleMods.length > 0) {
+          const names = incompatibleMods.map(m => m.title).join(', ');
+          const confirmed = await showModal('Incompatible Mods Enabled', `${names} don't support ${selectedVersion}. Disable them or switch version.`, true, true);
+          if (!confirmed) return;
+          for (const m of incompatibleMods) {
+            await ipcRenderer.invoke('mods:setEnabled', m.projectId, false);
+          }
+          await refreshInstalledMods();
+        }
+        const conflictCheck = await ipcRenderer.invoke('mods:validateConflicts');
+        if (conflictCheck.success && conflictCheck.conflicts && conflictCheck.conflicts.length > 0) {
+          const conflictMsg = conflictCheck.conflicts.map(c => `• ${c.reason}`).join('<br>');
+          const confirmed = await showModal('Mod Conflicts Detected', `Some mods are incompatible with each other:<br><br>${conflictMsg}<br><br>Launch anyway? This may crash.`, true, true);
+          if (!confirmed) return;
+        }
+      }
+
       const rect = btn.getBoundingClientRect();
       window.spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
       btn.classList.remove('launching');
@@ -2519,6 +2664,23 @@ function openVersionPopup() {
       line.textContent = new Date().toLocaleTimeString() + ' [GAME] ' + message;
       logContent.appendChild(line);
       logContent.scrollTop = logContent.scrollHeight;
+    }
+
+    function copyLogs() {
+      const logContent = document.getElementById('settingsLogContent');
+      if (!logContent) return;
+      const text = Array.from(logContent.children).map(el => el.textContent).join('\n');
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Copied', 'Logs copied to clipboard');
+      }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        showToast('Copied', 'Logs copied to clipboard');
+      });
     }
 
     function clearLogs() {
