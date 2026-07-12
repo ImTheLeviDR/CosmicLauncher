@@ -1052,11 +1052,11 @@
       font-size: 0.7rem;
     }
 
-    /* ── SETTINGS PANEL ── */
+    /* ── SETTINGS PANEL (Redesigned) ── */
     .settings-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.6);
       z-index: 200;
       display: flex;
       align-items: center;
@@ -1064,7 +1064,7 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      transition: opacity 0.25s ease, backdrop-filter 0.25s ease, visibility 0.25s;
+      transition: opacity 0.3s ease, backdrop-filter 0.3s ease, visibility 0.3s;
       backdrop-filter: blur(0px);
     }
 
@@ -1072,197 +1072,374 @@
       opacity: 1;
       visibility: visible;
       pointer-events: all;
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(12px);
     }
 
     .settings-panel {
-      background: rgba(10, 10, 18, 0.97);
+      background: rgba(10, 10, 18, 0.85);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      width: 520px;
-      max-height: 480px;
+      border-radius: 16px;
+      width: 860px;
+      height: 600px;
+      max-width: 95vw;
+      max-height: 90vh;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       overflow: hidden;
-      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
-      transform: scale(0.92);
-      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.05);
+      transform: translateY(20px) scale(0.96);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      backdrop-filter: blur(24px);
     }
 
     .settings-overlay.show .settings-panel {
-      transform: scale(1);
+      transform: translateY(0) scale(1);
     }
 
-    .settings-header {
+    .settings-sidebar {
+      width: 240px;
+      background: rgba(0, 0, 0, 0.3);
+      border-right: 1px solid var(--border);
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
+      flex-direction: column;
+      padding: 24px 16px;
     }
 
     .settings-title {
       font-family: 'Syne', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 700;
+      font-size: 1.2rem;
+      font-weight: 800;
       color: var(--text);
+      margin-bottom: 32px;
+      padding-left: 12px;
+      letter-spacing: 0.05em;
+    }
+
+    .settings-tabs {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .settings-tab {
+      padding: 12px 16px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .settings-tab:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .settings-tab.active {
+      color: var(--text);
+      background: var(--glow);
+      box-shadow: inset 2px 0 0 var(--accent);
+    }
+
+    .settings-content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .settings-header-right {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      z-index: 10;
     }
 
     .settings-close {
-      font-size: 1.2rem;
+      font-size: 1.6rem;
       color: var(--muted);
       cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 4px;
-      transition: all 0.15s;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid transparent;
+      transition: all 0.2s;
       line-height: 1;
     }
 
     .settings-close:hover {
       color: var(--text);
       background: rgba(255, 255, 255, 0.08);
-    }
-
-    .settings-tabs {
-      display: flex;
-      gap: 0;
-      padding: 0 20px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .settings-tab {
-      padding: 12px 16px;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s;
-      margin-bottom: -1px;
-    }
-
-    .settings-tab:hover {
-      color: var(--text);
-    }
-
-    .settings-tab.active {
-      color: var(--accent);
-      border-bottom-color: var(--accent);
+      border-color: var(--border);
+      transform: rotate(90deg);
     }
 
     .settings-body {
       flex: 1;
       overflow-y: auto;
-      padding: 20px;
+      padding: 40px;
     }
 
-    .settings-body::-webkit-scrollbar {
-      width: 5px;
-    }
+    .settings-body::-webkit-scrollbar { width: 6px; }
+    .settings-body::-webkit-scrollbar-track { background: transparent; }
+    .settings-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+    .settings-body::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-    .settings-body::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.03);
-    }
+    .settings-tab-content { display: none; animation: fadeIn 0.3s ease; }
+    .settings-tab-content.active { display: block; }
+    
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-    .settings-body::-webkit-scrollbar-thumb {
-      background: var(--accent);
-      border-radius: 3px;
-    }
-
-    .settings-tab-content {
-      display: none;
-    }
-
-    .settings-tab-content.active {
-      display: block;
-    }
-
-    .settings-section {
-      margin-bottom: 20px;
-    }
+    .settings-section { margin-bottom: 36px; }
 
     .settings-section-title {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.6rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 12px;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
     }
 
     .settings-section-description {
       font-family: 'Space Mono', monospace;
-      font-size: 0.6rem;
+      font-size: 0.65rem;
       color: var(--muted);
-      margin-bottom: 14px;
-      line-height: 1.5;
-      opacity: 0.7;
+      margin-bottom: 20px;
+      line-height: 1.6;
     }
 
-    /* ── LOG CONTAINER (inside settings) ── */
-    .settings-log-content {
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px 14px;
-      min-height: 280px;
-      max-height: 320px;
-      overflow-y: auto;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.6rem;
-      color: #88ff88;
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-
-    .settings-log-content::-webkit-scrollbar {
-      width: 5px;
-    }
-
-    .settings-log-content::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.03);
-    }
-
-    .settings-log-content::-webkit-scrollbar-thumb {
-      background: var(--accent);
-      border-radius: 3px;
-    }
-
-    .settings-log-content .error {
-      color: #ff6666;
-    }
-
-    .settings-log-content .warn {
-      color: #ffcc00;
-    }
-
-    .settings-log-header {
+    /* ── MODS UI (Redesigned Grid) ── */
+    .mods-sub-tabs {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
+      gap: 4px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 24px;
+      width: fit-content;
     }
 
-    .settings-log-clear {
+    .mods-sub-tab {
+      padding: 8px 24px;
       font-family: 'Space Mono', monospace;
-      font-size: 0.55rem;
-      letter-spacing: 0.08em;
+      font-size: 0.65rem;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
       color: var(--muted);
       cursor: pointer;
-      padding: 4px 10px;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border);
-      transition: all 0.15s;
+      border-radius: 8px;
+      transition: all 0.2s;
     }
 
-    .settings-log-clear:hover {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.08);
+    .mods-sub-tab:hover { color: var(--text); }
+    .mods-sub-tab.active { background: rgba(255,255,255,0.1); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+
+    .mods-view { display: none; }
+    .mods-view.active { display: block; animation: fadeIn 0.3s ease; }
+
+    .mod-search-bar-wrap {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      position: sticky;
+      top: -40px;
+      background: rgba(10,10,18,0.95);
+      padding: 16px 0;
+      z-index: 5;
+      backdrop-filter: blur(8px);
     }
+
+    .mod-search-input {
+      flex: 1;
+      padding: 14px 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .mod-search-input:focus {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.15);
+    }
+
+    .mod-search-btn {
+      padding: 0 28px;
+      background: var(--accent);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mod-search-btn:hover { background: #f07040; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232, 98, 42, 0.3); }
+
+    .mods-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .mod-card {
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      background: linear-gradient(160deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mod-card:hover {
+      background: linear-gradient(160deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+
+    .mod-card-top { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 12px; }
+
+    .mod-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.5);
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+
+    .mod-info-main { flex: 1; min-width: 0; }
+
+    .mod-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+
+    .mod-author-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      color: var(--accent2);
+      background: rgba(240, 168, 66, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .mod-desc {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.5;
+      margin-bottom: 16px;
+      flex: 1;
+    }
+
+    .mod-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: auto;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 12px;
+    }
+
+    .mod-meta { font-family: 'Space Mono', monospace; font-size: 0.55rem; color: var(--muted); }
+
+    .mod-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mod-btn.install { background: rgba(255,255,255,0.1); color: var(--text); }
+    .mod-btn.install:hover { background: var(--accent); color: #fff; }
+    
+    .mod-btn.remove { background: transparent; color: var(--muted); padding: 6px; border: 1px solid transparent; }
+    .mod-btn.remove:hover { color: #ff6666; border-color: rgba(255,60,60,0.3); background: rgba(255,60,60,0.1); }
+
+    /* Custom Toggle for Mods */
+    .mod-toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .mod-toggle-wrap span { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--muted); }
+    
+    .mod-switch {
+      width: 36px;
+      height: 20px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      position: relative;
+      transition: 0.3s;
+    }
+    .mod-switch::after {
+      content: '';
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 14px; height: 14px;
+      background: #fff;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+    .mod-toggle-wrap.on .mod-switch { background: #66dd66; }
+    .mod-toggle-wrap.on .mod-switch::after { transform: translateX(16px); }
+    .mod-toggle-wrap.on span { color: #66dd66; }
+
+    /* Empty states */
+    .mods-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      background: rgba(0,0,0,0.2);
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+    }
+
+    /* Logs inner adjustments for new layout */
+    .settings-log-content { min-height: 380px; max-height: 400px; }
 
     .particles-canvas {
       position: absolute;
@@ -1440,57 +1617,104 @@
   <!-- Settings Overlay -->
   <div class="settings-overlay" id="settingsOverlay" onclick="handleSettingsBackdropClick(event)">
     <div class="settings-panel">
-      <div class="settings-header">
-        <span class="settings-title">Settings</span>
-        <span class="settings-close" onclick="closeSettings()">&times;</span>
-      </div>
-      <div class="settings-tabs">
-        <div class="settings-tab active" data-tab="launch" onclick="switchSettingsTab('launch')">Launch Settings</div>
-        <div class="settings-tab" data-tab="logs" onclick="switchSettingsTab('logs')">Logs</div>
-      </div>
-      <div class="settings-body">
-        <!-- Launch Settings Tab -->
-        <div class="settings-tab-content active" id="settingsTabLaunch">
-          <div class="settings-section">
-            <div class="settings-section-title">Mod Loader</div>
-            <div class="settings-section-description">Choose between unmodified Minecraft (Vanilla) or the Fabric mod loader.</div>
-            <div class="loader-toggle" id="loaderToggle">
-              <div class="loader-toggle-left">
-                <div>
-                  <div class="loader-toggle-label">Loader: <span id="loaderToggleValue">Vanilla</span></div>
-                  <div class="loader-toggle-sublabel" id="loaderToggleDesc">Unmodified Minecraft</div>
-                </div>
-              </div>
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <span class="loader-label active" id="loaderVanilla">Vanilla</span>
-                <div class="loader-switch" id="loaderSwitch" onclick="toggleLoader()">
-                  <div class="loader-knob" id="loaderKnob"></div>
-                </div>
-                <span class="loader-label" id="loaderFabric">Fabric</span>
-              </div>
-            </div>
+      <!-- Sidebar Navigation -->
+      <div class="settings-sidebar">
+        <div class="settings-title">Cosmic Settings</div>
+        <div class="settings-tabs">
+          <div class="settings-tab active" data-tab="launch" onclick="switchSettingsTab('launch')">
+            <span style="font-size: 1rem;">&#x1F680;</span> Launch
           </div>
-
-          <div class="settings-section">
-            <div class="settings-section-title">Mods Folder</div>
-            <div class="settings-section-description">Open the mods folder to add or remove Fabric mods.</div>
-            <button class="open-mods-btn" onclick="openModsFolder()">
-              <div class="open-mods-icon">&#x1F4C1;</div>
-              <span>Open Mods Folder</span>
-              <span class="open-mods-arrow">&#x2192;</span>
-            </button>
+          <div class="settings-tab" data-tab="mods" onclick="switchSettingsTab('mods')">
+            <span style="font-size: 1rem;">&#x1F9E9;</span> Mods
+          </div>
+          <div class="settings-tab" data-tab="logs" onclick="switchSettingsTab('logs')">
+            <span style="font-size: 1rem;">&#x1F4DC;</span> Logs
           </div>
         </div>
+      </div>
 
-        <!-- Logs Tab -->
-        <div class="settings-tab-content" id="settingsTabLogs">
-          <div class="settings-section">
-            <div class="settings-log-header">
-              <div class="settings-section-title" style="margin-bottom: 0;">Launcher Logs</div>
-              <span class="settings-log-clear" onclick="clearLogs()">Clear</span>
+      <!-- Main Content Area -->
+      <div class="settings-content-wrapper">
+        <div class="settings-header-right">
+          <div class="settings-close" onclick="closeSettings()" title="Close">&times;</div>
+        </div>
+
+        <div class="settings-body">
+          <!-- Launch Settings Tab -->
+          <div class="settings-tab-content active" id="settingsTabLaunch">
+            <div class="settings-section">
+              <div class="settings-section-title">Mod Loader</div>
+              <div class="settings-section-description">Choose between unmodified Minecraft (Vanilla) or the Fabric mod loader.</div>
+              <div class="loader-toggle" id="loaderToggle">
+                <div class="loader-toggle-left">
+                  <div>
+                    <div class="loader-toggle-label">Loader: <span id="loaderToggleValue">Vanilla</span></div>
+                    <div class="loader-toggle-sublabel" id="loaderToggleDesc">Unmodified Minecraft</div>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span class="loader-label active" id="loaderVanilla">Vanilla</span>
+                  <div class="loader-switch" id="loaderSwitch" onclick="toggleLoader()">
+                    <div class="loader-knob" id="loaderKnob"></div>
+                  </div>
+                  <span class="loader-label" id="loaderFabric">Fabric</span>
+                </div>
+              </div>
             </div>
-            <div class="settings-log-content" id="settingsLogContent"></div>
+
+            <div class="settings-section">
+              <div class="settings-section-title">Local Files</div>
+              <div class="settings-section-description">Manage local mod files directly in your file explorer.</div>
+              <button class="open-mods-btn" onclick="openModsFolder()">
+                <div class="open-mods-icon">&#x1F4C1;</div>
+                <span>Open Mods Folder</span>
+                <span class="open-mods-arrow">&#x2192;</span>
+              </button>
+            </div>
           </div>
+
+          <!-- Mods Tab -->
+          <div class="settings-tab-content" id="settingsTabMods">
+            
+            <div class="mods-sub-tabs">
+              <div class="mods-sub-tab active" id="modsTabInstalledBtn" onclick="switchModsTab('installed')">Installed</div>
+              <div class="mods-sub-tab" id="modsTabBrowseBtn" onclick="switchModsTab('browse')">Browse</div>
+            </div>
+
+            <!-- Installed View -->
+            <div id="modsViewInstalled" class="mods-view active">
+              <div id="installedModsList" class="mods-grid">
+                <div class="mods-empty">Loading installed mods...</div>
+              </div>
+            </div>
+
+            <!-- Browse View -->
+            <div id="modsViewBrowse" class="mods-view">
+              <div class="mod-search-bar-wrap">
+                <input type="text" id="modSearchInput" class="mod-search-input" placeholder="Search Modrinth for mods...">
+                <button class="mod-search-btn" onclick="searchMods()">Search</button>
+              </div>
+              <div id="modSearchResults" class="mods-grid">
+                <div class="mods-empty">Discover new mods by searching above.</div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Logs Tab -->
+          <div class="settings-tab-content" id="settingsTabLogs">
+            <div class="settings-section">
+              <div class="settings-log-header">
+                <div>
+                  <div class="settings-section-title">Launcher Console</div>
+                  <div class="settings-section-description" style="margin-bottom:0">View real-time launcher and game output events.</div>
+                </div>
+                <span class="settings-log-clear" onclick="clearLogs()">Clear Logs</span>
+              </div>
+              <div class="settings-log-content" id="settingsLogContent"></div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -1811,6 +2035,9 @@
       document.querySelector(`.settings-tab[data-tab="${tab}"]`).classList.add('active');
       if (tab === 'launch') {
         document.getElementById('settingsTabLaunch').classList.add('active');
+      } else if (tab === 'mods') {
+        document.getElementById('settingsTabMods').classList.add('active');
+        refreshInstalledMods();
       } else if (tab === 'logs') {
         document.getElementById('settingsTabLogs').classList.add('active');
       }
@@ -1819,6 +2046,168 @@
     async function openModsFolder() {
       if (window.ipcRenderer) {
         window.ipcRenderer.invoke('openModsFolder');
+      }
+    }
+
+    /* ── MODS LOGIC & NEW UI ── */
+    function switchModsTab(view) {
+      document.querySelectorAll('.mods-sub-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.mods-view').forEach(v => v.classList.remove('active'));
+
+      if (view === 'installed') {
+        document.getElementById('modsTabInstalledBtn').classList.add('active');
+        document.getElementById('modsViewInstalled').classList.add('active');
+        refreshInstalledMods();
+      } else {
+        document.getElementById('modsTabBrowseBtn').classList.add('active');
+        document.getElementById('modsViewBrowse').classList.add('active');
+      }
+    }
+
+    async function searchMods() {
+      const input = document.getElementById('modSearchInput');
+      const resultsDiv = document.getElementById('modSearchResults');
+      const query = input.value.trim();
+      if (!query) return;
+
+      resultsDiv.innerHTML = '<div class="mods-empty">Searching universe...</div>';
+
+      try {
+        const result = await ipcRenderer.invoke('mods:search', query);
+        if (!result.success) {
+          resultsDiv.innerHTML = `<div class="mods-empty" style="color:#ff6666">Error: ${result.error}</div>`;
+          return;
+        }
+
+        if (!result.results || result.results.length === 0) {
+          resultsDiv.innerHTML = '<div class="mods-empty">No mods found matching your query.</div>';
+          return;
+        }
+
+        resultsDiv.innerHTML = '';
+        for (const mod of result.results) {
+          const card = document.createElement('div');
+          card.className = 'mod-card';
+          const iconUrl = mod.icon_url || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect fill="%236b6860" width="32" height="32"/><text x="16" y="22" text-anchor="middle" font-size="18" fill="%23f0ece4">?</text></svg>';
+          
+          card.innerHTML = `
+            <div class="mod-card-top">
+              <img class="mod-icon" src="${iconUrl}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
+              <div class="mod-info-main">
+                <div class="mod-title" title="${mod.title}">${mod.title}</div>
+                <div class="mod-author-tag">${mod.author || 'Modrinth'}</div>
+              </div>
+            </div>
+            <div class="mod-desc">${mod.description || 'No description provided.'}</div>
+            <div class="mod-actions">
+              <span class="mod-meta">v${mod.latest_version || 'Unknown'}</span>
+              <button class="mod-btn install" data-project="${mod.project_id}" data-title="${mod.title}">Install</button>
+            </div>
+          `;
+
+          card.querySelector('.mod-btn').onclick = (e) => installMod(e, mod.project_id, mod.title);
+          resultsDiv.appendChild(card);
+        }
+      } catch (err) {
+        resultsDiv.innerHTML = `<div class="mods-empty" style="color:#ff6666">Search failed: ${err.message}</div>`;
+      }
+    }
+
+    document.getElementById('modSearchInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') searchMods();
+    });
+
+    async function installMod(e, projectId, title) {
+      const btn = e.currentTarget;
+      btn.disabled = true;
+      btn.textContent = 'Working...';
+
+      try {
+        const result = await ipcRenderer.invoke('mods:install', projectId, null, selectedVersion, 'fabric');
+        if (result.success) {
+          btn.textContent = 'Installed';
+          btn.style.background = 'rgba(100,200,100,0.2)';
+          btn.style.color = '#66dd66';
+        } else {
+          btn.textContent = 'Failed';
+          showModal('Install Failed', result.error, true);
+          setTimeout(() => { btn.textContent = 'Install'; btn.disabled = false; }, 2000);
+        }
+      } catch (err) {
+        btn.textContent = 'Error';
+        showModal('Install Error', err.message, true);
+        setTimeout(() => { btn.textContent = 'Install'; btn.disabled = false; }, 2000);
+      }
+    }
+
+    async function refreshInstalledMods() {
+      const grid = document.getElementById('installedModsList');
+      if(!grid) return;
+      
+      try {
+        const result = await ipcRenderer.invoke('mods:list');
+        if (!result.success) {
+          grid.innerHTML = `<div class="mods-empty">Error loading installed mods</div>`;
+          return;
+        }
+
+        const mods = result.mods;
+        const entries = Object.entries(mods);
+
+        if (entries.length === 0) {
+          grid.innerHTML = '<div class="mods-empty">No mods currently installed.<br>Head over to Browse to find some!</div>';
+          return;
+        }
+
+        grid.innerHTML = '';
+
+        for (const [id, mod] of entries) {
+          const isCompatible = mod.gameVersions && mod.gameVersions.includes(selectedVersion);
+          const card = document.createElement('div');
+          card.className = 'mod-card';
+
+          const iconUrl = mod.icon_url || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect fill="%236b6860" width="32" height="32"/><text x="16" y="22" text-anchor="middle" font-size="18" fill="%23f0ece4">?</text></svg>';
+          
+          card.innerHTML = `
+            <div class="mod-card-top">
+              <img class="mod-icon" src="${iconUrl}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
+              <div class="mod-info-main">
+                <div class="mod-title" style="${!isCompatible ? 'color:var(--muted);text-decoration:line-through' : ''}">${mod.title}</div>
+                <div class="mod-author-tag">${mod.loaders ? mod.loaders.join(', ') : 'Unknown'}</div>
+              </div>
+            </div>
+            <div class="mod-desc">Supports: ${mod.gameVersions ? mod.gameVersions.join(', ') : 'Unknown versions'}</div>
+            <div class="mod-actions">
+              <div class="mod-toggle-wrap ${mod.enabled ? 'on' : ''}" data-id="${id}" data-enabled="${mod.enabled}">
+                <div class="mod-switch"></div>
+                <span>${mod.enabled ? 'Enabled' : 'Disabled'}</span>
+              </div>
+              <button class="mod-btn remove" data-id="${id}">&#x1F5D1; Remove</button>
+            </div>
+          `;
+
+          // Custom Toggle Click
+          card.querySelector('.mod-toggle-wrap').onclick = async (e) => {
+            const wrap = e.currentTarget;
+            const pid = wrap.dataset.id;
+            const newState = wrap.dataset.enabled === 'true' ? false : true;
+            await ipcRenderer.invoke('mods:setEnabled', pid, newState);
+            await refreshInstalledMods();
+          };
+
+          // Remove Button
+          card.querySelector('.mod-btn.remove').onclick = async (e) => {
+            const confirmed = await showModal('Remove Mod', `Are you sure you want to remove ${mod.title}?`, false, true);
+            if (!confirmed) return;
+            const pid = e.currentTarget.dataset.id;
+            await ipcRenderer.invoke('mods:remove', pid);
+            await refreshInstalledMods();
+          };
+
+          grid.appendChild(card);
+        }
+      } catch (err) {
+        grid.innerHTML = `<div class="mods-empty" style="color:#ff6666">${err.message}</div>`;
       }
     }
 

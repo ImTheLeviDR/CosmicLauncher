@@ -3,6 +3,7 @@ const path = require('path');
 const ConfigManager = require('./app/assets/js/configmanager');
 const AuthManager = require('./app/assets/js/authmanager');
 const LaunchManager = require('./app/assets/js/launchmanager');
+const ModManager = require('./app/assets/js/modmanager');
 const { AZURE_CLIENT_ID, MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR, SHELL_OPCODE } = require('./app/assets/js/ipcconstants');
 
 ConfigManager.load();
@@ -321,6 +322,78 @@ ipcMain.handle('openModsFolder', async () => {
         return { success: true }
     } catch(error) {
         console.error('Open mods folder error:', error)
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('mods:search', async (event, query) => {
+    try {
+        const results = await ModManager.searchMods(query, [], ['fabric'])
+        return { success: true, results }
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('mods:install', async (event, projectId, versionId, gameVersion, loader) => {
+    try {
+        const mod = await ModManager.installMod(projectId, versionId, gameVersion, loader)
+        return { success: true, mod }
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('mods:remove', async (event, projectId) => {
+    try {
+        ModManager.removeMod(projectId)
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('mods:list', async () => {
+    try {
+        const mods = ModManager.getInstalledMods()
+        return { success: true, mods }
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('mods:setEnabled', async (event, projectId, enabled) => {
+    try {
+        ModManager.setModEnabled(projectId, enabled)
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('mods:syncForVersion', async (event, gameVersion, loader) => {
+    try {
+        const changed = ModManager.syncModsForVersion(gameVersion, loader)
+        return { success: true, changed }
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('mods:getProject', async (event, projectId) => {
+    try {
+        const project = await ModManager.getProject(projectId)
+        return { success: true, project }
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('mods:getVersions', async (event, projectId, gameVersions, loaders) => {
+    try {
+        const versions = await ModManager.getProjectVersions(projectId, gameVersions, loaders)
+        return { success: true, versions }
+    } catch (error) {
         return { success: false, error: error.message }
     }
 })
