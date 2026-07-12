@@ -18,6 +18,7 @@ class LaunchManager {
     this.on("progress", () => {});
     this.on("launch", () => {});
     this.on("log", () => {});
+    this.on("gameLog", () => {});
   }
 
   getMinecraftDirectory() {
@@ -597,8 +598,10 @@ class LaunchManager {
       cwd: gameDir,
       shell: false,
       detached: true,
-      stdio: "ignore",
+      stdio: ["ignore", "pipe", "pipe"],
     });
+
+    this._attachGameLogs();
 
     this.proc.unref();
 
@@ -808,8 +811,10 @@ class LaunchManager {
       cwd: gameDir,
       shell: false,
       detached: true,
-      stdio: "ignore",
+      stdio: ["ignore", "pipe", "pipe"],
     });
+
+    this._attachGameLogs();
 
     this.proc.unref();
 
@@ -1188,6 +1193,52 @@ class LaunchManager {
     return "java";
   }
 
+  _attachGameLogs() {
+    if (!this.proc) return;
+
+    const sendLine = (line) => {
+      this.emit("gameLog", line);
+    };
+
+    if (this.proc.stdout) {
+      let buf = "";
+      this.proc.stdout.on("data", (chunk) => {
+        buf += chunk.toString();
+        const lines = buf.split("\n");
+        buf = lines.pop();
+        for (const line of lines) {
+          if (line.trim()) sendLine(line.trimEnd());
+        }
+      });
+      this.proc.stdout.on("end", () => {
+        if (buf.trim()) sendLine(buf.trimEnd());
+      });
+    }
+
+    if (this.proc.stderr) {
+      let buf = "";
+      this.proc.stderr.on("data", (chunk) => {
+        buf += chunk.toString();
+        const lines = buf.split("\n");
+        buf = lines.pop();
+        for (const line of lines) {
+          if (line.trim()) sendLine(line.trimEnd());
+        }
+      });
+      this.proc.stderr.on("end", () => {
+        if (buf.trim()) sendLine(buf.trimEnd());
+      });
+    }
+
+    this.proc.on("exit", (code, signal) => {
+      this.emit("gameLog", `=== Game exited (code: ${code}, signal: ${signal}) ===`);
+    });
+
+    this.proc.on("error", (err) => {
+      this.emit("gameLog", `=== Game process error: ${err.message} ===`);
+    });
+  }
+
   on(event, callback) {
     if (event === "progress") {
       this._progressCallback = callback;
@@ -1195,6 +1246,8 @@ class LaunchManager {
       this._launchCallback = callback;
     } else if (event === "log") {
       this._logCallback = callback;
+    } else if (event === "gameLog") {
+      this._gameLogCallback = callback;
     }
   }
 
@@ -1205,6 +1258,8 @@ class LaunchManager {
       this._launchCallback(data);
     } else if (event === "log" && this._logCallback) {
       this._logCallback(data);
+    } else if (event === "gameLog" && this._gameLogCallback) {
+      this._gameLogCallback(data);
     }
   }
 }

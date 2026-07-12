@@ -300,6 +300,12 @@ ipcMain.handle('launchGame', async (event, versionId, loader) => {
             }
         })
 
+        LaunchManager.on('gameLog', (message) => {
+            if (mainWindowRef) {
+                mainWindowRef.webContents.send('gameLog', message)
+            }
+        })
+
         if (selectedLoader === 'fabric') {
             await LaunchManager.launchFabric(versionId, account)
         } else {

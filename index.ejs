@@ -1439,7 +1439,13 @@
     }
 
     /* Logs inner adjustments for new layout */
-    .settings-log-content { min-height: 380px; max-height: 400px; }
+    .settings-log-content { min-height: 380px; max-height: 400px; overflow-y: auto; font-family: 'Space Mono', monospace; font-size: 0.65rem; line-height: 1.6; }
+    .settings-log-content div { color: var(--muted); padding: 1px 0; }
+    .settings-log-content div.error { color: #ff6666; }
+    .settings-log-content div.warn { color: #ffb86c; }
+    .settings-log-content div.game-log { color: #8be9fd; }
+    .settings-log-content div.game-log.error { color: #ff6666; }
+    .settings-log-content div.game-log.warn { color: #ffb86c; }
 
     .particles-canvas {
       position: absolute;
@@ -2500,6 +2506,21 @@ function openVersionPopup() {
       logContent.scrollTop = logContent.scrollHeight;
     }
 
+    function addGameLog(message) {
+      const logContent = document.getElementById('settingsLogContent');
+      if (!logContent) return;
+      const line = document.createElement('div');
+      line.className = 'game-log';
+      if (message.includes('ERROR') || message.includes('error') || message.includes('Exception') || message.includes('FAILED')) {
+        line.className = 'game-log error';
+      } else if (message.includes('WARN') || message.includes('warn')) {
+        line.className = 'game-log warn';
+      }
+      line.textContent = new Date().toLocaleTimeString() + ' [GAME] ' + message;
+      logContent.appendChild(line);
+      logContent.scrollTop = logContent.scrollHeight;
+    }
+
     function clearLogs() {
       const logContent = document.getElementById('settingsLogContent');
       if (logContent) logContent.innerHTML = '';
@@ -2516,6 +2537,10 @@ function openVersionPopup() {
 
     ipcRenderer.on('launchLog', (event, message) => {
       addLog(message);
+    });
+
+    ipcRenderer.on('gameLog', (event, message) => {
+      addGameLog(message);
     });
 
     /* ── WINDOW CONTROLS ── */
