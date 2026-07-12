@@ -17,7 +17,8 @@ const versionCachePath = path.join(dataPath, 'version-cache.json')
 const DEFAULT_CONFIG = {
     selectedAccount: null,
     authenticationDatabase: {},
-    selectedVersion: null
+    selectedVersion: null,
+    selectedLoader: 'vanilla'
 }
 
 let config = null
@@ -142,6 +143,15 @@ exports.getSelectedVersion = function(){
 
 exports.setSelectedVersion = function(versionId){
     config.selectedVersion = versionId
+    exports.save()
+}
+
+exports.getSelectedLoader = function(){
+    return config.selectedLoader || 'vanilla'
+}
+
+exports.setSelectedLoader = function(loader){
+    config.selectedLoader = loader
     exports.save()
 }
 

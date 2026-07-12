@@ -922,62 +922,346 @@
       color: var(--text);
     }
 
-    .log-container {
-      position: fixed;
-      top: 44px;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.9);
-      z-index: 150;
-      display: none;
-      flex-direction: column;
-    }
-
-    .log-container.show {
+    /* ── LOADER TOGGLE ── */
+    .loader-toggle {
       display: flex;
-    }
-
-    .log-header {
-      background: rgba(232, 98, 42, 0.3);
-      padding: 10px 16px;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--accent);
-      display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .loader-toggle-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .loader-toggle-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      color: var(--text);
+    }
+
+    .loader-toggle-sublabel {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .loader-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.3s;
+    }
+
+    .loader-label.active {
+      color: var(--accent);
+    }
+
+    .loader-switch {
+      position: relative;
+      width: 48px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      flex-shrink: 0;
+    }
+
+    .loader-switch:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .loader-switch.fabric {
+      background: rgba(232, 98, 42, 0.2);
+      border-color: rgba(232, 98, 42, 0.4);
+    }
+
+    .loader-knob {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--muted);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .loader-switch.fabric .loader-knob {
+      left: 27px;
+      background: var(--accent);
+      box-shadow: 0 0 10px rgba(232, 98, 42, 0.5);
+    }
+
+    /* ── OPEN MODS BUTTON ── */
+    .open-mods-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      width: 100%;
+    }
+
+    .open-mods-btn:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .open-mods-icon {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .open-mods-btn:hover .open-mods-icon {
+      background: rgba(232, 98, 42, 0.15);
+      color: var(--accent);
+    }
+
+    .open-mods-arrow {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 0.7rem;
+    }
+
+    /* ── SETTINGS PANEL ── */
+    .settings-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.25s ease, backdrop-filter 0.25s ease, visibility 0.25s;
+      backdrop-filter: blur(0px);
+    }
+
+    .settings-overlay.show {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: all;
+      backdrop-filter: blur(8px);
+    }
+
+    .settings-panel {
+      background: rgba(10, 10, 18, 0.97);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      width: 520px;
+      max-height: 480px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+      transform: scale(0.92);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .settings-overlay.show .settings-panel {
+      transform: scale(1);
+    }
+
+    .settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
       border-bottom: 1px solid var(--border);
     }
 
-    .log-content {
-      flex: 1;
+    .settings-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .settings-close {
+      font-size: 1.2rem;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.15s;
+      line-height: 1;
+    }
+
+    .settings-close:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .settings-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .settings-tab {
       padding: 12px 16px;
-      overflow-y: auto;
       font-family: 'Space Mono', monospace;
       font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      margin-bottom: -1px;
+    }
+
+    .settings-tab:hover {
+      color: var(--text);
+    }
+
+    .settings-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .settings-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .settings-body::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .settings-body::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .settings-body::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 3px;
+    }
+
+    .settings-tab-content {
+      display: none;
+    }
+
+    .settings-tab-content.active {
+      display: block;
+    }
+
+    .settings-section {
+      margin-bottom: 20px;
+    }
+
+    .settings-section-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .settings-section-description {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--muted);
+      margin-bottom: 14px;
+      line-height: 1.5;
+      opacity: 0.7;
+    }
+
+    /* ── LOG CONTAINER (inside settings) ── */
+    .settings-log-content {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      min-height: 280px;
+      max-height: 320px;
+      overflow-y: auto;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
       color: #88ff88;
       white-space: pre-wrap;
       word-break: break-all;
     }
 
-    .log-content .error {
-      color: #ff6666;
+    .settings-log-content::-webkit-scrollbar {
+      width: 5px;
     }
 
-    .log-content .warn {
-      color: #ffcc00;
+    .settings-log-content::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.03);
     }
 
-    .log-close {
-      cursor: pointer;
-      padding: 2px 8px;
-      background: rgba(255,255,255,0.1);
+    .settings-log-content::-webkit-scrollbar-thumb {
+      background: var(--accent);
       border-radius: 3px;
     }
 
-    .log-close:hover {
-      background: rgba(255,255,255,0.2);
+    .settings-log-content .error {
+      color: #ff6666;
+    }
+
+    .settings-log-content .warn {
+      color: #ffcc00;
+    }
+
+    .settings-log-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .settings-log-clear {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      transition: all 0.15s;
+    }
+
+    .settings-log-clear:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
     }
 
     .particles-canvas {
@@ -1097,9 +1381,9 @@
     
     <!-- Right: Controls -->
     <div class="right-panel">
-      <!-- Logs Button -->
+      <!-- Settings Button -->
       <div style="position: absolute; bottom: 20px; right: 24px; z-index: 50;">
-        <button class="tb-btn" onclick="toggleLogContainer()" title="Logs">&#x2630;</button>
+        <button class="tb-btn" onclick="openSettings()" title="Settings">&#x2699;</button>
       </div>
 
 <!-- Profile Changer / Mockup -->
@@ -1149,17 +1433,67 @@
       </div>
       <!-- End Version Popup -->
 
-      <div class="log-container" id="logContainer">
-        <div class="log-header">
-          <span>Logs</span>
-          <span class="log-close" onclick="closeLogContainer()">Close</span>
-        </div>
-        <div class="log-content" id="logContent"></div>
-      </div>
-      <!-- End Version Popup -->
-
     </div>
 
+  </div>
+
+  <!-- Settings Overlay -->
+  <div class="settings-overlay" id="settingsOverlay" onclick="handleSettingsBackdropClick(event)">
+    <div class="settings-panel">
+      <div class="settings-header">
+        <span class="settings-title">Settings</span>
+        <span class="settings-close" onclick="closeSettings()">&times;</span>
+      </div>
+      <div class="settings-tabs">
+        <div class="settings-tab active" data-tab="launch" onclick="switchSettingsTab('launch')">Launch Settings</div>
+        <div class="settings-tab" data-tab="logs" onclick="switchSettingsTab('logs')">Logs</div>
+      </div>
+      <div class="settings-body">
+        <!-- Launch Settings Tab -->
+        <div class="settings-tab-content active" id="settingsTabLaunch">
+          <div class="settings-section">
+            <div class="settings-section-title">Mod Loader</div>
+            <div class="settings-section-description">Choose between unmodified Minecraft (Vanilla) or the Fabric mod loader.</div>
+            <div class="loader-toggle" id="loaderToggle">
+              <div class="loader-toggle-left">
+                <div>
+                  <div class="loader-toggle-label">Loader: <span id="loaderToggleValue">Vanilla</span></div>
+                  <div class="loader-toggle-sublabel" id="loaderToggleDesc">Unmodified Minecraft</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="loader-label active" id="loaderVanilla">Vanilla</span>
+                <div class="loader-switch" id="loaderSwitch" onclick="toggleLoader()">
+                  <div class="loader-knob" id="loaderKnob"></div>
+                </div>
+                <span class="loader-label" id="loaderFabric">Fabric</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section-title">Mods Folder</div>
+            <div class="settings-section-description">Open the mods folder to add or remove Fabric mods.</div>
+            <button class="open-mods-btn" onclick="openModsFolder()">
+              <div class="open-mods-icon">&#x1F4C1;</div>
+              <span>Open Mods Folder</span>
+              <span class="open-mods-arrow">&#x2192;</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Logs Tab -->
+        <div class="settings-tab-content" id="settingsTabLogs">
+          <div class="settings-section">
+            <div class="settings-log-header">
+              <div class="settings-section-title" style="margin-bottom: 0;">Launcher Logs</div>
+              <span class="settings-log-clear" onclick="clearLogs()">Clear</span>
+            </div>
+            <div class="settings-log-content" id="settingsLogContent"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -1413,6 +1747,81 @@
 
       refreshProfileList();
 
+/* ── LOADER TOGGLE LOGIC ── */
+    let selectedLoader = 'vanilla';
+
+    function toggleLoader() {
+      selectedLoader = selectedLoader === 'vanilla' ? 'fabric' : 'vanilla';
+      updateLoaderUI();
+      if (window.ipcRenderer) {
+        window.ipcRenderer.invoke('saveSelectedLoader', selectedLoader);
+      }
+    }
+
+    function updateLoaderUI() {
+      const switchEl = document.getElementById('loaderSwitch');
+      const vanillaLabel = document.getElementById('loaderVanilla');
+      const fabricLabel = document.getElementById('loaderFabric');
+      const toggleValue = document.getElementById('loaderToggleValue');
+      const toggleDesc = document.getElementById('loaderToggleDesc');
+
+      if (selectedLoader === 'fabric') {
+        switchEl.classList.add('fabric');
+        vanillaLabel.classList.remove('active');
+        fabricLabel.classList.add('active');
+        if (toggleValue) toggleValue.textContent = 'Fabric';
+        if (toggleDesc) toggleDesc.textContent = 'Mod loader for running mods';
+      } else {
+        switchEl.classList.remove('fabric');
+        vanillaLabel.classList.add('active');
+        fabricLabel.classList.remove('active');
+        if (toggleValue) toggleValue.textContent = 'Vanilla';
+        if (toggleDesc) toggleDesc.textContent = 'Unmodified Minecraft';
+      }
+    }
+
+    async function loadLoaderPreference() {
+      try {
+        const loader = await ipcRenderer.invoke('getSelectedLoader');
+        if (loader === 'fabric' || loader === 'vanilla') {
+          selectedLoader = loader;
+          updateLoaderUI();
+        }
+      } catch (e) {
+        console.log('Could not load loader preference:', e);
+      }
+    }
+
+/* ── SETTINGS PANEL ── */
+    function openSettings() {
+      document.getElementById('settingsOverlay').classList.add('show');
+    }
+
+    function closeSettings() {
+      document.getElementById('settingsOverlay').classList.remove('show');
+    }
+
+    function handleSettingsBackdropClick(event) {
+      if (event.target === document.getElementById('settingsOverlay')) closeSettings();
+    }
+
+    function switchSettingsTab(tab) {
+      document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.settings-tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelector(`.settings-tab[data-tab="${tab}"]`).classList.add('active');
+      if (tab === 'launch') {
+        document.getElementById('settingsTabLaunch').classList.add('active');
+      } else if (tab === 'logs') {
+        document.getElementById('settingsTabLogs').classList.add('active');
+      }
+    }
+
+    async function openModsFolder() {
+      if (window.ipcRenderer) {
+        window.ipcRenderer.invoke('openModsFolder');
+      }
+    }
+
 /* ── VERSION POPUP LOGIC ── */
     let selectedVersion = '';
     let popupVisible = false;
@@ -1546,6 +1955,7 @@ function openVersionPopup() {
 
     loadVersions();
     loadTickSound();
+    loadLoaderPreference();
     setTimeout(() => { if (window.triggerOpenAnimation) window.triggerOpenAnimation(); }, 100);
     
     if (window.ipcRenderer) {
@@ -1609,7 +2019,7 @@ function openVersionPopup() {
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       try {
-        const result = await ipcRenderer.invoke('launchGame', selectedVersion);
+        const result = await ipcRenderer.invoke('launchGame', selectedVersion, selectedLoader);
         if (result.success) {
           status.textContent = 'Launching...';
           addLog('=== Launch successful! Game should be running ===');
@@ -1647,7 +2057,7 @@ function openVersionPopup() {
     }
 
     function addLog(message) {
-      const logContent = document.getElementById('logContent');
+      const logContent = document.getElementById('settingsLogContent');
       if (!logContent) return;
       const line = document.createElement('div');
       if (message.includes('ERROR') || message.includes('error') || message.includes('Failed')) {
@@ -1660,13 +2070,9 @@ function openVersionPopup() {
       logContent.scrollTop = logContent.scrollHeight;
     }
 
-    function toggleLogContainer() {
-      const container = document.getElementById('logContainer');
-      container.classList.toggle('show');
-    }
-
-    function closeLogContainer() {
-      document.getElementById('logContainer').classList.remove('show');
+    function clearLogs() {
+      const logContent = document.getElementById('settingsLogContent');
+      if (logContent) logContent.innerHTML = '';
     }
 
     ipcRenderer.on('launchProgress', (event, data) => {

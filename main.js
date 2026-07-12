@@ -241,6 +241,16 @@ ipcMain.handle('saveSelectedVersion', (event, versionId) => {
     return { success: true }
 })
 
+ipcMain.handle('getSelectedLoader', () => {
+    return ConfigManager.getSelectedLoader()
+})
+
+ipcMain.handle('saveSelectedLoader', (event, loader) => {
+    ConfigManager.setSelectedLoader(loader)
+    ConfigManager.save()
+    return { success: true }
+})
+
 ipcMain.handle('removeAccount', async (event, uuid) => {
     try {
         ConfigManager.removeAuthAccount(uuid)
@@ -251,7 +261,7 @@ ipcMain.handle('removeAccount', async (event, uuid) => {
     }
 })
 
-ipcMain.handle('launchGame', async (event, versionId) => {
+ipcMain.handle('launchGame', async (event, versionId, loader) => {
     try {
         const isValid = await AuthManager.validateSelected()
         if (!isValid) {
@@ -263,13 +273,19 @@ ipcMain.handle('launchGame', async (event, versionId) => {
             return { success: false, error: 'No account selected' }
         }
 
+        const selectedLoader = loader || ConfigManager.getSelectedLoader()
+
         LaunchManager.on('progress', (data) => {
             if (mainWindowRef) {
                 mainWindowRef.webContents.send('launchProgress', data)
             }
         })
 
-        await LaunchManager.launchVanilla(versionId, account)
+        if (selectedLoader === 'fabric') {
+            await LaunchManager.launchFabric(versionId, account)
+        } else {
+            await LaunchManager.launchVanilla(versionId, account)
+        }
         
         ConfigManager.setSelectedVersion(versionId)
         ConfigManager.save()
@@ -292,6 +308,19 @@ ipcMain.handle('getAvailableVersions', async () => {
         return { success: true, versions: manifest.versions }
     } catch(error) {
         console.error('Version manifest error:', error)
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('openModsFolder', async () => {
+    const modsDir = path.join(LaunchManager.getMinecraftDirectory(), 'mods')
+    try {
+        const fs = require('fs-extra')
+        fs.ensureDirSync(modsDir)
+        await shell.openPath(modsDir)
+        return { success: true }
+    } catch(error) {
+        console.error('Open mods folder error:', error)
         return { success: false, error: error.message }
     }
 })
