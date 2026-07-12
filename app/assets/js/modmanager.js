@@ -150,13 +150,17 @@ class ModManager {
     return changed;
   }
 
-  async _getLatestCompatibleVersion(projectId, gameVersion, loader) {
+  async _getLatestCompatibleVersion(projectId, gameVersion, loader, beforeDate) {
     try {
       const params = new URLSearchParams();
       params.set('game_versions', JSON.stringify([gameVersion]));
       params.set('loaders', JSON.stringify([loader]));
       const versions = await this._fetchJson(`${MODRINTH_API}/project/${projectId}/version?${params}`);
       if (Array.isArray(versions) && versions.length > 0) {
+        if (beforeDate) {
+          const filtered = versions.filter(v => v.date_published < beforeDate);
+          return filtered.length > 0 ? filtered[0] : null;
+        }
         return versions[0];
       }
     } catch (e) {
@@ -168,6 +172,7 @@ class ModManager {
   async _resolveDependencies(versionData, gameVersion, loader, visited = new Set()) {
     const toInstall = [];
     const conflicts = [];
+    const parentDate = versionData?.date_published;
 
     if (!versionData || !Array.isArray(versionData.dependencies)) {
       return { toInstall, conflicts };
@@ -191,7 +196,7 @@ class ModManager {
       if (alreadyInstalled) {
         const isCompatible = alreadyInstalled.gameVersions.includes(gameVersion) && alreadyInstalled.loaders.includes(loader);
         if (!isCompatible) {
-          const updatedVersion = await this._getLatestCompatibleVersion(dep.project_id, gameVersion, loader);
+          const updatedVersion = await this._getLatestCompatibleVersion(dep.project_id, gameVersion, loader, parentDate);
           if (updatedVersion) {
             toInstall.push({ projectId: dep.project_id, versionData: updatedVersion, isRequired: dep.dependency_type === 'required' });
             const subDeps = await this._resolveDependencies(updatedVersion, gameVersion, loader, visited);
@@ -206,7 +211,7 @@ class ModManager {
         continue;
       }
 
-      const compatibleVersion = await this._getLatestCompatibleVersion(dep.project_id, gameVersion, loader);
+      const compatibleVersion = await this._getLatestCompatibleVersion(dep.project_id, gameVersion, loader, parentDate);
       if (compatibleVersion) {
         toInstall.push({ projectId: dep.project_id, versionData: compatibleVersion, isRequired: dep.dependency_type === 'required' });
         const subDeps = await this._resolveDependencies(compatibleVersion, gameVersion, loader, visited);
@@ -429,6 +434,50 @@ class ModManager {
     return allConflicts;
   }
 
+  async _resolveConflictsAfterInstall(gameVersion, loader) {
+    this._loadDatabase();
+    const resolved = [];
+    const maxRounds = 5;
+
+    for (let round = 0; round < maxRounds; round++) {
+      const conflicts = await this.validateAllModConflicts();
+      if (conflicts.length === 0) break;
+
+      let fixedSomething = false;
+
+      for (const conflict of conflicts) {
+        const requiringMod = this._modDatabase[conflict.modId];
+        if (!requiringMod) continue;
+
+        const parentDate = requiringMod.installedAt ? new Date(requiringMod.installedAt).toISOString() : null;
+
+        const installedDep = this._modDatabase[conflict.conflictId];
+        if (!installedDep) continue;
+
+        const newVersion = await this._getLatestCompatibleVersion(
+          conflict.conflictId,
+          installedDep.gameVersions[0],
+          installedDep.loaders[0],
+          parentDate
+        );
+
+        if (newVersion && newVersion.id !== installedDep.installedVersion) {
+          try {
+            await this.updateMod(conflict.conflictId, gameVersion || installedDep.gameVersions[0], loader || installedDep.loaders[0]);
+            resolved.push({ replaced: conflict.conflictTitle, newVersion: newVersion.version_number, requiredBy: conflict.modTitle });
+            fixedSomething = true;
+          } catch (e) {
+            console.error(`Failed to resolve conflict: ${e.message}`);
+          }
+        }
+      }
+
+      if (!fixedSomething) break;
+    }
+
+    return resolved;
+  }
+
   async _installMissingDependency(projectId, gameVersion, loader) {
     this._loadDatabase();
     this._ensureModsDir();
@@ -591,18 +640,16 @@ class ModManager {
 
     const { installed: installedDeps, conflicts: depConflicts } = await this._resolveAndInstallDeps(targetVersion, gameVersion, loader);
 
+    const resolved = await this._resolveConflictsAfterInstall(gameVersion, loader);
+
     const selfConflict = await this._checkModConflicts(projectId, gameVersion, loader);
     const allConflicts = [...depConflicts.map(c => ({ ...c, source: 'dependency' })), ...selfConflict.conflicts.map(c => ({ ...c, source: 'compatibility' }))];
-
-    if (allConflicts.length > 0) {
-      const conflictSummary = allConflicts.map(c => c.reason).join('; ');
-      console.warn(`Mod installed with conflicts: ${conflictSummary}`);
-    }
 
     return {
       mod: this._modDatabase[projectId],
       installedDeps,
       conflicts: allConflicts,
+      resolved,
     };
   }
 
@@ -661,10 +708,12 @@ class ModManager {
 
     const { installed: installedDeps, conflicts: depConflicts } = await this._resolveAndInstallDeps(newVersion, gameVersion, loader);
 
+    const resolved = await this._resolveConflictsAfterInstall(gameVersion, loader);
+
     const selfConflict = await this._checkModConflicts(projectId, gameVersion, loader);
     const allConflicts = [...depConflicts.map(c => ({ ...c, source: 'dependency' })), ...selfConflict.conflicts.map(c => ({ ...c, source: 'compatibility' }))];
 
-    return { updated: true, mod: this._modDatabase[projectId], deps: installedDeps, depConflicts: allConflicts };
+    return { updated: true, mod: this._modDatabase[projectId], deps: installedDeps, depConflicts: allConflicts, resolved };
   }
 
   async _fetchJson(url) {

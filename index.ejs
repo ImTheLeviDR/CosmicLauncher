@@ -2230,6 +2230,9 @@
           if (data.conflicts && data.conflicts.length > 0) {
             const conflictMsg = data.conflicts.map(c => c.reason).join('<br>');
             showModal('Compatibility Warnings', 'Mod installed but has conflicts:<br><br>' + conflictMsg, true);
+          } else if (data.resolved && data.resolved.length > 0) {
+            const resolvedMsg = data.resolved.map(r => `${r.replaced} → v${r.newVersion} (required by ${r.requiredBy})`).join('<br>');
+            showToast('Conflicts resolved', resolvedMsg);
           } else if (data.installedDeps && data.installedDeps.length > 0) {
             showToast('Dependencies installed', data.installedDeps.map(d => d.title).join(', '));
           }

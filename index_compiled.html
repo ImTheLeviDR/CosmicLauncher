@@ -1718,47 +1718,7 @@
               <div id="installedModsList" class="mods-grid">
                 
                 
-                  
-                    
-                    
-                    <div class="mod-card">
-                      <div class="mod-card-top">
-                        <img class="mod-icon" src="https://cdn.modrinth.com/data/UIexcMP1/2d578a1f4d4bebebf19c7847eb9a1575a8a0b825_96.webp" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
-                        <div class="mod-info-main">
-                          <div class="mod-title" style="">Borderless Fullscreen</div>
-                          <div class="mod-author-tag">fabric</div>
-                        </div>
-                      </div>
-                      <div class="mod-desc">Supports: 1.21.9, 1.21.10, 1.21.11</div>
-                      <div class="mod-actions">
-                        <div class="mod-toggle-wrap on" data-id="UIexcMP1" data-enabled="true">
-                          <div class="mod-switch"></div>
-                          <span>Enabled</span>
-                        </div>
-                        <button class="mod-btn remove" data-id="UIexcMP1">&#x1F5D1; Remove</button>
-                      </div>
-                    </div>
-                  
-                    
-                    
-                    <div class="mod-card">
-                      <div class="mod-card-top">
-                        <img class="mod-icon" src="https://cdn.modrinth.com/data/YL57xq9U/18d0e7f076d3d6ed5bedd472b853909aac5da202_96.webp" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
-                        <div class="mod-info-main">
-                          <div class="mod-title" style="">Iris Shaders</div>
-                          <div class="mod-author-tag">fabric</div>
-                        </div>
-                      </div>
-                      <div class="mod-desc">Supports: 1.21.11</div>
-                      <div class="mod-actions">
-                        <div class="mod-toggle-wrap on" data-id="YL57xq9U" data-enabled="true">
-                          <div class="mod-switch"></div>
-                          <span>Enabled</span>
-                        </div>
-                        <button class="mod-btn remove" data-id="YL57xq9U">&#x1F5D1; Remove</button>
-                      </div>
-                    </div>
-                  
+                  <div class="mods-empty">No mods currently installed.<br>Head over to Browse to find some!</div>
                 
               </div>
             </div>
@@ -2257,6 +2217,9 @@
           if (data.conflicts && data.conflicts.length > 0) {
             const conflictMsg = data.conflicts.map(c => c.reason).join('<br>');
             showModal('Compatibility Warnings', 'Mod installed but has conflicts:<br><br>' + conflictMsg, true);
+          } else if (data.resolved && data.resolved.length > 0) {
+            const resolvedMsg = data.resolved.map(r => `${r.replaced} → v${r.newVersion} (required by ${r.requiredBy})`).join('<br>');
+            showToast('Conflicts resolved', resolvedMsg);
           } else if (data.installedDeps && data.installedDeps.length > 0) {
             showToast('Dependencies installed', data.installedDeps.map(d => d.title).join(', '));
           }
