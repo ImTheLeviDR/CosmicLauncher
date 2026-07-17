@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, shell, Tray, Menu, nativeImage } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const { pathToFileURL } = require('url');
 const ejs = require('ejs');
 const ConfigManager = require('./app/assets/js/configmanager');
 const AuthManager = require('./app/assets/js/authmanager');
@@ -9,7 +10,13 @@ const ModManager = require('./app/assets/js/modmanager');
 const { AZURE_CLIENT_ID, MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR, SHELL_OPCODE } = require('./app/assets/js/ipcconstants');
 
 const EJS_FILE = path.join(__dirname, 'index.ejs');
-const COMPILED_HTML = path.join(__dirname, 'index_compiled.html');
+
+function getCompiledHtmlPath() {
+    if (app.isPackaged) {
+        return path.join(app.getPath('userData'), 'index_compiled.html');
+    }
+    return path.join(__dirname, 'index_compiled.html');
+}
 
 function compileTemplate() {
     const template = fs.readFileSync(EJS_FILE, 'utf-8');
@@ -20,8 +27,13 @@ function compileTemplate() {
     let installedMods = {};
     try { installedMods = ModManager.getInstalledMods() || {}; } catch(e) { console.error('Failed to load mods for template:', e); }
 
-    const html = ejs.render(template, { accounts, selectedUuid, selectedVersion, loader, installedMods }, { filename: EJS_FILE });
-    fs.writeFileSync(COMPILED_HTML, html, 'utf-8');
+    const assetRoot = `${pathToFileURL(__dirname).href}/`;
+    const html = ejs.render(template, { accounts, selectedUuid, selectedVersion, loader, installedMods, assetRoot }, { filename: EJS_FILE });
+
+    const compiledPath = getCompiledHtmlPath();
+    fs.mkdirSync(path.dirname(compiledPath), { recursive: true });
+    fs.writeFileSync(compiledPath, html, 'utf-8');
+    return compiledPath;
 }
 
 ConfigManager.load();
@@ -539,8 +551,7 @@ function createTray() {
                             preload: path.join(__dirname, 'preload.js')
                         }
                     });
-                    compileTemplate();
-                    mainWindowRef.loadFile('index_compiled.html');
+                    mainWindowRef.loadFile(compileTemplate());
                     mainWindowRef.webContents.once('did-finish-load', () => {
                         mainWindowRef.webContents.send('triggerOpenAnimation');
                     });
@@ -573,8 +584,7 @@ function createWindow() {
     mainWindowRef = win;
     console.log('Main window created');
 
-    compileTemplate();
-    win.loadFile('index_compiled.html');
+    win.loadFile(compileTemplate());
 
     win.webContents.on('did-finish-load', () => {
         win.webContents.on('before-input-event', (event, input) => {
