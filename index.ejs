@@ -1132,25 +1132,26 @@
 
     .loader-toggle-label {
       font-family: 'Syne', sans-serif;
-      font-size: 0.88rem;
+      font-size: 0.9375rem;
       font-weight: 700;
-      letter-spacing: 0.01em;
+      letter-spacing: -0.01em;
       color: var(--text);
+      line-height: 1.3;
     }
 
     .loader-toggle-sublabel {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.68rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 400;
       color: var(--muted);
-      letter-spacing: 0.02em;
-      line-height: 1.5;
+      line-height: 1.45;
       margin-top: 4px;
     }
 
     .loader-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.03em;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 600;
       color: var(--muted);
       transition: color 0.3s;
     }
@@ -1212,9 +1213,9 @@
       transition: background 0.1s ease, border-color 0.1s ease;
       color: var(--text);
       font-family: 'Syne', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.01em;
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
       width: 100%;
     }
 
@@ -1282,7 +1283,10 @@
       overflow: hidden;
       box-shadow: none;
       font-family: 'Syne', sans-serif;
+      font-size: 0.875rem;
+      line-height: 1.5;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     .settings-sidebar {
@@ -1303,13 +1307,13 @@
 
     .settings-title {
       font-family: 'Syne', sans-serif;
-      font-size: 1.15rem;
-      font-weight: 700;
-      line-height: 1.35;
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.2;
       color: var(--text);
       margin-bottom: 0;
       padding: 20px 16px 22px;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
       border-bottom: 1px solid var(--border);
     }
 
@@ -1322,9 +1326,9 @@
     .settings-tab {
       padding: 14px 16px;
       font-family: 'Syne', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.01em;
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
       color: var(--muted);
       cursor: pointer;
       border-radius: 0;
@@ -1333,6 +1337,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      line-height: 1.3;
     }
 
     .settings-tab:hover {
@@ -1358,11 +1363,13 @@
       border-top: 1px solid var(--border);
       color: var(--muted);
       font-family: 'Syne', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 700;
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
       cursor: pointer;
       transition: background 0.1s ease, color 0.1s ease;
       flex-shrink: 0;
+      line-height: 1.3;
     }
 
     .settings-back svg {
@@ -1416,20 +1423,22 @@
 
     .settings-section-title {
       font-family: 'Syne', sans-serif;
-      font-size: 1.05rem;
+      font-size: 1.0625rem;
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 6px;
-      letter-spacing: -0.01em;
+      margin-bottom: 2px;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
     }
 
     .settings-section-description {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.72rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 400;
       color: var(--muted);
+      margin-top: 0;
       margin-bottom: 20px;
-      line-height: 1.65;
-      letter-spacing: 0.02em;
+      line-height: 1.35;
     }
 
     .settings-log-header {
@@ -1446,9 +1455,11 @@
     }
 
     .settings-log-clear {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.68rem;
-      letter-spacing: 0.04em;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
       color: var(--muted);
       cursor: pointer;
       transition: color 0.1s ease;
@@ -1487,14 +1498,15 @@
     .mods-sub-tab {
       padding: 10px 24px;
       font-family: 'Syne', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.01em;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
       color: var(--muted);
       cursor: pointer;
       border-radius: 0;
       border-right: 1px solid var(--border);
       transition: background 0.1s ease, color 0.1s ease;
+      line-height: 1.3;
     }
 
     .mods-sub-tab:last-child {
@@ -1528,9 +1540,10 @@
       border-right: 1px solid var(--border);
       border-radius: 0;
       color: var(--text);
-      font-family: 'Space Mono', monospace;
-      font-size: 0.78rem;
-      letter-spacing: 0.02em;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
       outline: none;
       transition: all 0.2s;
     }
@@ -1554,8 +1567,9 @@
       color: var(--text);
       font-family: 'Syne', sans-serif;
       font-weight: 700;
-      font-size: 0.78rem;
-      letter-spacing: 0.01em;
+      font-size: 0.8125rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
       cursor: pointer;
       transition: background 0.1s ease, color 0.1s ease;
     }
@@ -1602,35 +1616,39 @@
 
     .mod-title {
       font-family: 'Syne', sans-serif;
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 700;
       color: var(--text);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       margin-bottom: 4px;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
     }
 
     .mod-author-tag {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.55rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
       color: var(--accent2);
       background: rgba(240, 168, 66, 0.1);
-      padding: 2px 6px;
+      padding: 3px 8px;
       border-radius: 4px;
       display: inline-block;
+      letter-spacing: 0.01em;
     }
 
     .mod-desc {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.68rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 400;
       color: var(--muted);
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      line-height: 1.55;
-      letter-spacing: 0.02em;
+      line-height: 1.5;
       margin-bottom: 16px;
       flex: 1;
     }
@@ -1645,15 +1663,16 @@
       padding-top: 12px;
     }
 
-    .mod-meta { font-family: 'Space Mono', monospace; font-size: 0.55rem; color: var(--muted); }
+    .mod-meta { font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 400; color: var(--muted); }
 
     .mod-btn {
       padding: 8px 16px;
       border-radius: 8px;
       border: none;
       font-family: 'Syne', sans-serif;
-      font-size: 0.7rem;
+      font-size: 0.75rem;
       font-weight: 700;
+      letter-spacing: 0.01em;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -1671,7 +1690,7 @@
       gap: 8px;
       cursor: pointer;
     }
-    .mod-toggle-wrap span { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--muted); }
+    .mod-toggle-wrap span { font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 600; color: var(--muted); }
     
     .mod-switch {
       width: 36px;
@@ -1703,10 +1722,10 @@
       border: 1px dashed var(--border);
       border-radius: 16px;
       color: var(--muted);
-      font-family: 'Space Mono', monospace;
-      font-size: 0.72rem;
-      line-height: 1.65;
-      letter-spacing: 0.02em;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 400;
+      line-height: 1.55;
     }
 
     /* Logs inner adjustments for new layout */
@@ -1716,9 +1735,9 @@
       height: calc(100vh - 52px - 220px);
       overflow-y: auto;
       font-family: 'Space Mono', monospace;
-      font-size: 0.72rem;
-      line-height: 1.65;
-      letter-spacing: 0.02em;
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      letter-spacing: 0;
     }
     .settings-log-content div { color: var(--muted); padding: 1px 0; }
     .settings-log-content div.error { color: #ff6666; }
@@ -1826,8 +1845,8 @@
       <div class="tb-control-group">
         <div class="profile-wrap" id="profileWrap">
           <button type="button" class="tb-seg-btn header-btn-profile" id="profileTrigger" aria-expanded="false" aria-haspopup="true" title="Switch account">
-            <img src="https://mc-heads.net/avatar/<%= (selectedUuid && accounts[selectedUuid]) ? encodeURIComponent(accounts[selectedUuid].displayName) : 'Steve' %>/64" alt="" class="profile-head-img" id="activeProfileImg">
-            <span class="profile-name" id="activeProfileName"><%= (selectedUuid && accounts[selectedUuid]) ? accounts[selectedUuid].displayName : 'Account' %></span>
+            <img src="" alt="" class="profile-head-img" id="activeProfileImg" data-uuid="<%= selectedUuid || '' %>" data-name="<%= (selectedUuid && accounts[selectedUuid]) ? accounts[selectedUuid].displayName : 'Steve' %>">
+            <span class="profile-name" id="activeProfileName" data-uuid="<%= selectedUuid || '' %>"><%= (selectedUuid && accounts[selectedUuid]) ? accounts[selectedUuid].displayName : 'Account' %></span>
             <span class="profile-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
           </button>
 
@@ -1839,8 +1858,8 @@
               <% } else { %>
                 <% accountKeys.forEach(function(uuid) { %>
                   <% const acc = accounts[uuid]; %>
-                  <div class="profile-item<%= uuid === selectedUuid ? ' active' : '' %>" data-name="<%= acc.displayName %>" data-head="<%= acc.displayName %>" data-uuid="<%= uuid %>">
-                    <img src="https://mc-heads.net/avatar/<%= encodeURIComponent(acc.displayName) %>/64" alt="Head" class="profile-head-img">
+                  <div class="profile-item<%= uuid === selectedUuid ? ' active' : '' %>" data-name="<%= acc.displayName %>" data-uuid="<%= uuid %>">
+                    <img src="" alt="Head" class="profile-head-img" data-uuid="<%= uuid %>" data-name="<%= acc.displayName %>">
                     <div class="profile-info">
                       <span class="profile-item-name"><%= acc.displayName %></span>
                       <span class="profile-item-type"><%= acc.type === 'microsoft' ? 'Microsoft' : 'Mojang' %></span>
@@ -2186,9 +2205,219 @@
     /* ── PLAYER SKIN VIEWER ── */
     let playerSkinViewer = null;
 
-    function getPlayerSkinUrl(username) {
+    function setupSkinSpinPhysics(viewer, canvas) {
+      const wrapper = viewer.playerWrapper;
+      const controls = viewer.controls;
+      controls.enabled = false;
+
+      let dragging = false;
+      let lastX = 0;
+      let lastT = 0;
+      let dragVelocity = 0;
+      let spinVelocity = 0;
+      let lastFrame = performance.now();
+
+      const rotateSpeed = 0.9;
+      const frictionPerFrame = 0.94;
+      const minSpin = 0.00003;
+      const maxReleaseSpeed = 0.01;
+
+      function pxVelocityToRadPerMs(pxPerMs) {
+        return pxPerMs * ((2 * Math.PI * rotateSpeed) / Math.max(canvas.clientHeight, 1));
+      }
+
+      function curveReleaseVelocity(radPerMs) {
+        const sign = Math.sign(radPerMs) || 1;
+        const abs = Math.abs(radPerMs);
+        return sign * maxReleaseSpeed * Math.tanh(abs / maxReleaseSpeed);
+      }
+
+      function spinFriction(radPerMs, dtMs) {
+        const speedRatio = Math.min(Math.abs(radPerMs) / maxReleaseSpeed, 1);
+        const frameFriction = frictionPerFrame - speedRatio * 0.08;
+        return Math.pow(frameFriction, dtMs / 16.667);
+      }
+
+      function applyDragDelta(dx) {
+        wrapper.rotation.y += (2 * Math.PI * rotateSpeed * dx) / Math.max(canvas.clientHeight, 1);
+      }
+
+      function onPointerDown(e) {
+        if (e.button !== 0) return;
+        dragging = true;
+        lastX = e.clientX;
+        lastT = performance.now();
+        dragVelocity = 0;
+        spinVelocity = 0;
+        canvas.setPointerCapture(e.pointerId);
+        canvas.style.cursor = 'grabbing';
+      }
+
+      function onPointerMove(e) {
+        if (!dragging) return;
+        const now = performance.now();
+        const dt = Math.max(now - lastT, 1);
+        const dx = e.clientX - lastX;
+        applyDragDelta(dx);
+        dragVelocity = dragVelocity * 0.4 + (dx / dt) * 0.6;
+        lastX = e.clientX;
+        lastT = now;
+      }
+
+      function onPointerUp(e) {
+        if (!dragging) return;
+        dragging = false;
+        spinVelocity = curveReleaseVelocity(pxVelocityToRadPerMs(dragVelocity));
+        try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+        canvas.style.cursor = 'grab';
+      }
+
+      canvas.addEventListener('pointerdown', onPointerDown);
+      canvas.addEventListener('pointermove', onPointerMove);
+      canvas.addEventListener('pointerup', onPointerUp);
+      canvas.addEventListener('pointercancel', onPointerUp);
+
+      (function spinLoop(now) {
+        const dtMs = Math.min(Math.max(now - lastFrame, 1), 50);
+        lastFrame = now;
+
+        if (!dragging && Math.abs(spinVelocity) > minSpin) {
+          wrapper.rotation.y += spinVelocity * dtMs;
+          spinVelocity *= spinFriction(spinVelocity, dtMs);
+        }
+
+        requestAnimationFrame(spinLoop);
+      })(performance.now());
+    }
+
+    const STEVE_SKIN_URL = 'https://mc-heads.net/skin/Steve';
+    let avatarCacheBust = Date.now();
+
+    function normalizeSkinUrl(url) {
+      return (url || '').replace(/^http:\/\//i, 'https://');
+    }
+
+    function getPlayerAvatarSources(uuid, username) {
       const name = (username || 'Steve').trim() || 'Steve';
-      return `https://mc-heads.net/skin/${encodeURIComponent(name)}`;
+      const id = (uuid || '').replace(/-/g, '');
+      const bust = avatarCacheBust;
+      const sources = [
+        `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64?cb=${bust}`,
+      ];
+      if (id) {
+        sources.push(`https://minotar.net/avatar/${id}/64?cb=${bust}`);
+        sources.push(`https://mc-heads.net/avatar/${uuid}/64?cb=${bust}`);
+        sources.push(`https://mc-heads.net/avatar/${id}/64?cb=${bust}`);
+      }
+      sources.push(`https://mc-heads.net/avatar/Steve/64?cb=${bust}`);
+      return sources;
+    }
+
+    function setProfileAvatarImg(imgEl, uuid, username, bust = false) {
+      if (!imgEl) return;
+      if (bust) avatarCacheBust = Date.now();
+      const sources = getPlayerAvatarSources(uuid, username);
+      let index = 0;
+
+      const tryNext = () => {
+        if (index >= sources.length) return;
+        imgEl.onerror = () => {
+          index += 1;
+          tryNext();
+        };
+        imgEl.onload = () => {
+          imgEl.onerror = null;
+        };
+        imgEl.src = sources[index];
+      };
+
+      tryNext();
+    }
+
+    function initProfileAvatarImages() {
+      document.querySelectorAll('.profile-head-img[data-name]').forEach((img) => {
+        setProfileAvatarImg(img, img.dataset.uuid || null, img.dataset.name);
+      });
+    }
+
+    async function fetchMojangSkinProfile(uuid) {
+      const id = (uuid || '').replace(/-/g, '');
+      if (!id) return null;
+
+      const res = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${id}?unsigned=false`);
+      if (!res.ok) return null;
+
+      const data = await res.json();
+      const textureProp = data.properties?.find((p) => p.name === 'textures');
+      if (!textureProp?.value) return null;
+
+      const payload = JSON.parse(atob(textureProp.value));
+      const skin = payload?.textures?.SKIN;
+      if (!skin?.url) return null;
+
+      return {
+        url: normalizeSkinUrl(skin.url),
+        model: skin.metadata?.model === 'slim' ? 'slim' : 'default',
+      };
+    }
+
+    function getPlayerSkinCandidates(uuid, username) {
+      const name = (username || 'Steve').trim() || 'Steve';
+      const id = (uuid || '').replace(/-/g, '');
+      const candidates = [];
+
+      if (id) candidates.push({ source: 'mojang', uuid: id });
+      candidates.push({ url: `https://mc-heads.net/skin/${encodeURIComponent(name)}`, model: 'auto-detect' });
+      if (id) {
+        candidates.push({ url: `https://minotar.net/skin/${id}`, model: 'auto-detect' });
+        candidates.push({ url: `https://mc-heads.net/skin/${uuid}`, model: 'auto-detect' });
+        candidates.push({ url: `https://mc-heads.net/skin/${id}`, model: 'auto-detect' });
+      }
+      candidates.push({ url: STEVE_SKIN_URL, model: 'default' });
+      return candidates;
+    }
+
+    async function resolvePlayerSkin(uuid, username) {
+      const candidates = getPlayerSkinCandidates(uuid, username);
+
+      for (const candidate of candidates) {
+        if (candidate.source === 'mojang') {
+          try {
+            const profile = await fetchMojangSkinProfile(candidate.uuid);
+            if (profile) return profile;
+          } catch (_) {}
+          continue;
+        }
+
+        return candidate;
+      }
+
+      return { url: STEVE_SKIN_URL, model: 'default' };
+    }
+
+    async function applyPlayerSkin(uuid, username) {
+      if (!playerSkinViewer) return;
+      const candidates = getPlayerSkinCandidates(uuid, username);
+
+      for (const candidate of candidates) {
+        try {
+          if (candidate.source === 'mojang') {
+            const profile = await fetchMojangSkinProfile(candidate.uuid);
+            if (!profile) continue;
+            await playerSkinViewer.loadSkin(profile.url, { model: profile.model });
+            return;
+          }
+
+          await playerSkinViewer.loadSkin(candidate.url, { model: candidate.model });
+          return;
+        } catch (_) {}
+      }
+
+      await playerSkinViewer.loadSkin(STEVE_SKIN_URL, { model: 'default' });
+    }
+
+    function updatePlayerSkin(uuid, username) {
+      applyPlayerSkin(uuid, username);
     }
 
     function getPlayerModelSize() {
@@ -2206,13 +2435,15 @@
 
       const activeNameEl = document.getElementById('activeProfileName');
       const initialName = activeNameEl ? activeNameEl.textContent.trim() : 'Steve';
+      const initialUuid = activeNameEl?.dataset.uuid || null;
       const { w, h } = getPlayerModelSize();
 
       playerSkinViewer = new skinview3d.SkinViewer({
         canvas,
         width: w,
         height: h,
-        skin: getPlayerSkinUrl(initialName === 'Account' || initialName === 'Select Account' ? 'Steve' : initialName),
+        skin: STEVE_SKIN_URL,
+        model: 'auto-detect',
         enableControls: true,
       });
 
@@ -2225,14 +2456,13 @@
       playerSkinViewer.animation.speed = 0.55;
 
       const controls = playerSkinViewer.controls;
-      controls.enableRotate = true;
       controls.enableZoom = false;
       controls.enablePan = false;
-      const polar = Math.PI / 2;
-      controls.minPolarAngle = polar;
-      controls.maxPolarAngle = polar;
-      controls.addEventListener('start', () => { canvas.style.cursor = 'grabbing'; });
-      controls.addEventListener('end', () => { canvas.style.cursor = 'grab'; });
+      setupSkinSpinPhysics(playerSkinViewer, canvas);
+
+      if (initialName !== 'Account' && initialName !== 'Select Account') {
+        updatePlayerSkin(initialUuid, initialName);
+      }
 
       window.addEventListener('resize', () => {
         if (!playerSkinViewer) return;
@@ -2242,17 +2472,9 @@
       });
     }
 
-    function updatePlayerSkin(username) {
-      if (!playerSkinViewer) return;
-      const name = (username || 'Steve').trim() || 'Steve';
-      playerSkinViewer.loadSkin(getPlayerSkinUrl(name)).catch(() => {
-        playerSkinViewer.loadSkin(getPlayerSkinUrl('Steve'));
-      });
-    }
-
     function renderProfileItem(uuid, acc, isSelected) {
-      return `<div class="profile-item${isSelected ? ' active' : ''}" data-name="${acc.displayName}" data-head="${acc.displayName}" data-uuid="${uuid}">
-        <img src="https://mc-heads.net/avatar/${encodeURIComponent(acc.displayName)}/64" alt="Head" class="profile-head-img">
+      return `<div class="profile-item${isSelected ? ' active' : ''}" data-name="${acc.displayName}" data-uuid="${uuid}">
+        <img src="" alt="Head" class="profile-head-img" data-uuid="${uuid}" data-name="${acc.displayName}">
         <div class="profile-info">
           <span class="profile-item-name">${acc.displayName}</span>
           <span class="profile-item-type">${acc.type === 'microsoft' ? 'Microsoft' : 'Mojang'}</span>
@@ -2342,14 +2564,17 @@
         document.querySelectorAll('.profile-item').forEach(o => o.classList.remove('active'));
         el.classList.add('active');
 
-        const headName = el.dataset.head;
         const username = el.dataset.name;
+        const uuid = el.dataset.uuid;
 
         document.getElementById('activeProfileName').textContent = username;
-        document.getElementById('activeProfileImg').src = `https://mc-heads.net/avatar/${headName}/64`;
-        updatePlayerSkin(username);
+        document.getElementById('activeProfileName').dataset.uuid = uuid || '';
+        const activeImg = document.getElementById('activeProfileImg');
+        activeImg.dataset.uuid = uuid || '';
+        activeImg.dataset.name = username;
+        setProfileAvatarImg(activeImg, uuid, username, true);
+        updatePlayerSkin(uuid, username);
 
-        const uuid = el.dataset.uuid;
         if (uuid) {
             ipcRenderer.invoke('setSelectedAccount', uuid);
         }
@@ -2421,8 +2646,12 @@
           if (keys.length === 0) {
             profileList.innerHTML = '<div class="profile-item"><span class="profile-info">No accounts</span></div>';
             document.getElementById('activeProfileName').textContent = 'Select Account';
-            document.getElementById('activeProfileImg').src = 'https://mc-heads.net/avatar/Steve/64';
-            updatePlayerSkin('Steve');
+            document.getElementById('activeProfileName').dataset.uuid = '';
+            const activeImg = document.getElementById('activeProfileImg');
+            activeImg.dataset.uuid = '';
+            activeImg.dataset.name = 'Steve';
+            setProfileAvatarImg(activeImg, null, 'Steve', true);
+            updatePlayerSkin(null, 'Steve');
             return;
           }
           
@@ -2432,10 +2661,15 @@
             const selected = accounts.database[accounts.selectedAccount];
             if (selected) {
               document.getElementById('activeProfileName').textContent = selected.displayName;
-              document.getElementById('activeProfileImg').src = `https://mc-heads.net/avatar/${encodeURIComponent(selected.displayName)}/64`;
-              updatePlayerSkin(selected.displayName);
+              document.getElementById('activeProfileName').dataset.uuid = accounts.selectedAccount;
+              const activeImg = document.getElementById('activeProfileImg');
+              activeImg.dataset.uuid = accounts.selectedAccount;
+              activeImg.dataset.name = selected.displayName;
+              setProfileAvatarImg(activeImg, accounts.selectedAccount, selected.displayName, true);
+              updatePlayerSkin(accounts.selectedAccount, selected.displayName);
             }
           }
+          initProfileAvatarImages();
           initProfileHandlers();
         } catch (err) {
           console.error('Error refreshing profile list:', err);
@@ -3118,6 +3352,7 @@ function openVersionPopup() {
     }
 
     initPlayerModel();
+    initProfileAvatarImages();
   </script>
 </body>
 
