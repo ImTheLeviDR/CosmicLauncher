@@ -24,11 +24,13 @@ function compileTemplate() {
     const selectedUuid = ConfigManager.getSelectedUuid();
     const selectedVersion = ConfigManager.getSelectedVersion() || '1.20.4';
     const loader = ConfigManager.getSelectedLoader() || 'vanilla';
+    const launcherAction = ConfigManager.getLauncherAction();
+    const allowMultipleInstances = ConfigManager.getAllowMultipleInstances();
     let installedMods = {};
     try { installedMods = ModManager.getInstalledMods() || {}; } catch(e) { console.error('Failed to load mods for template:', e); }
 
     const assetRoot = `${pathToFileURL(__dirname).href}/`;
-    const html = ejs.render(template, { accounts, selectedUuid, selectedVersion, loader, installedMods, assetRoot }, { filename: EJS_FILE });
+    const html = ejs.render(template, { accounts, selectedUuid, selectedVersion, loader, launcherAction, allowMultipleInstances, installedMods, assetRoot }, { filename: EJS_FILE });
 
     const compiledPath = getCompiledHtmlPath();
     fs.mkdirSync(path.dirname(compiledPath), { recursive: true });
@@ -282,6 +284,38 @@ ipcMain.handle('saveSelectedLoader', (event, loader) => {
     return { success: true }
 })
 
+ipcMain.handle('getLaunchOptions', () => {
+    return {
+        launcherAction: ConfigManager.getLauncherAction(),
+        allowMultipleInstances: ConfigManager.getAllowMultipleInstances()
+    }
+})
+
+ipcMain.handle('setLauncherAction', (event, action) => {
+    ConfigManager.setLauncherAction(action)
+    ConfigManager.save()
+    return { success: true, launcherAction: ConfigManager.getLauncherAction() }
+})
+
+ipcMain.handle('setAllowMultipleInstances', (event, allowed) => {
+    ConfigManager.setAllowMultipleInstances(allowed)
+    ConfigManager.save()
+    return { success: true, allowMultipleInstances: ConfigManager.getAllowMultipleInstances() }
+})
+
+ipcMain.handle('isGameRunning', () => {
+    return LaunchManager.isGameRunning()
+})
+
+ipcMain.handle('stopGame', async () => {
+    try {
+        const stopped = LaunchManager.stopGame()
+        return { success: stopped }
+    } catch (error) {
+        return { success: false, error: error.message || 'Failed to stop game' }
+    }
+})
+
 ipcMain.handle('removeAccount', async (event, uuid) => {
     try {
         ConfigManager.removeAuthAccount(uuid)
@@ -294,6 +328,10 @@ ipcMain.handle('removeAccount', async (event, uuid) => {
 
 ipcMain.handle('launchGame', async (event, versionId, loader) => {
     try {
+        if (!ConfigManager.getAllowMultipleInstances() && LaunchManager.isGameRunning()) {
+            return { success: false, error: 'Game is already running.' }
+        }
+
         const isValid = await AuthManager.validateSelected()
         if (!isValid) {
             return { success: false, error: 'Account validation failed. Please re-login.' }
@@ -318,6 +356,12 @@ ipcMain.handle('launchGame', async (event, versionId, loader) => {
             }
         })
 
+        LaunchManager.on('gameExit', () => {
+            if (mainWindowRef) {
+                mainWindowRef.webContents.send('gameExit')
+            }
+        })
+
         if (selectedLoader === 'fabric') {
             await LaunchManager.launchFabric(versionId, account)
         } else {
@@ -328,8 +372,14 @@ ipcMain.handle('launchGame', async (event, versionId, loader) => {
         ConfigManager.save()
         
         if (mainWindowRef) {
-            mainWindowRef.webContents.send('launchLog', '=== Game launched! Minimize launcher to tray ===')
-            mainWindowRef.hide()
+            mainWindowRef.webContents.send('gameStarted')
+            mainWindowRef.webContents.send('launchLog', '=== Game launched! ===')
+            const launcherAction = ConfigManager.getLauncherAction()
+            if (launcherAction === 'hide') {
+                mainWindowRef.hide()
+            } else if (launcherAction === 'exit') {
+                app.quit()
+            }
         }
         
         return { success: true }

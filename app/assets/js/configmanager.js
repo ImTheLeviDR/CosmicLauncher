@@ -18,7 +18,9 @@ const DEFAULT_CONFIG = {
     selectedAccount: null,
     authenticationDatabase: {},
     selectedVersion: null,
-    selectedLoader: 'vanilla'
+    selectedLoader: 'vanilla',
+    launcherAction: 'hide',
+    allowMultipleInstances: false
 }
 
 let config = null
@@ -161,6 +163,25 @@ exports.getSelectedLoader = function(){
 exports.setSelectedLoader = function(loader){
     config.selectedLoader = loader
     exports.save()
+}
+
+exports.getLauncherAction = function(){
+    const action = config.launcherAction || 'hide'
+    return ['hide', 'exit', 'nothing'].includes(action) ? action : 'hide'
+}
+
+exports.setLauncherAction = function(action){
+    if (['hide', 'exit', 'nothing'].includes(action)) {
+        config.launcherAction = action
+    }
+}
+
+exports.getAllowMultipleInstances = function(){
+    return config.allowMultipleInstances === true
+}
+
+exports.setAllowMultipleInstances = function(allowed){
+    config.allowMultipleInstances = allowed === true
 }
 
 exports.cacheVersionManifest = function(manifest) {

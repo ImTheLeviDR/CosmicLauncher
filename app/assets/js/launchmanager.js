@@ -15,10 +15,40 @@ class LaunchManager {
     this.javaPath = "java";
     this.proc = null;
     this._exitCode = null;
+    this._gameRunning = false;
     this.on("progress", () => {});
     this.on("launch", () => {});
     this.on("log", () => {});
     this.on("gameLog", () => {});
+    this.on("gameExit", () => {});
+  }
+
+  isGameRunning() {
+    return this._gameRunning === true;
+  }
+
+  stopGame() {
+    if (!this._gameRunning || !this.proc) {
+      this._gameRunning = false;
+      this.proc = null;
+      return false;
+    }
+
+    const pid = this.proc.pid;
+    try {
+      if (process.platform === "win32") {
+        spawn("taskkill", ["/PID", String(pid), "/T", "/F"], { stdio: "ignore" });
+      } else {
+        this.proc.kill("SIGTERM");
+      }
+    } catch (err) {
+      this.log(`Failed to stop game process: ${err.message}`);
+    }
+
+    this._gameRunning = false;
+    this.proc = null;
+    this.emit("gameExit", { code: null, signal: "SIGTERM" });
+    return true;
   }
 
   getMinecraftDirectory() {
@@ -631,6 +661,7 @@ class LaunchManager {
       stdio: ["ignore", "pipe", "pipe"],
     });
 
+    this._gameRunning = true;
     this._attachGameLogs();
 
     this.proc.unref();
@@ -859,6 +890,7 @@ class LaunchManager {
       stdio: ["ignore", "pipe", "pipe"],
     });
 
+    this._gameRunning = true;
     this._attachGameLogs();
 
     this.proc.unref();
@@ -1308,11 +1340,17 @@ class LaunchManager {
     }
 
     this.proc.on("exit", (code, signal) => {
+      this._gameRunning = false;
+      this.proc = null;
       this.emit("gameLog", `=== Game exited (code: ${code}, signal: ${signal}) ===`);
+      this.emit("gameExit", { code, signal });
     });
 
     this.proc.on("error", (err) => {
+      this._gameRunning = false;
+      this.proc = null;
       this.emit("gameLog", `=== Game process error: ${err.message} ===`);
+      this.emit("gameExit", { code: null, signal: "error" });
     });
   }
 
@@ -1325,6 +1363,8 @@ class LaunchManager {
       this._logCallback = callback;
     } else if (event === "gameLog") {
       this._gameLogCallback = callback;
+    } else if (event === "gameExit") {
+      this._gameExitCallback = callback;
     }
   }
 
@@ -1337,6 +1377,8 @@ class LaunchManager {
       this._logCallback(data);
     } else if (event === "gameLog" && this._gameLogCallback) {
       this._gameLogCallback(data);
+    } else if (event === "gameExit" && this._gameExitCallback) {
+      this._gameExitCallback(data);
     }
   }
 }

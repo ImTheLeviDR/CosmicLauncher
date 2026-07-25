@@ -857,12 +857,30 @@
     }
 
     #playBtnIcon {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       vertical-align: middle;
+    }
+
+    #playBtnIcon svg {
+      width: 14px;
+      height: 14px;
+      display: block;
     }
 
     @keyframes btn-spin {
       to { transform: rotate(360deg); }
+    }
+
+    .play-btn.stop-mode {
+      background: #b83232;
+      box-shadow: 0 4px 24px rgba(184, 50, 50, 0.35), 0 1px 0 rgba(255, 255, 255, 0.12) inset;
+    }
+
+    .play-btn.stop-mode .play-btn-version,
+    .play-btn.launching .play-btn-version {
+      display: none;
     }
 
     .play-btn-main {
@@ -948,6 +966,16 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 32px rgba(232, 98, 42, 0.5), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
       background: #f07040;
+    }
+
+    .play-btn.stop-mode:not(:disabled):hover {
+      background: #cf3a3a;
+      box-shadow: 0 8px 32px rgba(184, 50, 50, 0.5), 0 1px 0 rgba(255, 255, 255, 0.15) inset;
+    }
+
+    .play-btn.stop-mode:not(:disabled):active {
+      background: #b83232;
+      box-shadow: 0 4px 20px rgba(184, 50, 50, 0.4), 0 1px 0 rgba(255, 255, 255, 0.12) inset;
     }
 
     .play-btn:active {
@@ -1148,8 +1176,12 @@
       background: rgba(255, 255, 255, 0.05);
     }
 
+    .loader-wrap.open {
+      z-index: 51;
+    }
+
     .loader-wrap.open .loader-trigger {
-      background: rgba(255, 255, 255, 0.08);
+      background: #12121c;
       border-color: rgba(255, 255, 255, 0.12);
     }
 
@@ -1209,18 +1241,18 @@
       top: 100%;
       left: 0;
       right: 0;
-      background: rgba(4, 4, 13, 0.88);
-      border: 1px solid var(--border);
+      z-index: 52;
+      background: #12121c;
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-top: none;
       border-radius: 0;
       padding: 0;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75);
       opacity: 0;
       visibility: hidden;
       transform: translateY(-4px);
       transform-origin: top center;
       transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
-      backdrop-filter: blur(16px);
     }
 
     .loader-wrap.open .loader-menu {
@@ -1233,6 +1265,7 @@
       display: flex;
       flex-direction: column;
       gap: 0;
+      background: #12121c;
     }
 
     .loader-item {
@@ -1244,10 +1277,10 @@
       cursor: pointer;
       transition: background 0.1s ease;
       border: none;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       position: relative;
       width: 100%;
-      background: transparent;
+      background: #12121c;
       text-align: left;
     }
 
@@ -1256,11 +1289,11 @@
     }
 
     .loader-item:hover {
-      background: rgba(255, 255, 255, 0.05);
+      background: #1a1a28;
     }
 
     .loader-item.active {
-      background: rgba(255, 255, 255, 0.04);
+      background: #1e1a24;
       box-shadow: inset 2px 0 0 var(--accent);
     }
 
@@ -1647,6 +1680,11 @@
 
     .settings-section { margin-bottom: 36px; }
 
+    .settings-section:has(.loader-wrap.open) {
+      position: relative;
+      z-index: 50;
+    }
+
     .settings-section-title {
       font-family: 'Syne', sans-serif;
       font-size: 1.0625rem;
@@ -1662,9 +1700,52 @@
       font-size: 0.8125rem;
       font-weight: 400;
       color: var(--muted);
-      margin-top: 0;
-      margin-bottom: 20px;
-      line-height: 1.5;
+      margin-bottom: 16px;
+      line-height: 1.55;
+    }
+
+    .launch-option-block {
+      margin-bottom: 18px;
+    }
+
+    .launch-option-block:last-child {
+      margin-bottom: 0;
+    }
+
+    .launch-option-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: 0.01em;
+    }
+
+    .launch-option-desc {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .launch-option-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      margin-top: 6px;
+    }
+
+    .launch-option-copy {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .launch-option-row .mod-toggle-wrap {
+      flex-shrink: 0;
     }
 
     .settings-log-header {
@@ -1700,6 +1781,190 @@
       background: rgba(255, 255, 255, 0.02);
       flex-shrink: 0;
       flex-wrap: wrap;
+    }
+
+    .log-toolbar-primary {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+
+    .log-instance-wrap {
+      position: relative;
+      z-index: 20;
+    }
+
+    .log-instance-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+      max-width: 180px;
+    }
+
+    .log-instance-trigger:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .log-instance-trigger:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+
+    .log-instance-wrap.open .log-instance-trigger:not(:disabled) {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .log-instance-trigger-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .log-instance-trigger-chevron {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      flex-shrink: 0;
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+
+    .log-instance-trigger-chevron svg {
+      width: 11px;
+      height: 11px;
+      display: block;
+    }
+
+    .log-instance-wrap.open .log-instance-trigger-chevron {
+      transform: rotate(180deg);
+      color: var(--accent2);
+    }
+
+    .log-instance-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      min-width: 240px;
+      max-width: 320px;
+      max-height: 240px;
+      overflow-y: auto;
+      background: rgba(4, 4, 13, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-4px);
+      transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
+      backdrop-filter: blur(16px);
+    }
+
+    .log-instance-wrap.open .log-instance-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .log-instance-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 8px 10px;
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.12s ease;
+    }
+
+    .log-instance-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .log-instance-item.active {
+      background: rgba(232, 98, 42, 0.12);
+    }
+
+    .log-instance-item-status {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: rgba(107, 104, 96, 0.8);
+    }
+
+    .log-instance-item-status.running {
+      background: #66dd66;
+      box-shadow: 0 0 6px rgba(102, 221, 102, 0.45);
+    }
+
+    .log-instance-item-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+      gap: 2px;
+    }
+
+    .log-instance-item-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .log-instance-item-meta {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .log-instance-item-check {
+      display: none;
+      color: var(--accent2);
+      flex-shrink: 0;
+    }
+
+    .log-instance-item-check svg {
+      width: 13px;
+      height: 13px;
+      display: block;
+    }
+
+    .log-instance-item.active .log-instance-item-check {
+      display: flex;
+    }
+
+    .log-instance-content {
+      display: none;
+    }
+
+    .log-instance-content.active {
+      display: block;
     }
 
     .log-filter-tabs {
@@ -1999,19 +2264,40 @@
     .mods-view { display: none; }
     .mods-view.active { display: block; animation: fadeIn 0.3s ease; }
 
+    .mod-search-sentinel {
+      height: 1px;
+      width: 100%;
+      pointer-events: none;
+    }
+
     .mod-search-panel {
       margin-bottom: 28px;
       position: sticky;
       top: -40px;
       z-index: 6;
-      padding: 18px 18px 16px;
-      background: rgba(4, 4, 13, 0.92);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(12px);
+      padding: 0 0 16px;
+      background: transparent;
+      border: none;
+      transition: padding 0.2s ease, background 0.2s ease;
+    }
+
+    .mod-search-panel.is-stuck {
+      top: -40px;
+      margin-left: -48px;
+      margin-right: -48px;
+      padding: 14px 48px 14px;
+      margin-bottom: 16px;
+      background: #04040d;
+    }
+
+    .mod-search-panel.is-stuck .mod-search-heading,
+    .mod-search-panel.is-stuck .mod-search-meta {
+      display: none;
     }
 
     .mod-search-heading {
       margin-bottom: 14px;
+      transition: opacity 0.2s ease;
     }
 
     .mod-search-heading .settings-section-title {
@@ -2189,8 +2475,6 @@
       justify-content: space-between;
       gap: 12px;
       margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .mod-search-hint {
@@ -2676,6 +2960,68 @@
             </div>
 
             <div class="settings-section">
+              <div class="settings-section-title">Launch Behavior</div>
+              <div class="settings-section-description">Control what happens after Minecraft starts.</div>
+
+              <div class="launch-option-block">
+                <div class="launch-option-label">Launcher action</div>
+                <div class="loader-wrap" id="launcherActionWrap">
+                  <button type="button" class="loader-trigger" id="launcherActionTrigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Launcher action">
+                    <div class="loader-trigger-info">
+                      <span class="loader-trigger-name" id="launcherActionTriggerName">Do nothing</span>
+                      <span class="loader-trigger-type" id="launcherActionTriggerType">Keep open</span>
+                    </div>
+                    <span class="loader-trigger-chevron" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </span>
+                  </button>
+                  <div class="loader-menu" id="launcherActionMenu" role="listbox" aria-label="Launcher action options">
+                    <div class="loader-list">
+                      <button type="button" class="loader-item" data-action="hide" role="option" aria-selected="false">
+                        <div class="loader-item-info">
+                          <span class="loader-item-name">Hide launcher</span>
+                          <span class="loader-item-type">Default</span>
+                        </div>
+                        <div class="loader-item-actions">
+                          <span class="loader-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                        </div>
+                      </button>
+                      <button type="button" class="loader-item" data-action="exit" role="option" aria-selected="false">
+                        <div class="loader-item-info">
+                          <span class="loader-item-name">Exit launcher</span>
+                          <span class="loader-item-type">Quit app</span>
+                        </div>
+                        <div class="loader-item-actions">
+                          <span class="loader-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                        </div>
+                      </button>
+                      <button type="button" class="loader-item active" data-action="nothing" role="option" aria-selected="true">
+                        <div class="loader-item-info">
+                          <span class="loader-item-name">Do nothing</span>
+                          <span class="loader-item-type">Keep open</span>
+                        </div>
+                        <div class="loader-item-actions">
+                          <span class="loader-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="launch-option-row">
+                <div class="launch-option-copy">
+                  <div class="launch-option-label">Allow multiple instances</div>
+                  <div class="launch-option-desc">Run more than one Minecraft session at the same time.</div>
+                </div>
+                <div class="mod-toggle-wrap " id="multipleInstancesToggle" data-enabled="false">
+                  <div class="mod-switch"></div>
+                  <span>Off</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-section">
               <div class="settings-section-title">Local Files</div>
               <div class="settings-section-description">Manage local mod files directly in your file explorer.</div>
               <button class="open-mods-btn" onclick="openModsFolder()">
@@ -2953,7 +3299,8 @@
 
             <!-- Browse View -->
             <div id="modsViewBrowse" class="mods-view">
-              <div class="mod-search-panel">
+              <div class="mod-search-sentinel" aria-hidden="true"></div>
+              <div class="mod-search-panel" id="modSearchPanel">
                 <div class="mod-search-heading">
                   <div class="settings-section-title">Browse Modrinth</div>
                   <div class="settings-section-description">Find and install mods for your selected Minecraft version.</div>
@@ -2992,10 +3339,23 @@
               </div>
               <div class="log-panel">
                 <div class="log-toolbar">
-                  <div class="log-filter-tabs">
-                    <button type="button" class="log-filter active" data-filter="all" onclick="setLogFilter('all')">All</button>
-                    <button type="button" class="log-filter" data-filter="launcher" onclick="setLogFilter('launcher')">Launcher</button>
-                    <button type="button" class="log-filter" data-filter="game" onclick="setLogFilter('game')">Game</button>
+                  <div class="log-toolbar-primary">
+                    <div class="log-instance-wrap" id="logInstanceWrap">
+                      <button type="button" class="log-instance-trigger" id="logInstanceTrigger" aria-haspopup="listbox" aria-expanded="false" disabled aria-label="Log session">
+                        <span class="log-instance-trigger-label" id="logInstanceTriggerLabel">No sessions</span>
+                        <span class="log-instance-trigger-chevron" aria-hidden="true">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </span>
+                      </button>
+                      <div class="log-instance-menu" id="logInstanceMenu" role="listbox" aria-label="Log sessions">
+                        <div class="log-instance-list" id="logInstanceList"></div>
+                      </div>
+                    </div>
+                    <div class="log-filter-tabs">
+                      <button type="button" class="log-filter active" data-filter="all" onclick="setLogFilter('all')">All</button>
+                      <button type="button" class="log-filter" data-filter="launcher" onclick="setLogFilter('launcher')">Launcher</button>
+                      <button type="button" class="log-filter" data-filter="game" onclick="setLogFilter('game')">Game</button>
+                    </div>
                   </div>
                   <div class="log-toolbar-actions">
                     <label class="log-autoscroll">
@@ -3018,7 +3378,7 @@
                     <span class="log-empty-title">No logs yet</span>
                     <span class="log-empty-hint">Launch the game or perform actions to see output here.</span>
                   </div>
-                  <div id="settingsLogContent"></div>
+                  <div id="logInstancesContainer"></div>
                 </div>
                 <div class="log-statusbar">
                   <span id="logLineCount">0 entries</span>
@@ -3832,6 +4192,7 @@
 
       trigger.addEventListener('click', (e) => {
         e.stopPropagation();
+        closeLauncherActionMenu();
         const isOpen = wrap.classList.toggle('open');
         trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       });
@@ -3860,8 +4221,194 @@
       }
     }
 
+/* ── LAUNCH OPTIONS ── */
+    let launcherAction = 'nothing';
+    let allowMultipleInstances = false;
+    let gameRunning = false;
+
+    const launcherActionOptions = {
+      hide: { label: 'Hide launcher', type: 'Default' },
+      exit: { label: 'Exit launcher', type: 'Quit app' },
+      nothing: { label: 'Do nothing', type: 'Keep open' },
+    };
+
+    const PLAY_ICON_LAUNCH = '&#x25B6;';
+    const PLAY_ICON_STOP = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="2" fill="currentColor"></rect></svg>';
+
+    function setLauncherAction(value) {
+      if (!launcherActionOptions[value]) return;
+      launcherAction = value;
+      updateLauncherActionUI();
+      closeLauncherActionMenu();
+      ipcRenderer.invoke('setLauncherAction', launcherAction);
+    }
+
+    function updateLauncherActionUI() {
+      const triggerName = document.getElementById('launcherActionTriggerName');
+      const triggerType = document.getElementById('launcherActionTriggerType');
+      const option = launcherActionOptions[launcherAction] || launcherActionOptions.hide;
+
+      if (triggerName) triggerName.textContent = option.label;
+      if (triggerType) triggerType.textContent = option.type;
+
+      document.querySelectorAll('.loader-item[data-action]').forEach(el => {
+        const isActive = el.dataset.action === launcherAction;
+        el.classList.toggle('active', isActive);
+        el.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+    }
+
+    function closeLauncherActionMenu() {
+      const wrap = document.getElementById('launcherActionWrap');
+      const trigger = document.getElementById('launcherActionTrigger');
+      if (!wrap || !trigger) return;
+      wrap.classList.remove('open');
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+
+    function initLauncherActionSwitcher() {
+      const wrap = document.getElementById('launcherActionWrap');
+      const trigger = document.getElementById('launcherActionTrigger');
+      const menu = document.getElementById('launcherActionMenu');
+      if (!wrap || !trigger || !menu) return;
+
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeLoaderMenu();
+        const isOpen = wrap.classList.toggle('open');
+        trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+
+      menu.querySelectorAll('.loader-item[data-action]').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setLauncherAction(item.dataset.action);
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!wrap.contains(e.target)) closeLauncherActionMenu();
+      });
+    }
+
+    function updateMultipleInstancesUI() {
+      const toggle = document.getElementById('multipleInstancesToggle');
+      if (!toggle) return;
+      toggle.dataset.enabled = allowMultipleInstances ? 'true' : 'false';
+      toggle.classList.toggle('on', allowMultipleInstances);
+      const label = toggle.querySelector('span');
+      if (label) label.textContent = allowMultipleInstances ? 'On' : 'Off';
+    }
+
+    function initMultipleInstancesToggle() {
+      const toggle = document.getElementById('multipleInstancesToggle');
+      if (!toggle) return;
+      toggle.onclick = async () => {
+        allowMultipleInstances = toggle.dataset.enabled !== 'true';
+        updateMultipleInstancesUI();
+        updatePlayButton();
+        await ipcRenderer.invoke('setAllowMultipleInstances', allowMultipleInstances);
+      };
+    }
+
+    function keepLauncherOpenOnLaunch() {
+      return launcherAction === 'nothing';
+    }
+
+    function updatePlayButton() {
+      const btn = document.getElementById('playBtn');
+      const status = document.getElementById('playBtnStatus');
+      const icon = document.getElementById('playBtnIcon');
+      const dots = document.getElementById('playBtnDots');
+      if (!btn || !status || !icon) return;
+
+      const isStopping = btn.classList.contains('is-stopping');
+      const isLaunching = btn.classList.contains('launching');
+      const isStop = (gameRunning && !allowMultipleInstances) || isStopping;
+      const showVersionPicker = !isStop && !isLaunching;
+
+      btn.classList.toggle('stop-mode', isStop);
+
+      if (!showVersionPicker && popupVisible) closeVersionPopup();
+
+      if (dots) {
+        dots.style.display = showVersionPicker ? '' : 'none';
+        dots.setAttribute('aria-hidden', showVersionPicker ? 'false' : 'true');
+      }
+
+      if (btn.disabled) return;
+
+      icon.innerHTML = isStop ? PLAY_ICON_STOP : PLAY_ICON_LAUNCH;
+      status.textContent = isStop ? 'Stop' : 'Launch';
+    }
+
+    function finishLaunchUI({ hideLayout = true } = {}) {
+      const layout = document.getElementById('layout');
+      const overlay = document.getElementById('launchOverlay');
+      const btn = document.getElementById('playBtn');
+
+      if (hideLayout) {
+        layout?.classList.remove('launching');
+        overlay?.classList.remove('fading');
+        if (window.resetStars) window.resetStars();
+      }
+
+      btn?.classList.remove('launching');
+      if (btn) btn.disabled = false;
+      updatePlayButton();
+    }
+
+    async function stopRunningGame() {
+      const btn = document.getElementById('playBtn');
+      const status = document.getElementById('playBtnStatus');
+      const icon = document.getElementById('playBtnIcon');
+      if (!btn) return;
+
+      btn.classList.add('is-stopping');
+      btn.disabled = true;
+      updatePlayButton();
+      status.textContent = 'Stopping...';
+      icon.innerHTML = '<span class="btn-spinner"></span>';
+
+      try {
+        const result = await ipcRenderer.invoke('stopGame');
+        if (result.success) {
+          gameRunning = false;
+          markActiveLaunchExited();
+        } else {
+          showModal('Stop Failed', result.error || 'Could not stop the game.', true);
+        }
+      } catch (err) {
+        showModal('Stop Failed', err.message, true);
+      } finally {
+        btn.classList.remove('is-stopping');
+        btn.disabled = false;
+        updatePlayButton();
+      }
+    }
+
+    async function loadLaunchOptions() {
+      try {
+        const opts = await ipcRenderer.invoke('getLaunchOptions');
+        if (opts) {
+          if (launcherActionOptions[opts.launcherAction]) launcherAction = opts.launcherAction;
+          allowMultipleInstances = !!opts.allowMultipleInstances;
+        }
+        updateLauncherActionUI();
+        updateMultipleInstancesUI();
+        gameRunning = await ipcRenderer.invoke('isGameRunning');
+        updatePlayButton();
+      } catch (e) {
+        console.log('Could not load launch options:', e);
+      }
+    }
+
 /* ── SETTINGS PANEL ── */
     let activeLogFilter = 'all';
+    let logInstances = [];
+    let logInstanceCounter = 0;
+    let activeLogInstanceId = null;
+    let activeLaunchInstanceId = null;
     let modsSubTabsAnimated = false;
     let modsInstalledAnimated = false;
     let modsBrowseAnimated = false;
@@ -3922,6 +4469,8 @@
 
     function closeSettings() {
       closeLoaderMenu();
+      closeLauncherActionMenu();
+      closeLogInstanceMenu();
       document.getElementById('settingsOverlay').classList.remove('show');
     }
 
@@ -3950,6 +4499,8 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeLoaderMenu();
+        closeLauncherActionMenu();
+        closeLogInstanceMenu();
         const overlay = document.getElementById('settingsOverlay');
         if (overlay && overlay.classList.contains('show')) {
           closeSettings();
@@ -3964,6 +4515,7 @@
       if (view === 'installed') {
         document.getElementById('modsTabInstalledBtn').classList.add('active');
         document.getElementById('modsViewInstalled').classList.add('active');
+        document.getElementById('modSearchPanel')?.classList.remove('is-stuck');
         refreshInstalledMods().then(() => animateModsInstalledView());
       } else {
         document.getElementById('modsTabBrowseBtn').classList.add('active');
@@ -4058,6 +4610,27 @@
       }
 
       updateModSearchClear();
+      initModSearchSticky();
+    }
+
+    function initModSearchSticky() {
+      const sentinel = document.querySelector('.mod-search-sentinel');
+      const panel = document.getElementById('modSearchPanel');
+      const scrollRoot = document.querySelector('.settings-body');
+      if (!sentinel || !panel || !scrollRoot) return;
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          const browseView = document.getElementById('modsViewBrowse');
+          if (!browseView?.classList.contains('active')) {
+            panel.classList.remove('is-stuck');
+            return;
+          }
+          panel.classList.toggle('is-stuck', !entry.isIntersecting);
+        },
+        { root: scrollRoot, threshold: 0 }
+      );
+      observer.observe(sentinel);
     }
 
     async function searchMods() {
@@ -4304,6 +4877,8 @@
     }
 
 function openVersionPopup() {
+      const btn = document.getElementById('playBtn');
+      if (btn?.classList.contains('launching') || btn?.classList.contains('stop-mode')) return;
       popupVisible = true;
       document.getElementById('versionPopup').classList.add('show');
     }
@@ -4439,7 +5014,11 @@ function openVersionPopup() {
     loadVersions();
     loadTickSound();
     loadLoaderPreference();
+    loadLaunchOptions();
     initLoaderSwitcher();
+    initLauncherActionSwitcher();
+    initMultipleInstancesToggle();
+    initLogInstanceSwitcher();
     initModSearch();
     refreshInstalledModIds();
     initModIconImages();
@@ -4456,6 +5035,8 @@ function openVersionPopup() {
     /* ── WIRE UP BUTTONS ── */
     document.getElementById('playBtnDots').addEventListener('click', function (e) {
       e.stopPropagation();
+      const btn = document.getElementById('playBtn');
+      if (btn?.classList.contains('stop-mode') || btn?.classList.contains('launching')) return;
       popupVisible ? closeVersionPopup() : openVersionPopup();
     });
 
@@ -4471,6 +5052,11 @@ function openVersionPopup() {
       const icon = document.getElementById('playBtnIcon');
       const dots = document.getElementById('playBtnDots');
       if (btn.disabled) return;
+
+      if (btn.classList.contains('stop-mode')) {
+        await stopRunningGame();
+        return;
+      }
 
       const modsCheck = await ipcRenderer.invoke('mods:list');
       if (modsCheck.success) {
@@ -4495,18 +5081,19 @@ function openVersionPopup() {
 
       const rect = btn.getBoundingClientRect();
       window.spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      const keepOpen = keepLauncherOpenOnLaunch();
+      const layout = document.getElementById('layout');
+      const overlay = document.getElementById('launchOverlay');
+
       btn.classList.remove('launching');
       void btn.offsetWidth;
       btn.classList.add('launching');
       
-      // Change icon to spinner and set initial text
       icon.innerHTML = '<span class="btn-spinner"></span>';
-      status.textContent = 'Preparing...';
-      
-      dots.style.display = 'none';
+      status.textContent = 'Launching';
       btn.disabled = true;
+      updatePlayButton();
 
-      // Play launch sound
       const launchSound = document.getElementById('launchSound');
       if (launchSound) {
         launchSound.currentTime = 0;
@@ -4514,56 +5101,175 @@ function openVersionPopup() {
         launchSound.play().catch(() => {});
       }
 
-      // Trigger fade animation
-      const layout = document.getElementById('layout');
-      const overlay = document.getElementById('launchOverlay');
-      layout.classList.add('launching');
-      overlay.classList.add('fading');
-
-      // Trigger star warp effect
-      if (window.triggerStarExplosion) {
-        window.triggerStarExplosion();
+      if (!keepOpen) {
+        layout.classList.add('launching');
+        overlay.classList.add('fading');
+        if (window.triggerStarExplosion) {
+          window.triggerStarExplosion();
+        }
+        await new Promise(resolve => setTimeout(resolve, 1500));
       }
 
-      // Wait for fade animation before actually launching
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
       try {
+        startNewLogInstance(selectedVersion, selectedLoader);
         const result = await ipcRenderer.invoke('launchGame', selectedVersion, selectedLoader);
         if (result.success) {
-          status.textContent = 'Launching...';
           addLog('=== Launch successful! Game should be running ===');
-          await new Promise(r => setTimeout(r, 500));
-          layout.classList.remove('launching');
-          overlay.classList.remove('fading');
-          btn.classList.remove('launching');
-          icon.innerHTML = '&#x25B6;';
-          status.textContent = 'Launch';
-          dots.style.display = '';
-          btn.disabled = false;
-          if (window.resetStars) window.resetStars();
+          gameRunning = true;
+          if (!keepOpen) {
+            await new Promise(r => setTimeout(r, 500));
+          }
+          finishLaunchUI({ hideLayout: !keepOpen });
         } else {
-          // Revert animation on failure
-          layout.classList.remove('launching');
-          overlay.classList.remove('fading');
-          btn.disabled = false;
-          btn.classList.remove('launching');
-          icon.innerHTML = '&#x25B6;';
-          status.textContent = 'Launch';
-          dots.style.display = '';
+          addLog('=== Launch failed: ' + (result.error || 'Failed to launch the game') + ' ===');
+          markActiveLaunchExited();
+          finishLaunchUI({ hideLayout: !keepOpen });
           showModal('Launch Failed', result.error || 'Failed to launch the game', true);
         }
       } catch (err) {
-        // Revert animation on error
-        layout.classList.remove('launching');
-        overlay.classList.remove('fading');
-        btn.disabled = false;
-        btn.classList.remove('launching');
-        icon.innerHTML = '&#x25B6;';
-        status.textContent = 'Launch';
-        dots.style.display = '';
+        addLog('=== Launch failed: ' + err.message + ' ===');
+        markActiveLaunchExited();
+        finishLaunchUI({ hideLayout: !keepOpen });
         showModal('Error', 'Failed to launch: ' + err.message, true);
       }
+    }
+
+    function formatLogInstanceTime(date) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    function getLogInstanceById(id) {
+      return logInstances.find(i => i.id === id) || null;
+    }
+
+    function getActiveLogContent() {
+      const instance = getLogInstanceById(activeLogInstanceId);
+      return instance ? instance.contentEl : null;
+    }
+
+    function getLaunchLogContent() {
+      const instance = getLogInstanceById(activeLaunchInstanceId);
+      return instance ? instance.contentEl : null;
+    }
+
+    function closeLogInstanceMenu() {
+      const wrap = document.getElementById('logInstanceWrap');
+      const trigger = document.getElementById('logInstanceTrigger');
+      if (!wrap || !trigger) return;
+      wrap.classList.remove('open');
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+
+    function updateLogInstanceSwitcher() {
+      const trigger = document.getElementById('logInstanceTrigger');
+      const triggerLabel = document.getElementById('logInstanceTriggerLabel');
+      const list = document.getElementById('logInstanceList');
+      if (!trigger || !triggerLabel || !list) return;
+
+      if (logInstances.length === 0) {
+        trigger.disabled = true;
+        triggerLabel.textContent = 'No sessions';
+        list.innerHTML = '';
+        return;
+      }
+
+      trigger.disabled = false;
+      const active = getLogInstanceById(activeLogInstanceId) || logInstances[logInstances.length - 1];
+      if (active) {
+        triggerLabel.textContent = `#${active.id} · ${formatLogInstanceTime(active.startedAt)}`;
+      }
+
+      list.innerHTML = [...logInstances].reverse().map(instance => {
+        const isActive = instance.id === activeLogInstanceId;
+        const loaderLabel = instance.loader === 'fabric' ? 'Fabric' : 'Vanilla';
+        return `<button type="button" class="log-instance-item${isActive ? ' active' : ''}" data-instance-id="${instance.id}" role="option" aria-selected="${isActive ? 'true' : 'false'}">
+          <span class="log-instance-item-status ${instance.status}"></span>
+          <span class="log-instance-item-info">
+            <span class="log-instance-item-title">Launch #${instance.id}</span>
+            <span class="log-instance-item-meta">${formatLogInstanceTime(instance.startedAt)} · ${instance.version} · ${loaderLabel}</span>
+          </span>
+          <span class="log-instance-item-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+        </button>`;
+      }).join('');
+
+      list.querySelectorAll('.log-instance-item[data-instance-id]').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          switchLogInstance(Number(item.dataset.instanceId));
+          closeLogInstanceMenu();
+        });
+      });
+    }
+
+    function switchLogInstance(id) {
+      if (!getLogInstanceById(id)) return;
+      activeLogInstanceId = id;
+      document.querySelectorAll('.log-instance-content').forEach(el => {
+        el.classList.toggle('active', Number(el.dataset.instanceId) === id);
+      });
+      updateLogInstanceSwitcher();
+      setLogFilter(activeLogFilter);
+      updateLogEmptyState();
+      updateLogCount();
+    }
+
+    function startNewLogInstance(version, loader) {
+      logInstances.filter(i => i.status === 'running').forEach(i => { i.status = 'exited'; });
+
+      logInstanceCounter += 1;
+      const id = logInstanceCounter;
+      const startedAt = new Date();
+      const container = document.getElementById('logInstancesContainer');
+      const contentEl = document.createElement('div');
+      contentEl.className = 'log-instance-content';
+      contentEl.dataset.instanceId = id;
+      container.appendChild(contentEl);
+
+      const instance = {
+        id,
+        startedAt,
+        version,
+        loader,
+        status: 'running',
+        contentEl
+      };
+      logInstances.push(instance);
+      activeLaunchInstanceId = id;
+      switchLogInstance(id);
+    }
+
+    function markLaunchInstanceStatus(message) {
+      const instance = getLogInstanceById(activeLaunchInstanceId);
+      if (!instance || instance.status !== 'running') return;
+      if (message.includes('Game exited') || message.includes('Game process error')) {
+        instance.status = 'exited';
+        updateLogInstanceSwitcher();
+      }
+    }
+
+    function markActiveLaunchExited() {
+      const instance = getLogInstanceById(activeLaunchInstanceId);
+      if (instance && instance.status === 'running') {
+        instance.status = 'exited';
+        updateLogInstanceSwitcher();
+      }
+    }
+
+    function initLogInstanceSwitcher() {
+      const wrap = document.getElementById('logInstanceWrap');
+      const trigger = document.getElementById('logInstanceTrigger');
+      if (!wrap || !trigger) return;
+
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (trigger.disabled) return;
+        const isOpen = wrap.classList.toggle('open');
+        trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!wrap.contains(e.target)) closeLogInstanceMenu();
+      });
     }
 
     function getLogLevel(message) {
@@ -4603,16 +5309,22 @@ function openVersionPopup() {
     }
 
     function updateLogEmptyState() {
-      const logContent = document.getElementById('settingsLogContent');
       const emptyState = document.getElementById('logEmptyState');
-      if (!logContent || !emptyState) return;
-      emptyState.style.display = logContent.children.length === 0 ? 'flex' : 'none';
+      const logContent = getActiveLogContent();
+      if (!emptyState) return;
+      const noSessions = logInstances.length === 0;
+      const empty = !logContent || logContent.children.length === 0;
+      emptyState.style.display = (noSessions || empty) ? 'flex' : 'none';
     }
 
     function updateLogCount() {
-      const logContent = document.getElementById('settingsLogContent');
+      const logContent = getActiveLogContent();
       const countEl = document.getElementById('logLineCount');
-      if (!logContent || !countEl) return;
+      if (!countEl) return;
+      if (!logContent) {
+        countEl.textContent = '0 entries';
+        return;
+      }
       const visible = logContent.querySelectorAll('.log-line:not(.hidden)').length;
       const total = logContent.children.length;
       countEl.textContent = activeLogFilter === 'all'
@@ -4625,7 +5337,9 @@ function openVersionPopup() {
       document.querySelectorAll('.log-filter').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.filter === filter);
       });
-      document.querySelectorAll('#settingsLogContent .log-line').forEach(line => {
+      const logContent = getActiveLogContent();
+      if (!logContent) return;
+      logContent.querySelectorAll('.log-line').forEach(line => {
         const source = line.dataset.source || 'launcher';
         const show = filter === 'all' || source === filter;
         line.classList.toggle('hidden', !show);
@@ -4633,22 +5347,25 @@ function openVersionPopup() {
       updateLogCount();
     }
 
-    function appendLogLine(line) {
-      const logContent = document.getElementById('settingsLogContent');
+    function appendLogLine(line, instanceId) {
+      const targetId = instanceId ?? activeLaunchInstanceId;
+      const logContent = getLogInstanceById(targetId)?.contentEl || getLaunchLogContent();
       const viewport = document.getElementById('logViewport');
       if (!logContent) return;
 
       logContent.appendChild(line);
       const source = line.dataset.source || 'launcher';
-      if (activeLogFilter !== 'all' && source !== activeLogFilter) {
+      if (activeLogInstanceId === targetId && activeLogFilter !== 'all' && source !== activeLogFilter) {
         line.classList.add('hidden');
       }
 
-      updateLogEmptyState();
-      updateLogCount();
+      if (activeLogInstanceId === targetId) {
+        updateLogEmptyState();
+        updateLogCount();
+      }
 
       const autoScroll = document.getElementById('logAutoScroll');
-      if (viewport && autoScroll && autoScroll.checked) {
+      if (activeLogInstanceId === targetId && viewport && autoScroll && autoScroll.checked) {
         viewport.scrollTop = viewport.scrollHeight;
       }
     }
@@ -4658,11 +5375,12 @@ function openVersionPopup() {
     }
 
     function addGameLog(message) {
+      markLaunchInstanceStatus(message);
       appendLogLine(createLogLine(message, 'game'));
     }
 
     function copyLogs() {
-      const logContent = document.getElementById('settingsLogContent');
+      const logContent = getActiveLogContent();
       if (!logContent) return;
       const lines = Array.from(logContent.querySelectorAll('.log-line:not(.hidden)'));
       const text = lines.map(el => {
@@ -4685,17 +5403,14 @@ function openVersionPopup() {
     }
 
     function clearLogs() {
-      const logContent = document.getElementById('settingsLogContent');
+      const logContent = getActiveLogContent();
       if (logContent) logContent.innerHTML = '';
       updateLogEmptyState();
       updateLogCount();
     }
 
     ipcRenderer.on('launchProgress', (event, data) => {
-      const status = document.getElementById('playBtnStatus');
-      if (data.task && status) {
-        const pct = data.progress ? Math.round(data.progress * 100) + '%' : '';
-        status.textContent = data.task + (pct ? ' ' + pct : '...');
+      if (data.task) {
         addLog('Progress: ' + data.task + ' (' + Math.round((data.progress || 0) * 100) + '%)');
       }
     });
@@ -4706,6 +5421,17 @@ function openVersionPopup() {
 
     ipcRenderer.on('gameLog', (event, message) => {
       addGameLog(message);
+    });
+
+    ipcRenderer.on('gameStarted', () => {
+      gameRunning = true;
+      updatePlayButton();
+    });
+
+    ipcRenderer.on('gameExit', () => {
+      gameRunning = false;
+      markActiveLaunchExited();
+      updatePlayButton();
     });
 
     /* ── WINDOW CONTROLS ── */
