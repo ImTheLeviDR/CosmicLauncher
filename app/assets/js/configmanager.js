@@ -177,14 +177,20 @@ exports.getCachedVersionManifest = function() {
     
     try {
         if (fs.existsSync(versionCachePath)) {
-            const data = fs.readFileSync(versionCachePath, 'UTF-8')
-            cachedVersionManifest = JSON.parse(data)
-            versionCacheTime = Date.now()
-            return cachedVersionManifest
+            const stat = fs.statSync(versionCachePath)
+            const cacheAge = Date.now() - stat.mtimeMs
+            if (cacheAge < VERSION_CACHE_TTL) {
+                const data = fs.readFileSync(versionCachePath, 'UTF-8')
+                cachedVersionManifest = JSON.parse(data)
+                versionCacheTime = stat.mtimeMs
+                return cachedVersionManifest
+            }
         }
     } catch (err) {
         console.error('Error loading cached version manifest:', err)
     }
     
+    cachedVersionManifest = null
+    versionCacheTime = 0
     return null
 }
