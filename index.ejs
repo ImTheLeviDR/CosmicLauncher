@@ -308,7 +308,7 @@
       padding: 6px 14px 6px 6px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border);
-      border-radius: 40px;
+      border-radius: 10px;
       cursor: pointer;
       backdrop-filter: blur(8px);
       transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -328,7 +328,7 @@
     .profile-head-img {
       width: 28px;
       height: 28px;
-      border-radius: 50%;
+      border-radius: 10px;
       image-rendering: pixelated;
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
       background: var(--muted);
@@ -423,11 +423,17 @@
     }
 
     .profile-check {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 0.9rem;
       color: var(--accent);
       opacity: 0;
       transform: scale(0.5);
       transition: all 0.2s;
+      pointer-events: none;
     }
 
     .profile-item.active .profile-check {
@@ -435,15 +441,30 @@
       transform: scale(1);
     }
 
+    .profile-item:hover .profile-check {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+
+    .profile-actions {
+      position: relative;
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
     .profile-delete {
       position: absolute;
-      right: 8px;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 0.75rem;
       color: #ff4444;
       opacity: 0;
+      border-radius: 10px;
       transition: all 0.2s;
       cursor: pointer;
-      padding: 4px;
     }
 
     .profile-item:hover .profile-delete {
@@ -452,6 +473,7 @@
 
     .profile-delete:hover {
       color: #ff6666;
+      background: rgba(255, 68, 68, 0.18);
     }
 
     .profile-divider {
@@ -553,11 +575,15 @@
       align-items: center;
       justify-content: center;
       background: rgba(255, 255, 255, 0.05);
-      border-radius: 50%;
-      font-size: 1.1rem;
-      font-weight: 400;
+      border-radius: 10px;
       color: inherit;
       transition: all 0.2s;
+    }
+
+    .add-icon-wrap svg {
+      width: 14px;
+      height: 14px;
+      display: block;
     }
 
     .add-account-btn:hover .add-icon-wrap {
@@ -1591,8 +1617,10 @@
               <span class="profile-item-name"><%= acc.displayName %></span>
               <span class="profile-item-type"><%= acc.type === 'microsoft' ? 'Microsoft' : 'Mojang' %></span>
             </div>
-            <span class="profile-check">&#x2713;</span>
-            <span class="profile-delete" title="Remove account">&#x2715;</span>
+            <div class="profile-actions">
+              <span class="profile-check">&#x2713;</span>
+              <span class="profile-delete" title="Remove account">&#x2715;</span>
+            </div>
           </div>
         <% }); %>
       <% } %>
@@ -1601,7 +1629,12 @@
     <div class="profile-divider"></div>
 
     <div class="add-account-btn" id="addAccountBtn">
-      <div class="add-icon-wrap">+</div>
+      <div class="add-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </div>
       <span>Add Microsoft Account</span>
     </div>
   </div>
@@ -1885,8 +1918,10 @@
           <span class="profile-item-name">${acc.displayName}</span>
           <span class="profile-item-type">${acc.type === 'microsoft' ? 'Microsoft' : 'Mojang'}</span>
         </div>
-        <span class="profile-check">&#x2713;</span>
-        <span class="profile-delete" title="Remove account">&#x2715;</span>
+        <div class="profile-actions">
+          <span class="profile-check">&#x2713;</span>
+          <span class="profile-delete" title="Remove account">&#x2715;</span>
+        </div>
       </div>`;
     }
 
@@ -1916,7 +1951,7 @@
     function initProfileHandlers() {
       document.querySelectorAll('.profile-item[data-uuid]').forEach(item => {
         item.onclick = (e) => {
-          if (e.target.classList.contains('profile-delete')) {
+          if (e.target.closest('.profile-delete')) {
             deleteAccount(item.dataset.uuid);
           } else {
             selectProfile(item);

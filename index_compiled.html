@@ -308,7 +308,7 @@
       padding: 6px 14px 6px 6px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border);
-      border-radius: 40px;
+      border-radius: 10px;
       cursor: pointer;
       backdrop-filter: blur(8px);
       transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -328,7 +328,7 @@
     .profile-head-img {
       width: 28px;
       height: 28px;
-      border-radius: 50%;
+      border-radius: 10px;
       image-rendering: pixelated;
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
       background: var(--muted);
@@ -423,11 +423,17 @@
     }
 
     .profile-check {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 0.9rem;
       color: var(--accent);
       opacity: 0;
       transform: scale(0.5);
       transition: all 0.2s;
+      pointer-events: none;
     }
 
     .profile-item.active .profile-check {
@@ -435,15 +441,30 @@
       transform: scale(1);
     }
 
+    .profile-item:hover .profile-check {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+
+    .profile-actions {
+      position: relative;
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
     .profile-delete {
       position: absolute;
-      right: 8px;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 0.75rem;
       color: #ff4444;
       opacity: 0;
+      border-radius: 10px;
       transition: all 0.2s;
       cursor: pointer;
-      padding: 4px;
     }
 
     .profile-item:hover .profile-delete {
@@ -452,6 +473,7 @@
 
     .profile-delete:hover {
       color: #ff6666;
+      background: rgba(255, 68, 68, 0.18);
     }
 
     .profile-divider {
@@ -553,11 +575,15 @@
       align-items: center;
       justify-content: center;
       background: rgba(255, 255, 255, 0.05);
-      border-radius: 50%;
-      font-size: 1.1rem;
-      font-weight: 400;
+      border-radius: 10px;
       color: inherit;
       transition: all 0.2s;
+    }
+
+    .add-icon-wrap svg {
+      width: 14px;
+      height: 14px;
+      display: block;
     }
 
     .add-account-btn:hover .add-icon-wrap {
@@ -1589,8 +1615,10 @@
               <span class="profile-item-name">TheLeviDR</span>
               <span class="profile-item-type">Microsoft</span>
             </div>
-            <span class="profile-check">&#x2713;</span>
-            <span class="profile-delete" title="Remove account">&#x2715;</span>
+            <div class="profile-actions">
+              <span class="profile-check">&#x2713;</span>
+              <span class="profile-delete" title="Remove account">&#x2715;</span>
+            </div>
           </div>
         
           
@@ -1600,8 +1628,10 @@
               <span class="profile-item-name">Terrimett</span>
               <span class="profile-item-type">Microsoft</span>
             </div>
-            <span class="profile-check">&#x2713;</span>
-            <span class="profile-delete" title="Remove account">&#x2715;</span>
+            <div class="profile-actions">
+              <span class="profile-check">&#x2713;</span>
+              <span class="profile-delete" title="Remove account">&#x2715;</span>
+            </div>
           </div>
         
       
@@ -1610,7 +1640,12 @@
     <div class="profile-divider"></div>
 
     <div class="add-account-btn" id="addAccountBtn">
-      <div class="add-icon-wrap">+</div>
+      <div class="add-icon-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </div>
       <span>Add Microsoft Account</span>
     </div>
   </div>
@@ -1629,7 +1664,7 @@
             <span class="play-btn-ver-icon">&#x25BE;</span>
           </div>
         </button>
-        <div class="version-label" id="versionLabel">Version: <span id="versionLabelText">1.21.11</span></div>
+        <div class="version-label" id="versionLabel">Version: <span id="versionLabelText">26.2</span></div>
       </div>
 
       <!-- Version Popup -->
@@ -1729,7 +1764,7 @@
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 1.21.11</div>
+                      <div class="mod-desc">Supports: 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="YL57xq9U" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -1749,7 +1784,7 @@
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 1.21.11</div>
+                      <div class="mod-desc">Supports: 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="AANobbMI" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -1769,11 +1804,11 @@
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 1.21.9, 1.21.10, 1.21.11</div>
+                      <div class="mod-desc">Supports: 26.2</div>
                       <div class="mod-actions">
-                        <div class="mod-toggle-wrap " data-id="UIexcMP1" data-enabled="false">
+                        <div class="mod-toggle-wrap on" data-id="UIexcMP1" data-enabled="true">
                           <div class="mod-switch"></div>
-                          <span>Disabled</span>
+                          <span>Enabled</span>
                         </div>
                         <button class="mod-btn remove" data-id="UIexcMP1">&#x1F5D1; Remove</button>
                       </div>
@@ -1789,7 +1824,7 @@
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 1.21.11</div>
+                      <div class="mod-desc">Supports: 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="w7ThoJFB" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -1809,7 +1844,7 @@
                           <div class="mod-author-tag">fabric, quilt</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 1.21.11</div>
+                      <div class="mod-desc">Supports: 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="mOgUt4GM" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -1826,10 +1861,10 @@
                         <img class="mod-icon" src="https://cdn.modrinth.com/data/eXts2L7r/e9c9990896e6422bffc5f73d2c41b8f077348f83.png" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
                         <div class="mod-info-main">
                           <div class="mod-title" style="">Text Placeholder API</div>
-                          <div class="mod-author-tag">fabric, quilt</div>
+                          <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 1.21.9, 1.21.10, 1.21.11-pre1, 1.21.11</div>
+                      <div class="mod-desc">Supports: 26.2-pre-1, 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="eXts2L7r" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -1849,7 +1884,7 @@
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 1.21.11</div>
+                      <div class="mod-desc">Supports: 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="P7dR8mSH" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -1869,7 +1904,7 @@
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 1.21.11</div>
+                      <div class="mod-desc">Supports: 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="1eAoo2KR" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -1889,7 +1924,7 @@
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 1.14, 1.14.1, 1.14.2, 1.14.3, 1.14.4, 1.15, 1.15.1, 1.15.2, 1.16, 1.16.1, 1.16.2, 1.16.3, 1.16.4, 1.16.5, 1.17, 1.17.1, 1.18, 1.18.1, 1.18.2, 1.19, 1.19.1, 1.19.2, 1.19.3, 1.19.4, 1.20, 1.20.1, 1.20.2, 1.20.3, 1.20.4, 1.20.5, 1.20.6, 1.21, 1.21.1, 1.21.2, 1.21.3, 1.21.4, 1.21.5, 1.21.6, 1.21.7, 1.21.8, 1.21.9, 1.21.10, 1.21.11, 26.1</div>
+                      <div class="mod-desc">Supports: 1.14, 1.14.1, 1.14.2, 1.14.3, 1.14.4, 1.15, 1.15.1, 1.15.2, 1.16, 1.16.1, 1.16.2, 1.16.3, 1.16.4, 1.16.5, 1.17, 1.17.1, 1.18, 1.18.1, 1.18.2, 1.19, 1.19.1, 1.19.2, 1.19.3, 1.19.4, 1.20, 1.20.1, 1.20.2, 1.20.3, 1.20.4, 1.20.5, 1.20.6, 1.21, 1.21.1, 1.21.2, 1.21.3, 1.21.4, 1.21.5, 1.21.6, 1.21.7, 1.21.8, 1.21.9, 1.21.10, 1.21.11, 26.1, 26.1.1, 26.1.2, 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="Ha28R6CL" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -1905,15 +1940,15 @@
                       <div class="mod-card-top">
                         <img class="mod-icon" src="https://cdn.modrinth.com/data/HwGFylw6/b5f13d29d9b23956e00c490afb2a83a48eda2368_96.webp" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="">Borderless Windowed Vulkan</div>
+                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Borderless Windowed Vulkan</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
                       <div class="mod-desc">Supports: 1.21, 1.21.1, 1.21.2, 1.21.3, 1.21.4, 1.21.5, 1.21.6, 1.21.7, 1.21.8, 1.21.9, 1.21.10, 1.21.11</div>
                       <div class="mod-actions">
-                        <div class="mod-toggle-wrap on" data-id="HwGFylw6" data-enabled="true">
+                        <div class="mod-toggle-wrap " data-id="HwGFylw6" data-enabled="false">
                           <div class="mod-switch"></div>
-                          <span>Enabled</span>
+                          <span>Disabled</span>
                         </div>
                         <button class="mod-btn remove" data-id="HwGFylw6">&#x1F5D1; Remove</button>
                       </div>
@@ -2072,8 +2107,10 @@
           <span class="profile-item-name">${acc.displayName}</span>
           <span class="profile-item-type">${acc.type === 'microsoft' ? 'Microsoft' : 'Mojang'}</span>
         </div>
-        <span class="profile-check">&#x2713;</span>
-        <span class="profile-delete" title="Remove account">&#x2715;</span>
+        <div class="profile-actions">
+          <span class="profile-check">&#x2713;</span>
+          <span class="profile-delete" title="Remove account">&#x2715;</span>
+        </div>
       </div>`;
     }
 
@@ -2103,7 +2140,7 @@
     function initProfileHandlers() {
       document.querySelectorAll('.profile-item[data-uuid]').forEach(item => {
         item.onclick = (e) => {
-          if (e.target.classList.contains('profile-delete')) {
+          if (e.target.closest('.profile-delete')) {
             deleteAccount(item.dataset.uuid);
           } else {
             selectProfile(item);
@@ -2462,7 +2499,7 @@
     }
 
 /* ── VERSION POPUP LOGIC ── */
-    let selectedVersion = '1.21.11';
+    let selectedVersion = '26.2';
     let popupVisible = false;
     let availableVersions = [];
     let tickSound = null;
