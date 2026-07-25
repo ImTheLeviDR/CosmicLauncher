@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="<%= theme === 'auto' ? 'cosmic' : theme %>">
 
 <head>
   <meta charset="UTF-8">
@@ -10,7 +10,8 @@
     href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Mono:wght@400;700&display=swap"
     rel="stylesheet">
   <style>
-    :root {
+    :root,
+    [data-theme="cosmic"] {
       --bg: #04040d;
       --panel: rgba(255, 255, 255, 0.03);
       --border: rgba(255, 255, 255, 0.07);
@@ -19,6 +20,153 @@
       --text: #f0ece4;
       --muted: #6b6860;
       --glow: rgba(232, 98, 42, 0.35);
+      --chrome: rgba(4, 4, 13, 0.88);
+      --player-glow: rgba(232, 98, 42, 0.22);
+      --nebula-warm: 22;
+      --nebula-cool: 260;
+    }
+
+    [data-theme="nebula"] {
+      --bg: #06040f;
+      --panel: rgba(255, 255, 255, 0.03);
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #8b5cf6;
+      --accent2: #c4b5fd;
+      --text: #ede9fe;
+      --muted: #7c7894;
+      --glow: rgba(139, 92, 246, 0.35);
+      --chrome: rgba(6, 4, 15, 0.9);
+      --player-glow: rgba(139, 92, 246, 0.24);
+      --nebula-warm: 280;
+      --nebula-cool: 230;
+    }
+
+    [data-theme="emerald"] {
+      --bg: #031208;
+      --panel: rgba(255, 255, 255, 0.03);
+      --border: rgba(255, 255, 255, 0.07);
+      --accent: #22c55e;
+      --accent2: #86efac;
+      --text: #ecfdf5;
+      --muted: #6b8a72;
+      --glow: rgba(34, 197, 94, 0.32);
+      --chrome: rgba(3, 18, 8, 0.9);
+      --player-glow: rgba(34, 197, 94, 0.22);
+      --nebula-warm: 130;
+      --nebula-cool: 170;
+    }
+
+    [data-theme="crimson"] {
+      --bg: #0d0406;
+      --panel: rgba(255, 255, 255, 0.03);
+      --border: rgba(255, 255, 255, 0.07);
+      --accent: #ef4444;
+      --accent2: #fca5a5;
+      --text: #fef2f2;
+      --muted: #8a6b6b;
+      --glow: rgba(239, 68, 68, 0.34);
+      --chrome: rgba(13, 4, 6, 0.9);
+      --player-glow: rgba(239, 68, 68, 0.22);
+      --nebula-warm: 0;
+      --nebula-cool: 340;
+    }
+
+    [data-theme="ocean"] {
+      --bg: #020810;
+      --panel: rgba(255, 255, 255, 0.03);
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #06b6d4;
+      --accent2: #67e8f9;
+      --text: #ecfeff;
+      --muted: #5f7f88;
+      --glow: rgba(6, 182, 212, 0.34);
+      --chrome: rgba(2, 8, 16, 0.9);
+      --player-glow: rgba(6, 182, 212, 0.22);
+      --nebula-warm: 190;
+      --nebula-cool: 210;
+    }
+
+    [data-theme="sunset"] {
+      --bg: #0f0608;
+      --panel: rgba(255, 255, 255, 0.03);
+      --border: rgba(255, 255, 255, 0.07);
+      --accent: #f472b6;
+      --accent2: #fdba74;
+      --text: #fff1f2;
+      --muted: #8a7078;
+      --glow: rgba(244, 114, 182, 0.34);
+      --chrome: rgba(15, 6, 8, 0.9);
+      --player-glow: rgba(244, 114, 182, 0.22);
+      --nebula-warm: 330;
+      --nebula-cool: 20;
+    }
+
+    [data-theme="frost"] {
+      --bg: #0a1018;
+      --panel: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.1);
+      --accent: #94a3b8;
+      --accent2: #e2e8f0;
+      --text: #f8fafc;
+      --muted: #7b8798;
+      --glow: rgba(148, 163, 184, 0.28);
+      --chrome: rgba(10, 16, 24, 0.92);
+      --player-glow: rgba(148, 163, 184, 0.2);
+      --nebula-warm: 210;
+      --nebula-cool: 220;
+    }
+
+    [data-theme="gold"] {
+      --bg: #0a0804;
+      --panel: rgba(255, 255, 255, 0.03);
+      --border: rgba(255, 255, 255, 0.07);
+      --accent: #d4a017;
+      --accent2: #fde047;
+      --text: #fefce8;
+      --muted: #8a8268;
+      --glow: rgba(212, 160, 23, 0.34);
+      --chrome: rgba(10, 8, 4, 0.9);
+      --player-glow: rgba(212, 160, 23, 0.22);
+      --nebula-warm: 45;
+      --nebula-cool: 35;
+    }
+
+    [data-theme="lavender"] {
+      --bg: #080612;
+      --panel: rgba(255, 255, 255, 0.03);
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #a78bfa;
+      --accent2: #ddd6fe;
+      --text: #f5f3ff;
+      --muted: #7f7a96;
+      --glow: rgba(167, 139, 250, 0.34);
+      --chrome: rgba(8, 6, 18, 0.9);
+      --player-glow: rgba(167, 139, 250, 0.22);
+      --nebula-warm: 270;
+      --nebula-cool: 300;
+    }
+
+    [data-theme="midnight"] {
+      --bg: #020308;
+      --panel: rgba(255, 255, 255, 0.025);
+      --border: rgba(255, 255, 255, 0.06);
+      --accent: #64748b;
+      --accent2: #94a3b8;
+      --text: #e2e8f0;
+      --muted: #5c6474;
+      --glow: rgba(100, 116, 139, 0.3);
+      --chrome: rgba(2, 3, 8, 0.92);
+      --player-glow: rgba(100, 116, 139, 0.18);
+      --nebula-warm: 215;
+      --nebula-cool: 240;
+    }
+
+    html[data-theme] {
+      --accent-hover: color-mix(in srgb, var(--accent) 78%, white 22%);
+      --glow-strong: color-mix(in srgb, var(--accent) 52%, transparent);
+      --glow-pulse-start: color-mix(in srgb, var(--accent) 80%, transparent);
+      --glow-pulse-mid: color-mix(in srgb, var(--accent) 90%, transparent);
+      --glow-pulse-outer: color-mix(in srgb, var(--accent2) 40%, transparent);
     }
 
     *,
@@ -80,7 +228,7 @@
       -webkit-app-region: drag;
       z-index: 100;
       border-bottom: 1px solid var(--border);
-      background: rgba(4, 4, 13, 0.88);
+      background: var(--chrome);
       backdrop-filter: blur(16px);
       gap: 12px;
     }
@@ -407,7 +555,7 @@
       transform: translateX(-50%);
       width: min(282px, 68%);
       height: 46px;
-      background: radial-gradient(ellipse at center, rgba(232, 98, 42, 0.22) 0%, transparent 70%);
+      background: radial-gradient(ellipse at center, var(--player-glow) 0%, transparent 70%);
       filter: blur(8px);
       pointer-events: none;
     }
@@ -457,7 +605,7 @@
       top: 100%;
       right: 0;
       width: 280px;
-      background: rgba(4, 4, 13, 0.88);
+      background: var(--chrome);
       border: 1px solid var(--border);
       border-top: none;
       border-radius: 0;
@@ -807,14 +955,10 @@
       align-items: stretch;
       height: 44px;
       max-width: min(420px, calc(100vw - 48px));
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border);
       border-radius: 10px;
       overflow: visible;
-      background: rgba(8, 8, 20, 0.92);
-      backdrop-filter: blur(20px);
-      box-shadow:
-        0 12px 36px rgba(0, 0, 0, 0.55),
-        0 2px 8px rgba(0, 0, 0, 0.35);
+      background: transparent;
       pointer-events: auto;
       -webkit-app-region: no-drag;
     }
@@ -897,7 +1041,7 @@
       position: relative;
       overflow: hidden;
       transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-shadow: 0 4px 24px rgba(232, 98, 42, 0.3), 0 1px 0 rgba(255, 255, 255, 0.15) inset;
+      box-shadow: 0 4px 24px var(--glow), 0 1px 0 rgba(255, 255, 255, 0.15) inset;
       display: flex;
       align-items: center;
     }
@@ -1005,8 +1149,8 @@
 
     .play-btn:not(:disabled):hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(232, 98, 42, 0.5), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
-      background: #f07040;
+      box-shadow: 0 8px 32px var(--glow-strong), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+      background: var(--accent-hover);
     }
 
     .play-btn.stop-mode:not(:disabled):hover {
@@ -1034,15 +1178,15 @@
 
     @keyframes launch-pulse {
       0% {
-        box-shadow: 0 0 0px rgba(232, 98, 42, 0.8);
+        box-shadow: 0 0 0px var(--glow-pulse-start);
       }
 
       50% {
-        box-shadow: 0 0 60px rgba(232, 98, 42, 0.9), 0 0 100px rgba(240, 168, 66, 0.4);
+        box-shadow: 0 0 60px var(--glow-pulse-mid), 0 0 100px var(--glow-pulse-outer);
       }
 
       100% {
-        box-shadow: 0 4px 24px rgba(232, 98, 42, 0.3);
+        box-shadow: 0 4px 24px var(--glow);
       }
     }
 
@@ -1058,7 +1202,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(4, 4, 13, 0.88);
+      background: var(--chrome);
       z-index: 200;
       display: flex;
       align-items: center;
@@ -1568,7 +1712,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(4, 4, 13, 0.88);
+      background: var(--chrome);
       z-index: 90;
       opacity: 0;
       visibility: hidden;
@@ -1792,6 +1936,111 @@
       color: var(--muted);
       margin-bottom: 16px;
       line-height: 1.55;
+    }
+
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    @media (min-width: 720px) {
+      .theme-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+    }
+
+    .theme-card {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      padding: 10px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 0;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.15s ease, background 0.15s ease;
+      color: var(--text);
+      font-family: inherit;
+    }
+
+    .theme-card:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .theme-card.active {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+
+    .theme-preview {
+      display: flex;
+      height: 42px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .theme-preview-bg {
+      flex: 1;
+    }
+
+    .theme-preview-accent {
+      width: 28%;
+    }
+
+    .theme-preview-accent2 {
+      width: 18%;
+    }
+
+    .theme-name {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .theme-preview.theme-preview-auto {
+      display: block;
+    }
+
+    .theme-preview-auto {
+      background: conic-gradient(
+        from 210deg,
+        #e8622a,
+        #8b5cf6,
+        #22c55e,
+        #ef4444,
+        #06b6d4,
+        #f472b6,
+        #94a3b8,
+        #d4a017,
+        #a78bfa,
+        #64748b,
+        #e8622a
+      );
+    }
+
+    .theme-card-auto-hint {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.5rem;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      line-height: 1.4;
+      min-height: 1.4em;
+    }
+
+    .theme-card.active .theme-card-auto-hint {
+      color: var(--accent2);
+    }
+
+    .theme-card.active .theme-name {
+      color: var(--accent2);
     }
 
     .launch-option-block {
@@ -2377,7 +2626,7 @@
       margin-right: -48px;
       padding: 14px 48px 14px;
       margin-bottom: 16px;
-      background: #04040d;
+      background: var(--bg);
     }
 
     .mod-search-panel.is-stuck .mod-search-heading,
@@ -2773,7 +3022,7 @@
     .launch-overlay {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at center, #1a0e06 0%, #04040d 100%);
+      background: radial-gradient(circle at center, color-mix(in srgb, var(--accent) 18%, var(--bg)) 0%, var(--bg) 100%);
       z-index: 999;
       opacity: 0;
       visibility: hidden;
@@ -2812,7 +3061,7 @@
       }
       100% {
         opacity: 1;
-        background: #04040d;
+        background: var(--bg);
       }
     }
 
@@ -2992,6 +3241,9 @@
             <div class="settings-tab active" data-tab="launch" onclick="switchSettingsTab('launch')">
               <span class="settings-tab-icon" data-icon="launch" aria-hidden="true"></span> Launch
             </div>
+            <div class="settings-tab" data-tab="appearance" onclick="switchSettingsTab('appearance')">
+              <span class="settings-tab-icon" data-icon="appearance" aria-hidden="true"></span> Appearance
+            </div>
             <div class="settings-tab" data-tab="mods" onclick="switchSettingsTab('mods')">
               <span class="settings-tab-icon" data-icon="mods" aria-hidden="true"></span> Mods
             </div>
@@ -3121,6 +3373,15 @@
                 <span>Open Mods Folder</span>
                 <span class="open-mods-arrow" data-icon="chevronRight" aria-hidden="true"></span>
               </button>
+            </div>
+          </div>
+
+          <!-- Appearance Tab -->
+          <div class="settings-tab-content" id="settingsTabAppearance">
+            <div class="settings-section">
+              <div class="settings-section-title">Theme</div>
+              <div class="settings-section-description">Pick a color theme for the launcher. Your choice is saved automatically.</div>
+              <div class="theme-grid" id="themeGrid"></div>
             </div>
           </div>
 
@@ -3266,9 +3527,27 @@
       function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
       resize();
       window.addEventListener('resize', resize);
+
+      function readThemeHue(name, fallback) {
+        const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        const parsed = parseFloat(value);
+        return Number.isFinite(parsed) ? parsed : fallback;
+      }
+
+      function randomWarmHue() {
+        const base = readThemeHue('--nebula-warm', 22);
+        return base + Math.random() * 18;
+      }
+
+      function randomCoolHue() {
+        const base = readThemeHue('--nebula-cool', 260);
+        return base + Math.random() * 40;
+      }
+
       const blobs = Array.from({ length: 7 }, (_, i) => ({
         x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-        r: 200 + Math.random() * 320, hue: i < 3 ? 22 + Math.random() * 18 : 260 + Math.random() * 40,
+        r: 200 + Math.random() * 320,
+        hue: i < 3 ? randomWarmHue() : randomCoolHue(),
         speed: (Math.random() - 0.5) * 0.15, vy: (Math.random() - 0.5) * 0.08,
         phase: Math.random() * Math.PI * 2, alpha: 0.04 + Math.random() * 0.07,
       }));
@@ -3338,6 +3617,11 @@
       window.triggerStarExplosion = () => { closing = true; };
       window.triggerOpenAnimation = () => { if (openZoom <= 0) openZoom = 30; };
       window.resetStars = () => { closing = false; warpSpeed = 0; openZoom = 0; wasOpening = false; starfield.forEach(s => { s.z = Math.random() * 400 + 50; }); };
+      window.updateNebulaTheme = () => {
+        blobs.forEach((b, i) => {
+          b.hue = i < 3 ? randomWarmHue() : randomCoolHue();
+        });
+      };
     })();
 
     /* ── PARTICLES ── */
@@ -3350,7 +3634,7 @@
       window.spawnParticles = function (x, y) {
         for (let i = 0; i < 28; i++) {
           const angle = Math.random() * Math.PI * 2, speed = 2 + Math.random() * 5;
-          particles.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: 1, r: 2 + Math.random() * 3, hue: 20 + Math.random() * 30 });
+          particles.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: 1, r: 2 + Math.random() * 3, hue: (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nebula-warm')) || 20) + Math.random() * 30 });
         }
       };
       (function loop() {
@@ -3376,6 +3660,7 @@
 
     const uiIcons = {
       launch: uiIcon('<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path>'),
+      appearance: uiIcon('<circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path>'),
       mods: uiIcon('<path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path>'),
       logs: uiIcon('<polyline points="4 17 10 11 4 5"></polyline><line x1="12" x2="20" y1="19" y2="19"></line>'),
       folder: uiIcon('<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path>'),
@@ -3525,6 +3810,9 @@
         };
         imgEl.onload = () => {
           imgEl.onerror = null;
+          if (selectedTheme === 'auto' && imgEl.id === 'activeProfileImg') {
+            refreshAutoTheme();
+          }
         };
         imgEl.src = sources[index];
       };
@@ -3603,15 +3891,18 @@
             const profile = await fetchMojangSkinProfile(candidate.uuid);
             if (!profile) continue;
             await playerSkinViewer.loadSkin(profile.url, { model: profile.model });
+            refreshAutoTheme();
             return;
           }
 
           await playerSkinViewer.loadSkin(candidate.url, { model: candidate.model });
+          refreshAutoTheme();
           return;
         } catch (_) {}
       }
 
       await playerSkinViewer.loadSkin(STEVE_SKIN_URL, { model: 'default' });
+      refreshAutoTheme();
     }
 
     function updatePlayerSkin(uuid, username) {
@@ -4011,6 +4302,321 @@
       }
 
       initProfileHandlers();
+
+/* ── THEME PICKER ── */
+    const COLOR_THEMES = [
+      { id: 'cosmic', label: 'Cosmic', bg: '#04040d', accent: '#e8622a', accent2: '#f0a842' },
+      { id: 'nebula', label: 'Nebula', bg: '#06040f', accent: '#8b5cf6', accent2: '#c4b5fd' },
+      { id: 'emerald', label: 'Emerald', bg: '#031208', accent: '#22c55e', accent2: '#86efac' },
+      { id: 'crimson', label: 'Crimson', bg: '#0d0406', accent: '#ef4444', accent2: '#fca5a5' },
+      { id: 'ocean', label: 'Ocean', bg: '#020810', accent: '#06b6d4', accent2: '#67e8f9' },
+      { id: 'sunset', label: 'Sunset', bg: '#0f0608', accent: '#f472b6', accent2: '#fdba74' },
+      { id: 'frost', label: 'Frost', bg: '#0a1018', accent: '#94a3b8', accent2: '#e2e8f0' },
+      { id: 'gold', label: 'Gold', bg: '#0a0804', accent: '#d4a017', accent2: '#fde047' },
+      { id: 'lavender', label: 'Lavender', bg: '#080612', accent: '#a78bfa', accent2: '#ddd6fe' },
+      { id: 'midnight', label: 'Midnight', bg: '#020308', accent: '#64748b', accent2: '#94a3b8' },
+    ];
+
+    let selectedTheme = '<%= theme %>';
+    let resolvedAutoTheme = 'cosmic';
+    let autoThemeRequest = 0;
+
+    function hexToRgb(hex) {
+      const value = hex.replace('#', '');
+      return [
+        parseInt(value.slice(0, 2), 16),
+        parseInt(value.slice(2, 4), 16),
+        parseInt(value.slice(4, 6), 16),
+      ];
+    }
+
+    function rgbToHsl(r, g, b) {
+      r /= 255;
+      g /= 255;
+      b /= 255;
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      const l = (max + min) / 2;
+      if (max === min) return { h: 0, s: 0, l };
+
+      const d = max - min;
+      const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      let h;
+
+      switch (max) {
+        case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+        case g: h = ((b - r) / d + 2) / 6; break;
+        default: h = ((r - g) / d + 4) / 6; break;
+      }
+
+      return { h: h * 360, s, l };
+    }
+
+    function hueDistance(a, b) {
+      const diff = Math.abs(a - b) % 360;
+      return diff > 180 ? 360 - diff : diff;
+    }
+
+    function colorMatchScore(rgb, hex) {
+      const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+      const target = rgbToHsl(...hexToRgb(hex));
+      if (hsl.s < 0.08) {
+        return hueDistance(hsl.h, target.h) * 0.35 + Math.abs(hsl.l - target.l) * 120;
+      }
+      return hueDistance(hsl.h, target.h) * 1.4 + Math.abs(hsl.s - target.s) * 90 + Math.abs(hsl.l - target.l) * 45;
+    }
+
+    function isNeutralPixel(r, g, b, a) {
+      if (a < 128) return true;
+      const brightness = (r + g + b) / 3;
+      if (brightness < 24 || brightness > 244) return true;
+      const spread = Math.max(r, g, b) - Math.min(r, g, b);
+      return spread < 18;
+    }
+
+    function findClosestTheme(rgb) {
+      let bestId = 'cosmic';
+      let bestScore = Infinity;
+
+      for (const theme of COLOR_THEMES) {
+        const score = Math.min(
+          colorMatchScore(rgb, theme.accent),
+          colorMatchScore(rgb, theme.accent2),
+        );
+        if (score < bestScore) {
+          bestScore = score;
+          bestId = theme.id;
+        }
+      }
+
+      return bestId;
+    }
+
+    function sampleImageData(data, width, height) {
+      const buckets = new Map();
+
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const a = data[i + 3];
+        if (isNeutralPixel(r, g, b, a)) continue;
+
+        const key = `${Math.round(r / 20) * 20},${Math.round(g / 20) * 20},${Math.round(b / 20) * 20}`;
+        buckets.set(key, (buckets.get(key) || 0) + 1);
+      }
+
+      let bestKey = null;
+      let bestCount = 0;
+      for (const [key, count] of buckets) {
+        if (count > bestCount) {
+          bestCount = count;
+          bestKey = key;
+        }
+      }
+
+      if (!bestKey) return null;
+      const [r, g, b] = bestKey.split(',').map(Number);
+      return { r, g, b };
+    }
+
+    function sampleSkinDominantColor(skinUrl) {
+      return new Promise((resolve) => {
+        const finish = (color) => resolve(color);
+
+        const loadFromUrl = (url, revoke) => {
+          const img = new Image();
+          img.onload = () => {
+            try {
+              const canvas = document.createElement('canvas');
+              const width = img.naturalWidth || img.width;
+              const height = img.naturalHeight || img.height;
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d', { willReadFrequently: true });
+              ctx.drawImage(img, 0, 0);
+              finish(sampleImageData(ctx.getImageData(0, 0, width, height).data));
+            } catch (_) {
+              finish(null);
+            } finally {
+              if (revoke) URL.revokeObjectURL(revoke);
+            }
+          };
+          img.onerror = () => {
+            if (revoke) URL.revokeObjectURL(revoke);
+            finish(null);
+          };
+          img.src = url;
+        };
+
+        if (typeof require === 'function') {
+          try {
+            const https = require('https');
+            const http = require('http');
+
+            const fetchBuffer = (url, redirects = 0) => new Promise((res, rej) => {
+              if (redirects > 5) {
+                rej(new Error('Too many redirects'));
+                return;
+              }
+              const client = url.startsWith('https:') ? https : http;
+              client.get(url, (response) => {
+                if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
+                  fetchBuffer(response.headers.location, redirects + 1).then(res).catch(rej);
+                  return;
+                }
+                if (response.statusCode !== 200) {
+                  rej(new Error(`HTTP ${response.statusCode}`));
+                  return;
+                }
+                const chunks = [];
+                response.on('data', (chunk) => chunks.push(chunk));
+                response.on('end', () => res(Buffer.concat(chunks)));
+              }).on('error', rej);
+            });
+
+            fetchBuffer(skinUrl).then((buffer) => {
+              const blobUrl = URL.createObjectURL(new Blob([buffer], { type: 'image/png' }));
+              loadFromUrl(blobUrl, blobUrl);
+            }).catch(() => {
+              const img = new Image();
+              img.crossOrigin = 'anonymous';
+              img.onload = () => {
+                try {
+                  const canvas = document.createElement('canvas');
+                  const width = img.naturalWidth || img.width;
+                  const height = img.naturalHeight || img.height;
+                  canvas.width = width;
+                  canvas.height = height;
+                  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                  ctx.drawImage(img, 0, 0);
+                  finish(sampleImageData(ctx.getImageData(0, 0, width, height).data));
+                } catch (_) {
+                  finish(null);
+                }
+              };
+              img.onerror = () => finish(null);
+              img.src = skinUrl;
+            });
+            return;
+          } catch (_) {}
+        }
+
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            const width = img.naturalWidth || img.width;
+            const height = img.naturalHeight || img.height;
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            ctx.drawImage(img, 0, 0);
+            finish(sampleImageData(ctx.getImageData(0, 0, width, height).data));
+          } catch (_) {
+            finish(null);
+          }
+        };
+        img.onerror = () => finish(null);
+        img.src = skinUrl;
+      });
+    }
+
+    async function resolveAutoThemeFromSkin() {
+      const profileName = document.getElementById('activeProfileName');
+      const uuid = profileName?.dataset?.uuid || null;
+      const username = profileName?.textContent?.trim() || null;
+      const skin = await resolvePlayerSkin(uuid, username);
+      const color = await sampleSkinDominantColor(skin.url);
+      return color ? findClosestTheme(color) : 'cosmic';
+    }
+
+    function updateAutoThemeHint() {
+      const hint = document.getElementById('autoThemeHint');
+      if (!hint) return;
+
+      if (selectedTheme !== 'auto') {
+        hint.textContent = 'Matches your skin';
+        return;
+      }
+
+      const match = COLOR_THEMES.find((theme) => theme.id === resolvedAutoTheme);
+      hint.textContent = match ? `Using ${match.label}` : 'Matching skin…';
+    }
+
+    async function refreshAutoTheme() {
+      if (selectedTheme !== 'auto') return;
+
+      const requestId = ++autoThemeRequest;
+      const resolved = await resolveAutoThemeFromSkin();
+      if (requestId !== autoThemeRequest || selectedTheme !== 'auto') return;
+
+      resolvedAutoTheme = resolved;
+      document.documentElement.dataset.theme = resolved;
+      updateAutoThemeHint();
+      if (window.updateNebulaTheme) window.updateNebulaTheme();
+    }
+
+    function applyTheme(themeId, persist = false) {
+      const isAuto = themeId === 'auto';
+      const isColorTheme = COLOR_THEMES.some((theme) => theme.id === themeId);
+      const theme = isAuto || isColorTheme ? themeId : 'cosmic';
+
+      selectedTheme = theme;
+      document.querySelectorAll('.theme-card').forEach((card) => {
+        card.classList.toggle('active', card.dataset.theme === theme);
+      });
+
+      if (theme === 'auto') {
+        refreshAutoTheme();
+      } else {
+        document.documentElement.dataset.theme = theme;
+        updateAutoThemeHint();
+        if (window.updateNebulaTheme) window.updateNebulaTheme();
+      }
+
+      if (persist && window.ipcRenderer) {
+        window.ipcRenderer.invoke('saveTheme', theme);
+      }
+    }
+
+    function renderThemeGrid() {
+      const grid = document.getElementById('themeGrid');
+      if (!grid) return;
+
+      const autoCard = `
+        <button type="button" class="theme-card${selectedTheme === 'auto' ? ' active' : ''}" data-theme="auto" aria-pressed="${selectedTheme === 'auto' ? 'true' : 'false'}">
+          <span class="theme-preview theme-preview-auto" aria-hidden="true"></span>
+          <span class="theme-name">Auto</span>
+          <span class="theme-card-auto-hint" id="autoThemeHint">Matches your skin</span>
+        </button>
+      `;
+
+      const colorCards = COLOR_THEMES.map((theme) => `
+        <button type="button" class="theme-card${theme.id === selectedTheme ? ' active' : ''}" data-theme="${theme.id}" aria-pressed="${theme.id === selectedTheme ? 'true' : 'false'}">
+          <span class="theme-preview" aria-hidden="true">
+            <span class="theme-preview-bg" style="background:${theme.bg}"></span>
+            <span class="theme-preview-accent" style="background:${theme.accent}"></span>
+            <span class="theme-preview-accent2" style="background:${theme.accent2}"></span>
+          </span>
+          <span class="theme-name">${theme.label}</span>
+        </button>
+      `).join('');
+
+      grid.innerHTML = autoCard + colorCards;
+
+      grid.querySelectorAll('.theme-card').forEach((card) => {
+        card.onclick = () => applyTheme(card.dataset.theme, true);
+      });
+
+      updateAutoThemeHint();
+    }
+
+    function initThemePicker() {
+      renderThemeGrid();
+      applyTheme(selectedTheme, false);
+    }
 
 /* ── LOADER SWITCHER LOGIC ── */
     let selectedLoader = '<%= loader %>';
@@ -4441,6 +5047,8 @@
       let tabEl;
       if (tab === 'launch') {
         tabEl = document.getElementById('settingsTabLaunch');
+      } else if (tab === 'appearance') {
+        tabEl = document.getElementById('settingsTabAppearance');
       } else if (tab === 'mods') {
         tabEl = document.getElementById('settingsTabMods');
       } else if (tab === 'logs') {
@@ -4982,6 +5590,7 @@
     initLaunchState();
     initVersionSearch();
     loadLaunchOptions();
+    initThemePicker();
     initLoaderSwitcher();
     initLauncherActionSwitcher();
     initMultipleInstancesToggle();

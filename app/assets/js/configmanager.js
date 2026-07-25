@@ -14,6 +14,20 @@ if (process.platform === 'win32') {
 const configPath = path.join(dataPath, 'config.json')
 const versionCachePath = path.join(dataPath, 'version-cache.json')
 
+const VALID_THEMES = [
+    'auto',
+    'cosmic',
+    'nebula',
+    'emerald',
+    'crimson',
+    'ocean',
+    'sunset',
+    'frost',
+    'gold',
+    'lavender',
+    'midnight'
+]
+
 const DEFAULT_CONFIG = {
     selectedAccount: null,
     authenticationDatabase: {},
@@ -22,7 +36,8 @@ const DEFAULT_CONFIG = {
     modsSyncedVersion: null,
     modsSyncedLoader: null,
     launcherAction: 'hide',
-    allowMultipleInstances: false
+    allowMultipleInstances: false,
+    theme: 'cosmic'
 }
 
 let config = null
@@ -202,6 +217,22 @@ exports.getAllowMultipleInstances = function(){
 
 exports.setAllowMultipleInstances = function(allowed){
     config.allowMultipleInstances = allowed === true
+}
+
+exports.getValidThemes = function(){
+    return VALID_THEMES.slice()
+}
+
+exports.getTheme = function(){
+    const theme = config.theme || 'cosmic'
+    return VALID_THEMES.includes(theme) ? theme : 'cosmic'
+}
+
+exports.setTheme = function(theme){
+    if (!VALID_THEMES.includes(theme)) return false
+    config.theme = theme
+    exports.save()
+    return true
 }
 
 exports.cacheVersionManifest = function(manifest) {

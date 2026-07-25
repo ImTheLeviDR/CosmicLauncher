@@ -26,11 +26,12 @@ function compileTemplate() {
     const loader = ConfigManager.getSelectedLoader() || 'vanilla';
     const launcherAction = ConfigManager.getLauncherAction();
     const allowMultipleInstances = ConfigManager.getAllowMultipleInstances();
+    const theme = ConfigManager.getTheme();
     let installedMods = {};
     try { installedMods = ModManager.getInstalledMods() || {}; } catch(e) { console.error('Failed to load mods for template:', e); }
 
     const assetRoot = `${pathToFileURL(__dirname).href}/`;
-    const html = ejs.render(template, { accounts, selectedUuid, selectedVersion, loader, launcherAction, allowMultipleInstances, installedMods, assetRoot }, { filename: EJS_FILE });
+    const html = ejs.render(template, { accounts, selectedUuid, selectedVersion, loader, launcherAction, allowMultipleInstances, theme, installedMods, assetRoot }, { filename: EJS_FILE });
 
     const compiledPath = getCompiledHtmlPath();
     fs.mkdirSync(path.dirname(compiledPath), { recursive: true });
@@ -322,6 +323,15 @@ ipcMain.handle('setAllowMultipleInstances', (event, allowed) => {
     ConfigManager.setAllowMultipleInstances(allowed)
     ConfigManager.save()
     return { success: true, allowMultipleInstances: ConfigManager.getAllowMultipleInstances() }
+})
+
+ipcMain.handle('getTheme', () => {
+    return { success: true, theme: ConfigManager.getTheme(), themes: ConfigManager.getValidThemes() }
+})
+
+ipcMain.handle('saveTheme', (event, theme) => {
+    const saved = ConfigManager.setTheme(theme)
+    return { success: saved, theme: ConfigManager.getTheme() }
 })
 
 ipcMain.handle('isGameRunning', () => {
