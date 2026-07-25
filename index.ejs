@@ -321,6 +321,9 @@
     .layout {
       position: relative;
       z-index: 10;
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
       width: 100%;
       height: 100vh;
       padding-top: 52px;
@@ -339,6 +342,7 @@
       position: relative;
       width: 540px;
       max-width: 100%;
+      flex-shrink: 0;
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -348,6 +352,48 @@
       background: transparent;
       gap: 0;
       box-sizing: border-box;
+    }
+
+    .player-model-panel {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      min-width: 0;
+      padding: 0 40px 72px 16px;
+      overflow: hidden;
+    }
+
+    .player-model-panel::before {
+      content: '';
+      position: absolute;
+      bottom: 16%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(282px, 68%);
+      height: 46px;
+      background: radial-gradient(ellipse at center, rgba(232, 98, 42, 0.22) 0%, transparent 70%);
+      filter: blur(8px);
+      pointer-events: none;
+    }
+
+    #playerSkinCanvas {
+      display: block;
+      max-width: 100%;
+      position: relative;
+      z-index: 1;
+      cursor: grab;
+    }
+
+    #playerSkinCanvas:active {
+      cursor: grabbing;
+    }
+
+    @media (max-width: 720px) {
+      .player-model-panel {
+        display: none;
+      }
     }
 
     .panel-settings-wrap {
@@ -1880,6 +1926,10 @@
 
     </div>
 
+    <div class="player-model-panel" id="playerModelPanel" aria-hidden="true">
+      <canvas id="playerSkinCanvas"></canvas>
+    </div>
+
   </div>
 
   <!-- Settings Overlay -->
@@ -2020,6 +2070,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/skinview3d/bundles/skinview3d.bundle.js"></script>
   <script>
     /* ── NEBULA CANVAS ── */
     (function () {
@@ -2132,6 +2183,73 @@
     const profileIconCheck = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
     const profileIconRemove = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path><path d="M7 7l1 12a1 1 0 0 0 1 .9h6a1 1 0 0 0 1-.9L17 7"></path><path d="M10 11v5M14 11v5"></path></svg>';
 
+    /* ── PLAYER SKIN VIEWER ── */
+    let playerSkinViewer = null;
+
+    function getPlayerSkinUrl(username) {
+      const name = (username || 'Steve').trim() || 'Steve';
+      return `https://mc-heads.net/skin/${encodeURIComponent(name)}`;
+    }
+
+    function getPlayerModelSize() {
+      const panel = document.getElementById('playerModelPanel');
+      if (!panel) return { w: 282, h: 370 };
+      const w = Math.min(Math.max(panel.clientWidth - 16, 194), 334);
+      const h = Math.min(Math.max(window.innerHeight - 120, 246), 458);
+      return { w, h };
+    }
+
+    function initPlayerModel() {
+      if (typeof skinview3d === 'undefined') return;
+      const canvas = document.getElementById('playerSkinCanvas');
+      if (!canvas) return;
+
+      const activeNameEl = document.getElementById('activeProfileName');
+      const initialName = activeNameEl ? activeNameEl.textContent.trim() : 'Steve';
+      const { w, h } = getPlayerModelSize();
+
+      playerSkinViewer = new skinview3d.SkinViewer({
+        canvas,
+        width: w,
+        height: h,
+        skin: getPlayerSkinUrl(initialName === 'Account' || initialName === 'Select Account' ? 'Steve' : initialName),
+        enableControls: true,
+      });
+
+      playerSkinViewer.background = null;
+      playerSkinViewer.fov = 42;
+      playerSkinViewer.zoom = 0.79;
+      playerSkinViewer.globalLight.intensity = 3.2;
+      playerSkinViewer.cameraLight.intensity = 0.55;
+      playerSkinViewer.animation = new skinview3d.WalkingAnimation();
+      playerSkinViewer.animation.speed = 0.55;
+
+      const controls = playerSkinViewer.controls;
+      controls.enableRotate = true;
+      controls.enableZoom = false;
+      controls.enablePan = false;
+      const polar = Math.PI / 2;
+      controls.minPolarAngle = polar;
+      controls.maxPolarAngle = polar;
+      controls.addEventListener('start', () => { canvas.style.cursor = 'grabbing'; });
+      controls.addEventListener('end', () => { canvas.style.cursor = 'grab'; });
+
+      window.addEventListener('resize', () => {
+        if (!playerSkinViewer) return;
+        const size = getPlayerModelSize();
+        playerSkinViewer.width = size.w;
+        playerSkinViewer.height = size.h;
+      });
+    }
+
+    function updatePlayerSkin(username) {
+      if (!playerSkinViewer) return;
+      const name = (username || 'Steve').trim() || 'Steve';
+      playerSkinViewer.loadSkin(getPlayerSkinUrl(name)).catch(() => {
+        playerSkinViewer.loadSkin(getPlayerSkinUrl('Steve'));
+      });
+    }
+
     function renderProfileItem(uuid, acc, isSelected) {
       return `<div class="profile-item${isSelected ? ' active' : ''}" data-name="${acc.displayName}" data-head="${acc.displayName}" data-uuid="${uuid}">
         <img src="https://mc-heads.net/avatar/${encodeURIComponent(acc.displayName)}/64" alt="Head" class="profile-head-img">
@@ -2229,6 +2347,7 @@
 
         document.getElementById('activeProfileName').textContent = username;
         document.getElementById('activeProfileImg').src = `https://mc-heads.net/avatar/${headName}/64`;
+        updatePlayerSkin(username);
 
         const uuid = el.dataset.uuid;
         if (uuid) {
@@ -2303,6 +2422,7 @@
             profileList.innerHTML = '<div class="profile-item"><span class="profile-info">No accounts</span></div>';
             document.getElementById('activeProfileName').textContent = 'Select Account';
             document.getElementById('activeProfileImg').src = 'https://mc-heads.net/avatar/Steve/64';
+            updatePlayerSkin('Steve');
             return;
           }
           
@@ -2313,6 +2433,7 @@
             if (selected) {
               document.getElementById('activeProfileName').textContent = selected.displayName;
               document.getElementById('activeProfileImg').src = `https://mc-heads.net/avatar/${encodeURIComponent(selected.displayName)}/64`;
+              updatePlayerSkin(selected.displayName);
             }
           }
           initProfileHandlers();
@@ -2995,6 +3116,8 @@ function openVersionPopup() {
         }
       });
     }
+
+    initPlayerModel();
   </script>
 </body>
 
