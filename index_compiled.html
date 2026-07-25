@@ -933,27 +933,11 @@
     }
 
     .play-btn-version:hover {
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .play-btn:hover .play-btn-main::before {
-      left: 150%;
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .play-btn-version:hover ~ .play-btn-main::before {
       display: none;
-    }
-
-    .play-btn-version:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .play-btn-ver-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.52rem;
-      letter-spacing: 0.05em;
-      color: rgba(255, 255, 255, 0.65);
-      line-height: 1;
     }
 
     .play-btn-ver-icon {
@@ -1013,8 +997,11 @@
     /* ── VERSION POPUP ── */
     .version-popup {
       position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.7);
+      top: 52px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(4, 4, 13, 0.88);
       z-index: 200;
       display: flex;
       align-items: center;
@@ -1022,132 +1009,178 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      transition: opacity 0.25s ease, backdrop-filter 0.25s ease, visibility 0.25s;
-      backdrop-filter: blur(0px);
+      transition: opacity 0.15s ease, visibility 0.15s;
+      backdrop-filter: blur(16px);
     }
 
     .version-popup.show {
       opacity: 1;
       visibility: visible;
       pointer-events: all;
-      backdrop-filter: blur(8px);
     }
 
-    .version-popup-inner {
-      position: relative;
+    .version-popup-panel {
+      width: min(360px, calc(100vw - 48px));
+      max-height: min(480px, calc(100vh - 120px));
+      background: #12121c;
+      border: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      transform: translateY(8px);
+      opacity: 0;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75);
     }
 
-    .version-cards {
+    .version-popup.show .version-popup-panel {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .version-popup-header {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
-      transform: scale(0.92);
-      transition: transform 0.25s ease;
-      max-height: min(420px, calc(100vh - 180px));
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding: 8px;
-      scroll-behavior: smooth;
-    }
-    
-    .version-cards::-webkit-scrollbar {
-      width: 6px;
-    }
-    
-    .version-cards::-webkit-scrollbar-track {
-      background: rgba(255,255,255,0.05);
-      border-radius: 3px;
-    }
-    
-    .version-cards::-webkit-scrollbar-thumb {
-      background: var(--accent);
-      border-radius: 3px;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 20px 20px 12px;
+      flex-shrink: 0;
     }
 
-    .version-popup.show .version-cards {
-      transform: scale(1);
-    }
-
-    .version-card {
-      padding: 18px 28px;
-      font-family: 'Space Mono', monospace;
-      font-size: 1rem;
-      color: var(--text);
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    .version-popup-search {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      min-width: 280px;
-      width: 100%;
-      box-sizing: border-box;
-      overflow: hidden;
+      gap: 8px;
+      margin: 0 16px 12px;
+      padding: 4px 10px;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
     }
 
-    .version-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-      transition: left 0.5s ease;
+    .version-popup-search:focus-within {
+      border-color: rgba(232, 98, 42, 0.45);
+      box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.12);
+      background: rgba(255, 255, 255, 0.03);
     }
 
-    .version-card:hover::before {
-      left: 100%;
+    .version-popup-search-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      flex-shrink: 0;
+      transition: color 0.15s ease;
     }
 
-    .version-card:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: var(--accent);
-      transform: translateX(8px) scale(1.02);
-      box-shadow: 0 0 20px rgba(232, 98, 42, 0.2), 0 4px 12px rgba(0, 0, 0, 0.3);
+    .version-popup-search:focus-within .version-popup-search-icon {
+      color: var(--accent2);
     }
 
-    .version-card:active {
-      transform: translateX(8px) scale(0.98);
+    .version-popup-search-icon svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.75;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
-    .version-card.selected {
-      background: rgba(232, 98, 42, 0.15);
-      border-color: var(--accent);
-      color: var(--accent);
-      box-shadow: 0 0 16px rgba(232, 98, 42, 0.3), 0 0 0 1px var(--accent) inset;
+    .version-popup-search-input {
+      flex: 1;
+      min-width: 0;
+      padding: 6px 0;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.01em;
+      outline: none;
     }
 
-    .version-card-check {
-      opacity: 0;
-      color: var(--accent);
-      transform: scale(0);
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    .version-popup-search-input::placeholder {
+      color: var(--muted);
+      opacity: 0.75;
     }
 
-    .version-card.selected .version-card-check {
-      opacity: 1;
-      transform: scale(1);
+    .version-popup-search-input::-webkit-search-cancel-button {
+      display: none;
     }
 
-    .version-close {
-      align-self: flex-end;
-      font-size: 1.5rem;
-      line-height: 1;
+    .version-popup-empty {
+      padding: 24px 16px;
+      text-align: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8125rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .version-popup-heading {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px;
+      letter-spacing: -0.02em;
+      line-height: 1.4;
+    }
+
+    .version-popup-desc {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .version-popup-close {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      background: transparent;
+      border: 1px solid var(--border);
       color: var(--muted);
       cursor: pointer;
-      transition: color 0.2s;
-      padding: 4px 8px;
-      margin-bottom: 4px;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
     }
 
-    .version-close:hover {
+    .version-popup-close svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+    }
+
+    .version-popup-close:hover {
+      background: rgba(255, 255, 255, 0.05);
       color: var(--text);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .version-popup-list {
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+      scroll-behavior: smooth;
+    }
+
+    .version-popup-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .version-popup-list::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .version-popup-list::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 3px;
     }
 
     /* ── LOADER SWITCHER (matches profile switcher) ── */
@@ -2871,22 +2904,36 @@
         <div class="version-label" id="versionLabel">Version: <span id="versionLabelText">26.2</span></div>
       </div>
 
-      <!-- Version Popup -->
-      <div class="version-popup" id="versionPopup" onclick="handlePopupBackdropClick(event)">
-        <div class="version-popup-inner">
-          <div class="version-close" onclick="closeVersionPopup()">&times;</div>
-          <div class="version-cards" id="versionCardsContainer">
-          </div>
-        </div>
-      </div>
-      <!-- End Version Popup -->
-
     </div>
 
     <div class="player-model-panel" id="playerModelPanel" aria-hidden="true">
       <canvas id="playerSkinCanvas"></canvas>
     </div>
 
+  </div>
+
+  <!-- Version Popup -->
+  <div class="version-popup" id="versionPopup" onclick="handlePopupBackdropClick(event)">
+    <div class="version-popup-panel" onclick="event.stopPropagation()">
+      <div class="version-popup-header">
+        <div class="version-popup-header-text">
+          <div class="version-popup-heading">Minecraft Version</div>
+          <div class="version-popup-desc">Choose which release to launch.</div>
+        </div>
+        <button type="button" class="version-popup-close" onclick="closeVersionPopup()" aria-label="Close">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 6L6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="version-popup-search">
+        <span class="version-popup-search-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+        </span>
+        <input type="search" id="versionSearchInput" class="version-popup-search-input" placeholder="Search versions..." autocomplete="off" spellcheck="false" aria-label="Search versions">
+      </div>
+      <div class="version-popup-list loader-list" id="versionList" role="listbox" aria-label="Minecraft versions"></div>
+    </div>
   </div>
 
   <!-- Settings Overlay -->
@@ -3051,11 +3098,11 @@
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FYL57xq9U%2F18d0e7f076d3d6ed5bedd472b853909aac5da202_96.webp">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="">Iris Shaders</div>
+                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Iris Shaders</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.2</div>
+                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="YL57xq9U" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3070,11 +3117,11 @@
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FAANobbMI%2F295862f4724dc3f78df3447ad6072b2dcd3ef0c9_96.webp">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="">Sodium</div>
+                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Sodium</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.2</div>
+                      <div class="mod-desc">Supports: 26.1.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="AANobbMI" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3089,11 +3136,11 @@
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FUIexcMP1%2F2d578a1f4d4bebebf19c7847eb9a1575a8a0b825_96.webp">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="">Borderless Fullscreen</div>
+                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Borderless Fullscreen</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.2</div>
+                      <div class="mod-desc">Supports: 26.1.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="UIexcMP1" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3108,11 +3155,11 @@
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2Fw7ThoJFB%2Fe2de67a0bfb9e8aa2347982ab3ec5463f26cca31_96.webp">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="">Zoomify (Zoom)</div>
+                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Zoomify (Zoom)</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.2</div>
+                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="w7ThoJFB" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3127,11 +3174,11 @@
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FmOgUt4GM%2F5a20ed1450a0e1e79a1fe04e61bb4e5878bf1d20.png">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="">Mod Menu</div>
+                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Mod Menu</div>
                           <div class="mod-author-tag">fabric, quilt</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.2</div>
+                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="mOgUt4GM" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3146,11 +3193,11 @@
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FeXts2L7r%2Fe9c9990896e6422bffc5f73d2c41b8f077348f83.png">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="">Text Placeholder API</div>
+                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Text Placeholder API</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.2-pre-1, 26.2</div>
+                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="eXts2L7r" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3165,11 +3212,11 @@
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FP7dR8mSH%2Ficon.png">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="">Fabric API</div>
+                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Fabric API</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.2</div>
+                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="P7dR8mSH" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3184,11 +3231,11 @@
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2F1eAoo2KR%2F08c0cd32515e260f4bb20bbc0696510041523f9a_96.webp">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="">YetAnotherConfigLib (YACL)</div>
+                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">YetAnotherConfigLib (YACL)</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.2</div>
+                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="1eAoo2KR" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3226,11 +3273,11 @@
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 1.21, 1.21.1, 1.21.2, 1.21.3, 1.21.4, 1.21.5, 1.21.6, 1.21.7, 1.21.8, 1.21.9, 1.21.10, 1.21.11</div>
+                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2</div>
                       <div class="mod-actions">
-                        <div class="mod-toggle-wrap " data-id="HwGFylw6" data-enabled="false">
+                        <div class="mod-toggle-wrap on" data-id="HwGFylw6" data-enabled="true">
                           <div class="mod-switch"></div>
-                          <span>Disabled</span>
+                          <span>Enabled</span>
                         </div>
                         <button class="mod-btn remove" data-id="HwGFylw6"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
                       </div>
@@ -3241,11 +3288,11 @@
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FPtjYWJkn%2F0df4fb22a11e1dcb5e83cb0aadd275b571aca7a9_96.webp">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="">Sodium Extra</div>
+                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Sodium Extra</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.2</div>
+                      <div class="mod-desc">Supports: 26.1.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="PtjYWJkn" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3279,11 +3326,11 @@
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FBh37bMuy%2Ficon.png">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="">Reese&#39;s Sodium Options</div>
+                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Reese&#39;s Sodium Options</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.2</div>
+                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="Bh37bMuy" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -4767,39 +4814,56 @@
       }
     }
 
-/* ── VERSION POPUP LOGIC ── */
+/* ── VERSION POPUP ── */
     let selectedVersion = '26.2';
     let popupVisible = false;
     let availableVersions = [];
-    let tickSound = null;
+    let versionSearchQuery = '';
 
-    async function loadTickSound() {
-      try {
-        const response = await fetch('./sounds/tick.mp3');
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        tickSound = new Audio(url);
-      } catch (e) {
-        console.log('Tick sound not found, using fallback');
-      }
+    const VERSION_CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+
+    function getFilteredVersions() {
+      const query = versionSearchQuery.trim().toLowerCase();
+      if (!query) return availableVersions;
+      return availableVersions.filter(v => v.id.toLowerCase().includes(query));
     }
 
-    function playTick() {
-      if (tickSound) {
-        tickSound.currentTime = 0;
-        tickSound.play().catch(() => {});
-      } else {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.frequency.value = 800;
-        gain.gain.setValueAtTime(0.1, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.1);
+    function openVersionPopup() {
+      const btn = document.getElementById('playBtn');
+      if (btn?.classList.contains('launching') || btn?.classList.contains('stop-mode')) return;
+      popupVisible = true;
+      document.getElementById('versionPopup').classList.add('show');
+      requestAnimationFrame(() => {
+        document.getElementById('versionSearchInput')?.focus();
+      });
+    }
+
+    function closeVersionPopup() {
+      popupVisible = false;
+      document.getElementById('versionPopup').classList.remove('show');
+      versionSearchQuery = '';
+      const searchInput = document.getElementById('versionSearchInput');
+      if (searchInput) searchInput.value = '';
+      renderVersionList();
+    }
+
+    function handlePopupBackdropClick(event) {
+      if (event.target === document.getElementById('versionPopup')) closeVersionPopup();
+    }
+
+    function setVersion(versionId) {
+      if (versionId === selectedVersion) {
+        closeVersionPopup();
+        return;
       }
+      const oldVersion = selectedVersion;
+      selectedVersion = versionId;
+      updateVersionUI();
+      if (window.ipcRenderer) {
+        window.ipcRenderer.invoke('saveSelectedVersion', selectedVersion);
+      }
+      setTimeout(closeVersionPopup, 150);
+      checkModCompatibilityOnVersionChange(selectedVersion, oldVersion);
     }
 
     async function loadVersions() {
@@ -4817,7 +4881,7 @@
           } else if (availableVersions.length > 0) {
             selectedVersion = availableVersions[0].id;
           }
-          updateVersionCards();
+          updateVersionUI();
         }
       } catch (err) {
         console.error('Failed to load versions:', err);
@@ -4829,78 +4893,57 @@
           { id: '1.18.2', type: 'release' }
         ];
         selectedVersion = savedVersion && availableVersions.some(v => v.id === savedVersion) ? savedVersion : availableVersions[0].id;
-        updateVersionCards();
+        updateVersionUI();
       }
     }
 
-    function updateVersionCards() {
-      const cardsContainer = document.querySelector('.version-cards');
-      if (!cardsContainer) return;
-      cardsContainer.innerHTML = availableVersions.map(v => `
-        <div class="version-card ${v.id === selectedVersion ? 'selected' : ''}" data-v="${v.id}" onclick="selectVersion(this)">
-          <span>${v.id}</span>
-          <span class="version-card-check">&#x2713;</span>
-        </div>
-      `).join('');
-      document.getElementById('versionLabelText').textContent = selectedVersion;
-      if (!cardsContainer._hasScrollListener) {
-        cardsContainer._hasScrollListener = true;
-        cardsContainer.addEventListener('wheel', handleVersionScroll, { passive: true });
+    function updateVersionUI() {
+      const labelText = document.getElementById('versionLabelText');
+      if (labelText) labelText.textContent = selectedVersion;
+      renderVersionList();
+    }
+
+    function renderVersionList() {
+      const list = document.getElementById('versionList');
+      if (!list) return;
+
+      const filtered = getFilteredVersions();
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="version-popup-empty">No versions match your search.</div>';
+        return;
       }
-      cardsContainer.querySelectorAll('.version-card').forEach(card => {
-        card.addEventListener('mouseenter', () => playTick());
+
+      list.innerHTML = filtered.map(v => {
+        const isActive = v.id === selectedVersion;
+        return `<button type="button" class="loader-item${isActive ? ' active' : ''}" data-version="${v.id}" role="option" aria-selected="${isActive ? 'true' : 'false'}">
+          <span class="loader-item-info">
+            <span class="loader-item-name">${v.id}</span>
+            <span class="loader-item-type">Release</span>
+          </span>
+          <span class="loader-item-actions">
+            <span class="loader-check" aria-hidden="true">${VERSION_CHECK_ICON}</span>
+          </span>
+        </button>`;
+      }).join('');
+
+      list.querySelectorAll('.loader-item[data-version]').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setVersion(item.dataset.version);
+        });
       });
     }
 
-    let scrollTimeout = null;
-    let lastScrollTop = 0;
-    function handleVersionScroll(e) {
-      const cardsContainer = document.querySelector('.version-cards');
-      if (!cardsContainer) return;
-      
-      const currentScrollTop = cardsContainer.scrollTop;
-      const maxScrollTop = cardsContainer.scrollHeight - cardsContainer.clientHeight;
-      
-      if (scrollTimeout) return;
-      
-      const isScrollDown = e.deltaY > 0;
-      const isScrollUp = e.deltaY < 0;
-      
-      if ((isScrollUp && currentScrollTop <= 0) || (isScrollDown && currentScrollTop >= maxScrollTop)) {
-        return;
-      }
-      
-      scrollTimeout = setTimeout(() => { scrollTimeout = null; }, 150);
-      playTick();
-      
-      lastScrollTop = currentScrollTop;
-    }
-
-function openVersionPopup() {
-      const btn = document.getElementById('playBtn');
-      if (btn?.classList.contains('launching') || btn?.classList.contains('stop-mode')) return;
-      popupVisible = true;
-      document.getElementById('versionPopup').classList.add('show');
-    }
-    function closeVersionPopup() {
-      popupVisible = false;
-      document.getElementById('versionPopup').classList.remove('show');
-    }
-    function handlePopupBackdropClick(event) {
-      if (event.target === document.getElementById('versionPopup')) closeVersionPopup();
-    }
-    function selectVersion(el) {
-      document.querySelectorAll('.version-card').forEach(o => o.classList.remove('selected'));
-      el.classList.add('selected');
-      const newVersion = el.dataset.v;
-      const oldVersion = selectedVersion;
-      selectedVersion = newVersion;
-      document.getElementById('versionLabelText').textContent = selectedVersion;
-      if (window.ipcRenderer) {
-        window.ipcRenderer.invoke('saveSelectedVersion', selectedVersion);
-      }
-      setTimeout(closeVersionPopup, 300);
-      checkModCompatibilityOnVersionChange(newVersion, oldVersion);
+    function initVersionSearch() {
+      const input = document.getElementById('versionSearchInput');
+      if (!input) return;
+      input.addEventListener('input', () => {
+        versionSearchQuery = input.value;
+        renderVersionList();
+      });
+      input.addEventListener('keydown', (e) => {
+        e.stopPropagation();
+      });
     }
 
     let _versionChangePending = false;
@@ -4946,11 +4989,8 @@ function openVersionPopup() {
             showToast('Mods synced', result.incompatible.length + ' mod(s) disabled, ' + result.updatable.length + ' updated');
           } else {
             selectedVersion = oldVersion;
-            document.getElementById('versionLabelText').textContent = oldVersion;
+            updateVersionUI();
             if (window.ipcRenderer) window.ipcRenderer.invoke('saveSelectedVersion', oldVersion);
-            document.querySelectorAll('.version-card').forEach(c => {
-              if (c.dataset.v === oldVersion) c.classList.add('selected');
-            });
           }
           _versionChangePending = false;
           return;
@@ -5012,7 +5052,7 @@ function openVersionPopup() {
     }
 
     loadVersions();
-    loadTickSound();
+    initVersionSearch();
     loadLoaderPreference();
     loadLaunchOptions();
     initLoaderSwitcher();
@@ -5032,6 +5072,10 @@ function openVersionPopup() {
       });
     }
 
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && popupVisible) closeVersionPopup();
+    });
+
     /* ── WIRE UP BUTTONS ── */
     document.getElementById('playBtnDots').addEventListener('click', function (e) {
       e.stopPropagation();
@@ -5050,7 +5094,6 @@ function openVersionPopup() {
       const btn = document.getElementById('playBtn');
       const status = document.getElementById('playBtnStatus');
       const icon = document.getElementById('playBtnIcon');
-      const dots = document.getElementById('playBtnDots');
       if (btn.disabled) return;
 
       if (btn.classList.contains('stop-mode')) {
