@@ -42,6 +42,7 @@
 
     body.booting .titlebar,
     body.booting .layout,
+    body.booting .panel-actions,
     body.booting .particles-canvas {
       opacity: 0;
       visibility: hidden;
@@ -118,12 +119,6 @@
       align-self: stretch;
     }
 
-    .tb-control-group .profile-wrap {
-      display: flex;
-      align-items: stretch;
-      height: 100%;
-    }
-
     .tb-actions {
       display: flex;
       align-items: stretch;
@@ -159,12 +154,15 @@
     }
 
     .tb-control-group > :first-child .tb-seg-btn,
-    .tb-control-group > .tb-seg-btn:first-child {
+    .tb-control-group > .tb-seg-btn:first-child,
+    .panel-control-group > :first-child .tb-seg-btn,
+    .panel-control-group > .tb-seg-btn:first-child {
       border-left: none;
       border-radius: 0;
     }
 
-    .tb-control-group > .tb-seg-btn:last-child {
+    .tb-control-group > .tb-seg-btn:last-child,
+    .panel-control-group > .tb-seg-btn:last-child {
       border-radius: 0;
     }
 
@@ -193,6 +191,7 @@
       align-items: center;
       justify-content: center;
       transition: background 0.1s ease, color 0.1s ease;
+      border-left: none;
     }
 
     .tb-win-btn:hover {
@@ -779,7 +778,7 @@
     /* ── PLAY BUTTON ── */
     .play-wrap {
       position: relative;
-      margin-bottom: 28px;
+      margin-bottom: 0;
     }
 
     .version-label {
@@ -793,6 +792,93 @@
 
     .version-label span {
       color: var(--accent);
+    }
+
+    .panel-actions {
+      position: fixed;
+      top: 72px;
+      right: 24px;
+      z-index: 90;
+      pointer-events: none;
+    }
+
+    .panel-control-group {
+      display: inline-flex;
+      align-items: stretch;
+      height: 44px;
+      max-width: min(420px, calc(100vw - 48px));
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: visible;
+      background: rgba(8, 8, 20, 0.92);
+      backdrop-filter: blur(20px);
+      box-shadow:
+        0 12px 36px rgba(0, 0, 0, 0.55),
+        0 2px 8px rgba(0, 0, 0, 0.35);
+      pointer-events: auto;
+      -webkit-app-region: no-drag;
+    }
+
+    .panel-control-group .header-btn-profile {
+      min-width: 0;
+      flex: 1 1 auto;
+      border-radius: 10px 0 0 10px;
+    }
+
+    .panel-control-group .header-btn-profile:hover,
+    .panel-control-group .header-btn-profile:active,
+    .panel-control-group .profile-wrap.open .header-btn-profile {
+      border-radius: 10px 0 0 10px;
+    }
+
+    .panel-control-group .tb-settings-btn,
+    .panel-control-group .tb-settings-btn:hover,
+    .panel-control-group .tb-settings-btn:active {
+      border-radius: 0 10px 10px 0;
+    }
+
+    .panel-control-group .profile-wrap.open {
+      z-index: 120;
+    }
+
+    .panel-control-group .profile-dropdown {
+      top: calc(100% + 8px);
+      border-top: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+    }
+
+    .panel-control-group .profile-dropdown .profile-item:first-child {
+      border-radius: 10px 10px 0 0;
+    }
+
+    .panel-control-group .profile-dropdown .profile-item:first-child:last-child {
+      border-radius: 10px 10px 0 0;
+    }
+
+    .panel-control-group .profile-dropdown .add-account-btn {
+      border-radius: 0 0 10px 10px;
+    }
+
+    .panel-control-group .tb-seg-btn {
+      border-left-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .panel-control-group .profile-wrap {
+      display: flex;
+      align-items: stretch;
+      height: 100%;
+      border-radius: 10px 0 0 10px;
+      overflow: hidden;
+    }
+
+    .panel-control-group .profile-wrap.open {
+      overflow: visible;
+    }
+
+    .panel-control-group .tb-seg-btn {
+      height: 100%;
     }
 
     .play-btn {
@@ -2774,68 +2860,6 @@
     <div class="tb-drag-spacer" aria-hidden="true"></div>
     <div class="tb-actions">
       <div class="tb-control-group">
-        <div class="profile-wrap" id="profileWrap">
-          <button type="button" class="tb-seg-btn header-btn-profile" id="profileTrigger" aria-expanded="false" aria-haspopup="true" title="Switch account">
-            <img src="" alt="" class="profile-head-img" id="activeProfileImg" data-uuid="02163933cfbf431cab26f48860c2f9a1" data-name="TheLeviDR">
-            <span class="profile-name" id="activeProfileName" data-uuid="02163933cfbf431cab26f48860c2f9a1">TheLeviDR</span>
-            <span class="profile-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
-          </button>
-
-          <div class="profile-dropdown" id="profileDropdown">
-            <div class="profile-list" id="profileList">
-              
-              
-                
-                  
-                  <div class="profile-item active" data-name="TheLeviDR" data-uuid="02163933cfbf431cab26f48860c2f9a1">
-                    <img src="" alt="Head" class="profile-head-img" data-uuid="02163933cfbf431cab26f48860c2f9a1" data-name="TheLeviDR">
-                    <div class="profile-info">
-                      <span class="profile-item-name">TheLeviDR</span>
-                      <span class="profile-item-type">Microsoft</span>
-                    </div>
-                    <div class="profile-actions">
-                      <span class="profile-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
-                      <span class="profile-delete" title="Remove account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path><path d="M7 7l1 12a1 1 0 0 0 1 .9h6a1 1 0 0 0 1-.9L17 7"></path><path d="M10 11v5M14 11v5"></path></svg></span>
-                    </div>
-                  </div>
-                
-                  
-                  <div class="profile-item" data-name="Terrimett" data-uuid="61ccdfded7a349729cfbbd3c14efced3">
-                    <img src="" alt="Head" class="profile-head-img" data-uuid="61ccdfded7a349729cfbbd3c14efced3" data-name="Terrimett">
-                    <div class="profile-info">
-                      <span class="profile-item-name">Terrimett</span>
-                      <span class="profile-item-type">Microsoft</span>
-                    </div>
-                    <div class="profile-actions">
-                      <span class="profile-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
-                      <span class="profile-delete" title="Remove account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path><path d="M7 7l1 12a1 1 0 0 0 1 .9h6a1 1 0 0 0 1-.9L17 7"></path><path d="M10 11v5M14 11v5"></path></svg></span>
-                    </div>
-                  </div>
-                
-              
-            </div>
-
-            <div class="profile-divider"></div>
-
-            <div class="add-account-btn" id="addAccountBtn">
-              <div class="add-icon-wrap">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-              </div>
-              <span>Add Microsoft Account</span>
-            </div>
-          </div>
-        </div>
-
-        <button type="button" class="tb-seg-btn tb-settings-btn" onclick="openSettings()" title="Settings" aria-label="Settings">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-          </svg>
-        </button>
-
         <button type="button" class="tb-seg-btn tb-win-btn" onclick="minimize()" title="Minimize" aria-label="Minimize">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
             <line x1="3" y1="8" x2="13" y2="8"></line>
@@ -2851,6 +2875,72 @@
   </div>
 
   <canvas class="particles-canvas" id="particles"></canvas>
+
+  <div class="panel-actions">
+    <div class="tb-control-group panel-control-group">
+      <div class="profile-wrap" id="profileWrap">
+        <button type="button" class="tb-seg-btn header-btn-profile" id="profileTrigger" aria-expanded="false" aria-haspopup="true" title="Switch account">
+          <img src="" alt="" class="profile-head-img" id="activeProfileImg" data-uuid="02163933cfbf431cab26f48860c2f9a1" data-name="TheLeviDR">
+          <span class="profile-name" id="activeProfileName" data-uuid="02163933cfbf431cab26f48860c2f9a1">TheLeviDR</span>
+          <span class="profile-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+        </button>
+
+        <div class="profile-dropdown" id="profileDropdown">
+          <div class="profile-list" id="profileList">
+            
+            
+              
+                
+                <div class="profile-item active" data-name="TheLeviDR" data-uuid="02163933cfbf431cab26f48860c2f9a1">
+                  <img src="" alt="Head" class="profile-head-img" data-uuid="02163933cfbf431cab26f48860c2f9a1" data-name="TheLeviDR">
+                  <div class="profile-info">
+                    <span class="profile-item-name">TheLeviDR</span>
+                    <span class="profile-item-type">Microsoft</span>
+                  </div>
+                  <div class="profile-actions">
+                    <span class="profile-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                    <span class="profile-delete" title="Remove account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path><path d="M7 7l1 12a1 1 0 0 0 1 .9h6a1 1 0 0 0 1-.9L17 7"></path><path d="M10 11v5M14 11v5"></path></svg></span>
+                  </div>
+                </div>
+              
+                
+                <div class="profile-item" data-name="Terrimett" data-uuid="61ccdfded7a349729cfbbd3c14efced3">
+                  <img src="" alt="Head" class="profile-head-img" data-uuid="61ccdfded7a349729cfbbd3c14efced3" data-name="Terrimett">
+                  <div class="profile-info">
+                    <span class="profile-item-name">Terrimett</span>
+                    <span class="profile-item-type">Microsoft</span>
+                  </div>
+                  <div class="profile-actions">
+                    <span class="profile-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                    <span class="profile-delete" title="Remove account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path><path d="M7 7l1 12a1 1 0 0 0 1 .9h6a1 1 0 0 0 1-.9L17 7"></path><path d="M10 11v5M14 11v5"></path></svg></span>
+                  </div>
+                </div>
+              
+            
+          </div>
+
+          <div class="profile-divider"></div>
+
+          <div class="add-account-btn" id="addAccountBtn">
+            <div class="add-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </div>
+            <span>Add Microsoft Account</span>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="tb-seg-btn tb-settings-btn" onclick="openSettings()" title="Settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
 
   <div class="layout" id="layout">
 
