@@ -23,6 +23,10 @@ const DEFAULT_CONFIG = {
 
 let config = null
 
+let cachedVersionManifest = null
+let versionCacheTime = 0
+const VERSION_CACHE_TTL = 30 * 60 * 1000 // 30 minutes
+
 exports.getLauncherDirectory = function(){
     return dataPath
 }
@@ -54,11 +58,15 @@ exports.load = function(){
         }
     }
     
-    // Pre-load cached version manifest
+    // Pre-load cached version manifest (respect file mtime for TTL)
     try {
         if (fs.existsSync(versionCachePath)) {
-            cachedVersionManifest = JSON.parse(fs.readFileSync(versionCachePath, 'UTF-8'))
-            versionCacheTime = Date.now()
+            const stat = fs.statSync(versionCachePath)
+            const cacheAge = Date.now() - stat.mtimeMs
+            if (cacheAge < VERSION_CACHE_TTL) {
+                cachedVersionManifest = JSON.parse(fs.readFileSync(versionCachePath, 'UTF-8'))
+                versionCacheTime = stat.mtimeMs
+            }
         }
     } catch (err) {}
     
@@ -154,10 +162,6 @@ exports.setSelectedLoader = function(loader){
     config.selectedLoader = loader
     exports.save()
 }
-
-let cachedVersionManifest = null
-let versionCacheTime = 0
-const VERSION_CACHE_TTL = 30 * 60 * 1000 // 30 minutes
 
 exports.cacheVersionManifest = function(manifest) {
     cachedVersionManifest = manifest

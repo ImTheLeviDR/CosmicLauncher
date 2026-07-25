@@ -341,7 +341,7 @@ ipcMain.handle('launchGame', async (event, versionId, loader) => {
 
 ipcMain.handle('getAvailableVersions', async () => {
     try {
-        const manifest = await LaunchManager.getVersionManifest()
+        const manifest = await LaunchManager.getVersionManifest(true)
         return { success: true, versions: manifest.versions }
     } catch(error) {
         console.error('Version manifest error:', error)

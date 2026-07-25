@@ -192,15 +192,26 @@ class LaunchManager {
     });
   }
 
-  async getVersionManifest() {
-    const cached = ConfigManager.getCachedVersionManifest();
-    if (cached) {
-      this.log("Using cached version manifest");
-      return cached;
+  async getVersionManifest(forceRefresh = false) {
+    if (!forceRefresh) {
+      const cached = ConfigManager.getCachedVersionManifest();
+      if (cached) {
+        this.log("Using cached version manifest");
+        return cached;
+      }
     }
-    const manifest = await this.fetchJson(MINECRAFT_VERSION_MANIFEST);
-    ConfigManager.cacheVersionManifest(manifest);
-    return manifest;
+    try {
+      const manifest = await this.fetchJson(MINECRAFT_VERSION_MANIFEST);
+      ConfigManager.cacheVersionManifest(manifest);
+      return manifest;
+    } catch (err) {
+      const cached = ConfigManager.getCachedVersionManifest();
+      if (cached) {
+        this.log("Network unavailable, using cached version manifest");
+        return cached;
+      }
+      throw err;
+    }
   }
 
   async ensureVersion(versionId) {
