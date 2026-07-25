@@ -40,6 +40,15 @@
       user-select: none;
     }
 
+    body.booting .titlebar,
+    body.booting .layout,
+    body.booting .panel-settings-wrap,
+    body.booting .particles-canvas {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
     #nebula {
       position: absolute;
       inset: 0;
@@ -1113,91 +1122,208 @@
       color: var(--text);
     }
 
-    /* ── LOADER TOGGLE ── */
-    .loader-toggle {
+    /* ── LOADER SWITCHER (matches profile switcher) ── */
+    .loader-wrap {
+      position: relative;
+      z-index: 25;
+    }
+
+    .loader-trigger {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 18px;
+      gap: 12px;
+      width: 100%;
+      padding: 12px 14px;
       background: transparent;
       border: 1px solid var(--border);
       border-radius: 0;
+      color: var(--text);
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+      text-align: left;
     }
 
-    .loader-toggle-left {
+    .loader-trigger:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .loader-wrap.open .loader-trigger {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .loader-trigger:focus-visible {
+      outline: 2px solid var(--accent2);
+      outline-offset: -2px;
+    }
+
+    .loader-trigger-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .loader-trigger-name {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: 0.02em;
+      line-height: 1.45;
+    }
+
+    .loader-trigger-type {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 3px;
+      line-height: 1.45;
+    }
+
+    .loader-trigger-chevron {
       display: flex;
       align-items: center;
-      gap: 10px;
-    }
-
-    .loader-toggle-label {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.9375rem;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      color: var(--text);
-      line-height: 1.3;
-    }
-
-    .loader-toggle-sublabel {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.8125rem;
-      font-weight: 400;
+      justify-content: center;
       color: var(--muted);
-      line-height: 1.45;
-      margin-top: 4px;
-    }
-
-    .loader-label {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--muted);
-      transition: color 0.3s;
-    }
-
-    .loader-label.active {
-      color: var(--accent);
-    }
-
-    .loader-switch {
-      position: relative;
-      width: 48px;
-      height: 24px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: transform 0.2s ease, color 0.2s ease;
       flex-shrink: 0;
     }
 
-    .loader-switch:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.15);
+    .loader-trigger-chevron svg {
+      width: 12px;
+      height: 12px;
+      display: block;
     }
 
-    .loader-switch.fabric {
-      background: rgba(232, 98, 42, 0.2);
-      border-color: rgba(232, 98, 42, 0.4);
+    .loader-wrap.open .loader-trigger-chevron {
+      transform: rotate(180deg);
+      color: var(--accent2);
     }
 
-    .loader-knob {
+    .loader-menu {
       position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: var(--muted);
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: rgba(4, 4, 13, 0.88);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-4px);
+      transform-origin: top center;
+      transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
+      backdrop-filter: blur(16px);
     }
 
-    .loader-switch.fabric .loader-knob {
-      left: 27px;
-      background: var(--accent);
-      box-shadow: 0 0 10px rgba(232, 98, 42, 0.5);
+    .loader-wrap.open .loader-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .loader-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .loader-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 0;
+      cursor: pointer;
+      transition: background 0.1s ease;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      width: 100%;
+      background: transparent;
+      text-align: left;
+    }
+
+    .loader-item:last-child {
+      border-bottom: none;
+    }
+
+    .loader-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .loader-item.active {
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: inset 2px 0 0 var(--accent);
+    }
+
+    .loader-item-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .loader-item-name {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: 0.02em;
+      line-height: 1.45;
+    }
+
+    .loader-item-type {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 3px;
+      line-height: 1.45;
+    }
+
+    .loader-item-actions {
+      position: relative;
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .loader-check {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      opacity: 0;
+      transform: scale(0.5);
+      transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+    }
+
+    .loader-check svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+    }
+
+    .loader-item.active .loader-check {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .loader-item:hover .loader-check {
+      opacity: 0;
+      transform: scale(0.5);
     }
 
     /* ── OPEN MODS BUTTON ── */
@@ -1225,28 +1351,91 @@
     }
 
     .open-mods-icon {
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      font-size: 0.75rem;
       flex-shrink: 0;
+      color: var(--muted);
+      transition: color 0.15s ease;
+    }
+
+    .open-mods-icon svg {
+      width: 18px;
+      height: 18px;
+      display: block;
     }
 
     .open-mods-btn:hover .open-mods-icon {
-      background: transparent;
-      border-color: rgba(232, 98, 42, 0.35);
       color: var(--accent);
     }
 
     .open-mods-arrow {
       margin-left: auto;
       color: var(--muted);
-      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      transition: color 0.15s ease, transform 0.15s ease;
+    }
+
+    .open-mods-arrow svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+    }
+
+    .open-mods-btn:hover .open-mods-arrow {
+      color: var(--accent2);
+      transform: translateX(2px);
+    }
+
+    .settings-tab-icon svg,
+    .open-mods-icon svg,
+    .open-mods-arrow svg,
+    .log-action-btn svg,
+    .log-empty-icon svg,
+    .mod-btn.remove svg {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.75;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .settings-tab-icon {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: currentColor;
+      opacity: 0.7;
+    }
+
+    .settings-tab.active .settings-tab-icon {
+      opacity: 1;
+      color: var(--accent2);
+    }
+
+    .settings-tab-icon svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+
+    .settings-inline-icon {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+
+    .settings-inline-icon svg {
+      width: 13px;
+      height: 13px;
+      display: block;
     }
 
     /* ── SETTINGS PANEL (Redesigned) ── */
@@ -1309,10 +1498,10 @@
       font-family: 'Syne', sans-serif;
       font-size: 1.35rem;
       font-weight: 800;
-      line-height: 1.2;
+      line-height: 1.45;
       color: var(--text);
       margin-bottom: 0;
-      padding: 20px 16px 22px;
+      padding: 22px 16px 24px;
       letter-spacing: -0.03em;
       border-bottom: 1px solid var(--border);
     }
@@ -1324,7 +1513,7 @@
     }
 
     .settings-tab {
-      padding: 14px 16px;
+      padding: 15px 16px;
       font-family: 'Syne', sans-serif;
       font-size: 0.875rem;
       font-weight: 600;
@@ -1337,7 +1526,8 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      line-height: 1.3;
+      line-height: 1.5;
+      min-height: 48px;
     }
 
     .settings-tab:hover {
@@ -1356,7 +1546,7 @@
       align-items: center;
       gap: 10px;
       width: 100%;
-      padding: 14px 16px;
+      padding: 15px 16px;
       margin-top: auto;
       background: transparent;
       border: none;
@@ -1369,7 +1559,8 @@
       cursor: pointer;
       transition: background 0.1s ease, color 0.1s ease;
       flex-shrink: 0;
-      line-height: 1.3;
+      line-height: 1.5;
+      min-height: 48px;
     }
 
     .settings-back svg {
@@ -1409,15 +1600,50 @@
       padding: 40px 48px 48px;
     }
 
+    .settings-body:has(#settingsTabLogs.active) {
+      overflow: hidden;
+    }
+
     .settings-body::-webkit-scrollbar { width: 6px; }
     .settings-body::-webkit-scrollbar-track { background: transparent; }
     .settings-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
     .settings-body::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-    .settings-tab-content { display: none; animation: fadeIn 0.3s ease; }
+    .settings-tab-content { display: none; }
     .settings-tab-content.active { display: block; }
-    
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    @keyframes settingsItemIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .settings-tab-content.active .settings-section,
+    .settings-tab-content.active .log-panel {
+      animation: settingsItemIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      opacity: 0;
+    }
+
+    .mods-sub-tabs.animate-in,
+    .mod-search-panel.animate-in,
+    .mod-card.animate-in,
+    .mods-empty.animate-in {
+      animation: settingsItemIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      opacity: 0;
+    }
+
+    .settings-tab-content.active .settings-section:nth-child(1) { animation-delay: 0.04s; }
+    .settings-tab-content.active .settings-section:nth-child(2) { animation-delay: 0.12s; }
+    .settings-tab-content.active .settings-section:nth-child(3) { animation-delay: 0.20s; }
+    .mods-sub-tabs.animate-in { animation-delay: 0.04s; }
+    .mod-search-panel.animate-in { animation-delay: 0.10s; }
+    .mod-card.animate-in { animation-delay: calc(0.08s + var(--stagger, 0) * 0.05s); }
+    .mods-empty.animate-in { animation-delay: 0.12s; }
+    .settings-tab-content.active .log-panel { animation-delay: 0.06s; }
 
     .settings-section { margin-bottom: 36px; }
 
@@ -1428,7 +1654,7 @@
       color: var(--text);
       margin-bottom: 2px;
       letter-spacing: -0.02em;
-      line-height: 1.2;
+      line-height: 1.4;
     }
 
     .settings-section-description {
@@ -1438,7 +1664,7 @@
       color: var(--muted);
       margin-top: 0;
       margin-bottom: 20px;
-      line-height: 1.35;
+      line-height: 1.5;
     }
 
     .settings-log-header {
@@ -1446,7 +1672,7 @@
       align-items: flex-start;
       justify-content: space-between;
       gap: 16px;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
 
     .settings-log-header > div {
@@ -1454,33 +1680,284 @@
       min-width: 0;
     }
 
-    .settings-log-clear {
+    .log-panel {
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 420px;
+      flex-shrink: 0;
+    }
+
+    .log-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.02);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    .log-filter-tabs {
+      display: flex;
+      gap: 4px;
+    }
+
+    .log-filter {
+      padding: 6px 12px;
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      color: var(--muted);
       font-family: 'Syne', sans-serif;
       font-size: 0.75rem;
       font-weight: 600;
       letter-spacing: 0.02em;
-      text-transform: uppercase;
-      color: var(--muted);
       cursor: pointer;
-      transition: color 0.1s ease;
-      flex-shrink: 0;
-      padding-top: 4px;
+      transition: background 0.12s ease, color 0.12s ease;
     }
 
-    .settings-log-clear:hover {
-      color: var(--accent2);
+    .log-filter:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
     }
 
-    .settings-log-clear + .settings-log-clear {
-      margin-left: 0;
+    .log-filter.active {
+      color: var(--text);
+      background: rgba(232, 98, 42, 0.15);
     }
 
-    .settings-log-actions {
+    .log-toolbar-actions {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .log-autoscroll {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+      padding: 4px 6px;
+      border-radius: 6px;
+      transition: color 0.12s ease;
+    }
+
+    .log-autoscroll:hover { color: var(--text); }
+
+    .log-autoscroll input {
+      accent-color: var(--accent);
+      width: 13px;
+      height: 13px;
+      cursor: pointer;
+    }
+
+    .log-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 10px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+    }
+
+    .log-action-btn svg {
+      width: 12px;
+      height: 12px;
+      display: block;
       flex-shrink: 0;
-      padding-top: 4px;
+    }
+
+    .log-action-btn [data-icon] {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .log-action-btn [data-icon] svg {
+      width: 12px;
+      height: 12px;
+      display: block;
+    }
+
+    .log-action-btn:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .log-viewport {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain;
+      padding: 0;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      line-height: 1.55;
+    }
+
+    .log-viewport::-webkit-scrollbar { width: 6px; }
+    .log-viewport::-webkit-scrollbar-track { background: transparent; }
+    .log-viewport::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+    .log-viewport::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    .log-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 100%;
+      padding: 40px 24px;
+      color: var(--muted);
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .log-empty-icon {
+      width: 40px;
+      height: 40px;
+      color: rgba(255, 255, 255, 0.12);
+    }
+
+    .log-empty-icon svg {
+      width: 40px;
+      height: 40px;
+      display: block;
+    }
+
+    .log-empty-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .log-empty-hint {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 400;
+      max-width: 260px;
+      line-height: 1.5;
+    }
+
+    .log-line {
+      display: grid;
+      grid-template-columns: 72px 52px 1fr;
+      gap: 10px;
+      padding: 5px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      align-items: start;
+      transition: background 0.1s ease;
+    }
+
+    .log-line:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .log-line.no-badge {
+      grid-template-columns: 72px 1fr;
+    }
+
+    .log-line.hidden { display: none; }
+
+    .log-time {
+      color: rgba(107, 104, 96, 0.85);
+      font-size: 0.68rem;
+      white-space: nowrap;
+      padding-top: 1px;
+    }
+
+    .log-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      line-height: 1.4;
+    }
+
+    .log-badge.info { background: rgba(255,255,255,0.06); color: var(--muted); }
+    .log-badge.warn { background: rgba(255, 184, 108, 0.15); color: #ffb86c; }
+    .log-badge.error { background: rgba(255, 102, 102, 0.15); color: #ff6666; }
+    .log-badge.game { background: rgba(139, 233, 253, 0.12); color: #8be9fd; }
+
+    .log-message {
+      color: rgba(240, 236, 228, 0.82);
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .log-line.warn .log-message { color: #ffd4a8; }
+    .log-line.error .log-message { color: #ffaaaa; }
+    .log-line.game .log-message { color: #b8f0ff; }
+    .log-line.game.warn .log-message { color: #ffd4a8; }
+    .log-line.game.error .log-message { color: #ffaaaa; }
+
+    .log-statusbar {
+      display: flex;
+      align-items: center;
+      padding: 8px 14px;
+      border-top: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.02);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .mod-btn.remove {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .mod-btn.remove svg {
+      width: 13px;
+      height: 13px;
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .mod-remove-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .mod-remove-icon svg {
+      width: 13px;
+      height: 13px;
+      display: block;
     }
 
     /* ── MODS UI (Redesigned Grid) ── */
@@ -1496,7 +1973,7 @@
     }
 
     .mods-sub-tab {
-      padding: 10px 24px;
+      padding: 11px 24px;
       font-family: 'Syne', sans-serif;
       font-size: 0.8125rem;
       font-weight: 600;
@@ -1506,7 +1983,10 @@
       border-radius: 0;
       border-right: 1px solid var(--border);
       transition: background 0.1s ease, color 0.1s ease;
-      line-height: 1.3;
+      line-height: 1.5;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
     }
 
     .mods-sub-tab:last-child {
@@ -1519,61 +1999,233 @@
     .mods-view { display: none; }
     .mods-view.active { display: block; animation: fadeIn 0.3s ease; }
 
-    .mod-search-bar-wrap {
-      display: flex;
-      gap: 0;
-      margin-bottom: 24px;
+    .mod-search-panel {
+      margin-bottom: 28px;
       position: sticky;
       top: -40px;
-      background: rgba(4, 4, 13, 0.95);
-      padding: 16px 0;
-      z-index: 5;
-      backdrop-filter: blur(8px);
+      z-index: 6;
+      padding: 18px 18px 16px;
+      background: rgba(4, 4, 13, 0.92);
       border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+    }
+
+    .mod-search-heading {
+      margin-bottom: 14px;
+    }
+
+    .mod-search-heading .settings-section-title {
+      margin-bottom: 4px;
+    }
+
+    .mod-search-heading .settings-section-description {
+      margin-bottom: 0;
+    }
+
+    .mod-search-field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 6px 6px 14px;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid var(--border);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .mod-search-field:focus-within {
+      border-color: rgba(232, 98, 42, 0.45);
+      box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.12);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .mod-search-field-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      flex-shrink: 0;
+      transition: color 0.15s ease;
+    }
+
+    .mod-search-field:focus-within .mod-search-field-icon {
+      color: var(--accent2);
+    }
+
+    .mod-search-field-icon svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.75;
+      stroke-linecap: round;
+      stroke-linejoin: round;
     }
 
     .mod-search-input {
       flex: 1;
-      padding: 14px 20px;
+      min-width: 0;
+      padding: 10px 0;
       background: transparent;
       border: none;
-      border-right: 1px solid var(--border);
       border-radius: 0;
       color: var(--text);
-      font-family: 'Syne', sans-serif;
-      font-size: 0.875rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.78rem;
       font-weight: 400;
-      letter-spacing: -0.01em;
+      letter-spacing: 0.01em;
+      line-height: 1.5;
       outline: none;
-      transition: all 0.2s;
     }
 
     .mod-search-input::placeholder {
       color: var(--muted);
-      opacity: 0.85;
+      opacity: 0.75;
     }
 
-    .mod-search-input:focus {
-      background: rgba(255, 255, 255, 0.06);
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.15);
+    .mod-search-input::-webkit-search-cancel-button {
+      display: none;
     }
 
-    .mod-search-btn {
-      padding: 0 28px;
+    .mod-search-clear {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      padding: 0;
       background: transparent;
       border: none;
-      border-radius: 0;
+      border-radius: 6px;
+      color: var(--muted);
+      cursor: pointer;
+      flex-shrink: 0;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.15s ease, visibility 0.15s ease, background 0.12s ease, color 0.12s ease;
+    }
+
+    .mod-search-clear.visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .mod-search-clear:hover {
+      background: rgba(255, 255, 255, 0.08);
       color: var(--text);
+    }
+
+    .mod-search-clear svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.75;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .mod-search-submit {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 10px 16px;
+      background: var(--accent);
+      border: none;
+      border-radius: 0;
+      color: #fff;
       font-family: 'Syne', sans-serif;
       font-weight: 700;
-      font-size: 0.8125rem;
+      font-size: 0.75rem;
       letter-spacing: 0.04em;
       text-transform: uppercase;
       cursor: pointer;
-      transition: background 0.1s ease, color 0.1s ease;
+      flex-shrink: 0;
+      transition: background 0.15s ease, opacity 0.15s ease, transform 0.12s ease;
+      line-height: 1;
+      min-height: 36px;
     }
-    .mod-search-btn:hover { background: rgba(255, 255, 255, 0.08); color: var(--accent2); }
+
+    .mod-search-submit:hover:not(:disabled) {
+      background: #f07030;
+    }
+
+    .mod-search-submit:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .mod-search-submit:disabled {
+      opacity: 0.65;
+      cursor: wait;
+    }
+
+    .mod-search-submit svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .mod-search-submit.loading svg {
+      animation: modSearchSpin 0.8s linear infinite;
+    }
+
+    @keyframes modSearchSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .mod-search-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .mod-search-hint {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .mod-search-hint kbd {
+      display: inline-block;
+      padding: 2px 6px;
+      margin: 0 2px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .mod-search-powered {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      color: rgba(107, 104, 96, 0.85);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
 
     .mods-grid {
       display: grid;
@@ -1678,7 +2330,13 @@
     }
 
     .mod-btn.install { background: rgba(255,255,255,0.1); color: var(--text); }
-    .mod-btn.install:hover { background: var(--accent); color: #fff; }
+    .mod-btn.install:hover:not(:disabled) { background: var(--accent); color: #fff; }
+    .mod-btn.install.installed,
+    .mod-btn.install:disabled {
+      background: rgba(100, 200, 100, 0.15);
+      color: #66dd66;
+      cursor: default;
+    }
     
     .mod-btn.remove { background: transparent; color: var(--muted); padding: 6px; border: 1px solid transparent; }
     .mod-btn.remove:hover { color: #ff6666; border-color: rgba(255,60,60,0.3); background: rgba(255,60,60,0.1); }
@@ -1728,23 +2386,8 @@
       line-height: 1.55;
     }
 
-    /* Logs inner adjustments for new layout */
-    .settings-log-content {
-      min-height: 320px;
-      max-height: none;
-      height: calc(100vh - 52px - 220px);
-      overflow-y: auto;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.8125rem;
-      line-height: 1.6;
-      letter-spacing: 0;
-    }
-    .settings-log-content div { color: var(--muted); padding: 1px 0; }
-    .settings-log-content div.error { color: #ff6666; }
-    .settings-log-content div.warn { color: #ffb86c; }
-    .settings-log-content div.game-log { color: #8be9fd; }
-    .settings-log-content div.game-log.error { color: #ff6666; }
-    .settings-log-content div.game-log.warn { color: #ffb86c; }
+    /* Logs — legacy selectors kept for compatibility */
+    .settings-log-content { display: contents; }
 
     .particles-canvas {
       position: absolute;
@@ -1828,7 +2471,7 @@
   </style>
 </head>
 
-<body>
+<body class="booting">
 
   <canvas id="nebula"></canvas>
   <div class="grain"></div>
@@ -1845,8 +2488,8 @@
       <div class="tb-control-group">
         <div class="profile-wrap" id="profileWrap">
           <button type="button" class="tb-seg-btn header-btn-profile" id="profileTrigger" aria-expanded="false" aria-haspopup="true" title="Switch account">
-            <img src="" alt="" class="profile-head-img" id="activeProfileImg" data-uuid="61ccdfded7a349729cfbbd3c14efced3" data-name="Terrimett">
-            <span class="profile-name" id="activeProfileName" data-uuid="61ccdfded7a349729cfbbd3c14efced3">Terrimett</span>
+            <img src="" alt="" class="profile-head-img" id="activeProfileImg" data-uuid="02163933cfbf431cab26f48860c2f9a1" data-name="TheLeviDR">
+            <span class="profile-name" id="activeProfileName" data-uuid="02163933cfbf431cab26f48860c2f9a1">TheLeviDR</span>
             <span class="profile-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
           </button>
 
@@ -1856,7 +2499,7 @@
               
                 
                   
-                  <div class="profile-item" data-name="TheLeviDR" data-uuid="02163933cfbf431cab26f48860c2f9a1">
+                  <div class="profile-item active" data-name="TheLeviDR" data-uuid="02163933cfbf431cab26f48860c2f9a1">
                     <img src="" alt="Head" class="profile-head-img" data-uuid="02163933cfbf431cab26f48860c2f9a1" data-name="TheLeviDR">
                     <div class="profile-info">
                       <span class="profile-item-name">TheLeviDR</span>
@@ -1869,7 +2512,7 @@
                   </div>
                 
                   
-                  <div class="profile-item active" data-name="Terrimett" data-uuid="61ccdfded7a349729cfbbd3c14efced3">
+                  <div class="profile-item" data-name="Terrimett" data-uuid="61ccdfded7a349729cfbbd3c14efced3">
                     <img src="" alt="Head" class="profile-head-img" data-uuid="61ccdfded7a349729cfbbd3c14efced3" data-name="Terrimett">
                     <div class="profile-info">
                       <span class="profile-item-name">Terrimett</span>
@@ -1971,13 +2614,13 @@
           <div class="settings-title">Settings</div>
           <div class="settings-tabs">
             <div class="settings-tab active" data-tab="launch" onclick="switchSettingsTab('launch')">
-              <span style="font-size: 1rem;">&#x1F680;</span> Launch
+              <span class="settings-tab-icon" data-icon="launch" aria-hidden="true"></span> Launch
             </div>
             <div class="settings-tab" data-tab="mods" onclick="switchSettingsTab('mods')">
-              <span style="font-size: 1rem;">&#x1F9E9;</span> Mods
+              <span class="settings-tab-icon" data-icon="mods" aria-hidden="true"></span> Mods
             </div>
             <div class="settings-tab" data-tab="logs" onclick="switchSettingsTab('logs')">
-              <span style="font-size: 1rem;">&#x1F4DC;</span> Logs
+              <span class="settings-tab-icon" data-icon="logs" aria-hidden="true"></span> Logs
             </div>
           </div>
         </div>
@@ -1997,19 +2640,37 @@
             <div class="settings-section">
               <div class="settings-section-title">Mod Loader</div>
               <div class="settings-section-description">Choose between unmodified Minecraft (Vanilla) or the Fabric mod loader.</div>
-              <div class="loader-toggle" id="loaderToggle">
-                <div class="loader-toggle-left">
-                  <div>
-                    <div class="loader-toggle-label">Loader: <span id="loaderToggleValue">Fabric</span></div>
-                    <div class="loader-toggle-sublabel" id="loaderToggleDesc">Mod loader for running mods</div>
+              <div class="loader-wrap" id="loaderWrap">
+                <button type="button" class="loader-trigger" id="loaderTrigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Mod loader selection">
+                  <div class="loader-trigger-info">
+                    <span class="loader-trigger-name" id="loaderTriggerName">Fabric</span>
+                    <span class="loader-trigger-type" id="loaderTriggerType">Mod loader</span>
                   </div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <span class="loader-label" id="loaderVanilla">Vanilla</span>
-                  <div class="loader-switch fabric" id="loaderSwitch" onclick="toggleLoader()">
-                    <div class="loader-knob" id="loaderKnob"></div>
+                  <span class="loader-trigger-chevron" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </span>
+                </button>
+                <div class="loader-menu" id="loaderMenu" role="listbox" aria-label="Mod loader options">
+                  <div class="loader-list">
+                    <button type="button" class="loader-item" data-loader="vanilla" role="option" aria-selected="false">
+                      <div class="loader-item-info">
+                        <span class="loader-item-name">Vanilla</span>
+                        <span class="loader-item-type">Unmodified</span>
+                      </div>
+                      <div class="loader-item-actions">
+                        <span class="loader-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                      </div>
+                    </button>
+                    <button type="button" class="loader-item active" data-loader="fabric" role="option" aria-selected="true">
+                      <div class="loader-item-info">
+                        <span class="loader-item-name">Fabric</span>
+                        <span class="loader-item-type">Mod loader</span>
+                      </div>
+                      <div class="loader-item-actions">
+                        <span class="loader-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                      </div>
+                    </button>
                   </div>
-                  <span class="loader-label active" id="loaderFabric">Fabric</span>
                 </div>
               </div>
             </div>
@@ -2018,9 +2679,9 @@
               <div class="settings-section-title">Local Files</div>
               <div class="settings-section-description">Manage local mod files directly in your file explorer.</div>
               <button class="open-mods-btn" onclick="openModsFolder()">
-                <div class="open-mods-icon">&#x1F4C1;</div>
+                <div class="open-mods-icon" data-icon="folder" aria-hidden="true"></div>
                 <span>Open Mods Folder</span>
-                <span class="open-mods-arrow">&#x2192;</span>
+                <span class="open-mods-arrow" data-icon="chevronRight" aria-hidden="true"></span>
               </button>
             </div>
           </div>
@@ -2040,10 +2701,9 @@
                 
                   
                     
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
-                        <img class="mod-icon" src="https://cdn.modrinth.com/data/YL57xq9U/18d0e7f076d3d6ed5bedd472b853909aac5da202_96.webp" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
+                        <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FYL57xq9U%2F18d0e7f076d3d6ed5bedd472b853909aac5da202_96.webp">
                         <div class="mod-info-main">
                           <div class="mod-title" style="">Iris Shaders</div>
                           <div class="mod-author-tag">fabric</div>
@@ -2055,15 +2715,14 @@
                           <div class="mod-switch"></div>
                           <span>Enabled</span>
                         </div>
-                        <button class="mod-btn remove" data-id="YL57xq9U">&#x1F5D1; Remove</button>
+                        <button class="mod-btn remove" data-id="YL57xq9U"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
                       </div>
                     </div>
                   
                     
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
-                        <img class="mod-icon" src="https://cdn.modrinth.com/data/AANobbMI/295862f4724dc3f78df3447ad6072b2dcd3ef0c9_96.webp" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
+                        <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FAANobbMI%2F295862f4724dc3f78df3447ad6072b2dcd3ef0c9_96.webp">
                         <div class="mod-info-main">
                           <div class="mod-title" style="">Sodium</div>
                           <div class="mod-author-tag">fabric</div>
@@ -2075,15 +2734,14 @@
                           <div class="mod-switch"></div>
                           <span>Enabled</span>
                         </div>
-                        <button class="mod-btn remove" data-id="AANobbMI">&#x1F5D1; Remove</button>
+                        <button class="mod-btn remove" data-id="AANobbMI"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
                       </div>
                     </div>
                   
                     
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
-                        <img class="mod-icon" src="https://cdn.modrinth.com/data/UIexcMP1/2d578a1f4d4bebebf19c7847eb9a1575a8a0b825_96.webp" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
+                        <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FUIexcMP1%2F2d578a1f4d4bebebf19c7847eb9a1575a8a0b825_96.webp">
                         <div class="mod-info-main">
                           <div class="mod-title" style="">Borderless Fullscreen</div>
                           <div class="mod-author-tag">fabric</div>
@@ -2095,15 +2753,14 @@
                           <div class="mod-switch"></div>
                           <span>Enabled</span>
                         </div>
-                        <button class="mod-btn remove" data-id="UIexcMP1">&#x1F5D1; Remove</button>
+                        <button class="mod-btn remove" data-id="UIexcMP1"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
                       </div>
                     </div>
                   
                     
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
-                        <img class="mod-icon" src="https://cdn.modrinth.com/data/w7ThoJFB/e2de67a0bfb9e8aa2347982ab3ec5463f26cca31_96.webp" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
+                        <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2Fw7ThoJFB%2Fe2de67a0bfb9e8aa2347982ab3ec5463f26cca31_96.webp">
                         <div class="mod-info-main">
                           <div class="mod-title" style="">Zoomify (Zoom)</div>
                           <div class="mod-author-tag">fabric</div>
@@ -2115,15 +2772,14 @@
                           <div class="mod-switch"></div>
                           <span>Enabled</span>
                         </div>
-                        <button class="mod-btn remove" data-id="w7ThoJFB">&#x1F5D1; Remove</button>
+                        <button class="mod-btn remove" data-id="w7ThoJFB"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
                       </div>
                     </div>
                   
                     
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
-                        <img class="mod-icon" src="https://cdn.modrinth.com/data/mOgUt4GM/5a20ed1450a0e1e79a1fe04e61bb4e5878bf1d20.png" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
+                        <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FmOgUt4GM%2F5a20ed1450a0e1e79a1fe04e61bb4e5878bf1d20.png">
                         <div class="mod-info-main">
                           <div class="mod-title" style="">Mod Menu</div>
                           <div class="mod-author-tag">fabric, quilt</div>
@@ -2135,15 +2791,14 @@
                           <div class="mod-switch"></div>
                           <span>Enabled</span>
                         </div>
-                        <button class="mod-btn remove" data-id="mOgUt4GM">&#x1F5D1; Remove</button>
+                        <button class="mod-btn remove" data-id="mOgUt4GM"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
                       </div>
                     </div>
                   
                     
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
-                        <img class="mod-icon" src="https://cdn.modrinth.com/data/eXts2L7r/e9c9990896e6422bffc5f73d2c41b8f077348f83.png" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
+                        <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FeXts2L7r%2Fe9c9990896e6422bffc5f73d2c41b8f077348f83.png">
                         <div class="mod-info-main">
                           <div class="mod-title" style="">Text Placeholder API</div>
                           <div class="mod-author-tag">fabric</div>
@@ -2155,15 +2810,14 @@
                           <div class="mod-switch"></div>
                           <span>Enabled</span>
                         </div>
-                        <button class="mod-btn remove" data-id="eXts2L7r">&#x1F5D1; Remove</button>
+                        <button class="mod-btn remove" data-id="eXts2L7r"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
                       </div>
                     </div>
                   
                     
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
-                        <img class="mod-icon" src="https://cdn.modrinth.com/data/P7dR8mSH/icon.png" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
+                        <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FP7dR8mSH%2Ficon.png">
                         <div class="mod-info-main">
                           <div class="mod-title" style="">Fabric API</div>
                           <div class="mod-author-tag">fabric</div>
@@ -2175,15 +2829,14 @@
                           <div class="mod-switch"></div>
                           <span>Enabled</span>
                         </div>
-                        <button class="mod-btn remove" data-id="P7dR8mSH">&#x1F5D1; Remove</button>
+                        <button class="mod-btn remove" data-id="P7dR8mSH"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
                       </div>
                     </div>
                   
                     
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
-                        <img class="mod-icon" src="https://cdn.modrinth.com/data/1eAoo2KR/08c0cd32515e260f4bb20bbc0696510041523f9a_96.webp" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
+                        <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2F1eAoo2KR%2F08c0cd32515e260f4bb20bbc0696510041523f9a_96.webp">
                         <div class="mod-info-main">
                           <div class="mod-title" style="">YetAnotherConfigLib (YACL)</div>
                           <div class="mod-author-tag">fabric</div>
@@ -2195,15 +2848,14 @@
                           <div class="mod-switch"></div>
                           <span>Enabled</span>
                         </div>
-                        <button class="mod-btn remove" data-id="1eAoo2KR">&#x1F5D1; Remove</button>
+                        <button class="mod-btn remove" data-id="1eAoo2KR"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
                       </div>
                     </div>
                   
                     
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
-                        <img class="mod-icon" src="https://cdn.modrinth.com/data/Ha28R6CL/72c3d74aeb665e45aea93a945a01474cbce3b7da_96.webp" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
+                        <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FHa28R6CL%2F72c3d74aeb665e45aea93a945a01474cbce3b7da_96.webp">
                         <div class="mod-info-main">
                           <div class="mod-title" style="">Fabric Language Kotlin</div>
                           <div class="mod-author-tag">fabric</div>
@@ -2215,15 +2867,14 @@
                           <div class="mod-switch"></div>
                           <span>Enabled</span>
                         </div>
-                        <button class="mod-btn remove" data-id="Ha28R6CL">&#x1F5D1; Remove</button>
+                        <button class="mod-btn remove" data-id="Ha28R6CL"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
                       </div>
                     </div>
                   
                     
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
-                        <img class="mod-icon" src="https://cdn.modrinth.com/data/HwGFylw6/b5f13d29d9b23956e00c490afb2a83a48eda2368_96.webp" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
+                        <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FHwGFylw6%2Fb5f13d29d9b23956e00c490afb2a83a48eda2368_96.webp">
                         <div class="mod-info-main">
                           <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Borderless Windowed Vulkan</div>
                           <div class="mod-author-tag">fabric</div>
@@ -2235,7 +2886,64 @@
                           <div class="mod-switch"></div>
                           <span>Disabled</span>
                         </div>
-                        <button class="mod-btn remove" data-id="HwGFylw6">&#x1F5D1; Remove</button>
+                        <button class="mod-btn remove" data-id="HwGFylw6"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
+                      </div>
+                    </div>
+                  
+                    
+                    <div class="mod-card">
+                      <div class="mod-card-top">
+                        <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FPtjYWJkn%2F0df4fb22a11e1dcb5e83cb0aadd275b571aca7a9_96.webp">
+                        <div class="mod-info-main">
+                          <div class="mod-title" style="">Sodium Extra</div>
+                          <div class="mod-author-tag">fabric</div>
+                        </div>
+                      </div>
+                      <div class="mod-desc">Supports: 26.2</div>
+                      <div class="mod-actions">
+                        <div class="mod-toggle-wrap on" data-id="PtjYWJkn" data-enabled="true">
+                          <div class="mod-switch"></div>
+                          <span>Enabled</span>
+                        </div>
+                        <button class="mod-btn remove" data-id="PtjYWJkn"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
+                      </div>
+                    </div>
+                  
+                    
+                    <div class="mod-card">
+                      <div class="mod-card-top">
+                        <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FEE4vxUHj%2F5739f79c724116d782076b79c5859de481ac975b.png">
+                        <div class="mod-info-main">
+                          <div class="mod-title" style="">Greenlight</div>
+                          <div class="mod-author-tag">fabric</div>
+                        </div>
+                      </div>
+                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2, 26.2</div>
+                      <div class="mod-actions">
+                        <div class="mod-toggle-wrap on" data-id="EE4vxUHj" data-enabled="true">
+                          <div class="mod-switch"></div>
+                          <span>Enabled</span>
+                        </div>
+                        <button class="mod-btn remove" data-id="EE4vxUHj"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
+                      </div>
+                    </div>
+                  
+                    
+                    <div class="mod-card">
+                      <div class="mod-card-top">
+                        <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FBh37bMuy%2Ficon.png">
+                        <div class="mod-info-main">
+                          <div class="mod-title" style="">Reese&#39;s Sodium Options</div>
+                          <div class="mod-author-tag">fabric</div>
+                        </div>
+                      </div>
+                      <div class="mod-desc">Supports: 26.2</div>
+                      <div class="mod-actions">
+                        <div class="mod-toggle-wrap on" data-id="Bh37bMuy" data-enabled="true">
+                          <div class="mod-switch"></div>
+                          <span>Enabled</span>
+                        </div>
+                        <button class="mod-btn remove" data-id="Bh37bMuy"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
                       </div>
                     </div>
                   
@@ -2245,9 +2953,26 @@
 
             <!-- Browse View -->
             <div id="modsViewBrowse" class="mods-view">
-              <div class="mod-search-bar-wrap">
-                <input type="text" id="modSearchInput" class="mod-search-input" placeholder="Search Modrinth for mods...">
-                <button class="mod-search-btn" onclick="searchMods()">Search</button>
+              <div class="mod-search-panel">
+                <div class="mod-search-heading">
+                  <div class="settings-section-title">Browse Modrinth</div>
+                  <div class="settings-section-description">Find and install mods for your selected Minecraft version.</div>
+                </div>
+                <div class="mod-search-field">
+                  <span class="mod-search-field-icon" data-icon="search" aria-hidden="true"></span>
+                  <input type="search" id="modSearchInput" class="mod-search-input" placeholder="Search mods, authors, or keywords..." autocomplete="off" spellcheck="false">
+                  <button type="button" class="mod-search-clear" id="modSearchClear" aria-label="Clear search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                  </button>
+                  <button type="button" class="mod-search-submit" id="modSearchSubmit" onclick="searchMods()">
+                    <span class="mod-search-submit-icon" data-icon="search" aria-hidden="true"></span>
+                    <span class="mod-search-submit-label">Search</span>
+                  </button>
+                </div>
+                <div class="mod-search-meta">
+                  <span class="mod-search-hint">Press <kbd>Enter</kbd> to search</span>
+                  <span class="mod-search-powered">Powered by Modrinth</span>
+                </div>
               </div>
               <div id="modSearchResults" class="mods-grid">
                 <div class="mods-empty">Discover new mods by searching above.</div>
@@ -2262,14 +2987,43 @@
               <div class="settings-log-header">
                 <div>
                   <div class="settings-section-title">Launcher Console</div>
-                  <div class="settings-section-description" style="margin-bottom:0">View real-time launcher and game output events.</div>
-                </div>
-                <div class="settings-log-actions">
-                  <span class="settings-log-clear" onclick="copyLogs()">Copy Logs</span>
-                  <span class="settings-log-clear" onclick="clearLogs()">Clear Logs</span>
+                  <div class="settings-section-description" style="margin-bottom:0">Real-time output from the launcher and game process.</div>
                 </div>
               </div>
-              <div class="settings-log-content" id="settingsLogContent"></div>
+              <div class="log-panel">
+                <div class="log-toolbar">
+                  <div class="log-filter-tabs">
+                    <button type="button" class="log-filter active" data-filter="all" onclick="setLogFilter('all')">All</button>
+                    <button type="button" class="log-filter" data-filter="launcher" onclick="setLogFilter('launcher')">Launcher</button>
+                    <button type="button" class="log-filter" data-filter="game" onclick="setLogFilter('game')">Game</button>
+                  </div>
+                  <div class="log-toolbar-actions">
+                    <label class="log-autoscroll">
+                      <input type="checkbox" id="logAutoScroll" checked>
+                      Auto-scroll
+                    </label>
+                    <button type="button" class="log-action-btn" onclick="copyLogs()">
+                      <span data-icon="copy" aria-hidden="true"></span>
+                      Copy
+                    </button>
+                    <button type="button" class="log-action-btn" onclick="clearLogs()">
+                      <span data-icon="trash" aria-hidden="true"></span>
+                      Clear
+                    </button>
+                  </div>
+                </div>
+                <div class="log-viewport" id="logViewport">
+                  <div class="log-empty" id="logEmptyState">
+                    <div class="log-empty-icon" data-icon="terminal" aria-hidden="true"></div>
+                    <span class="log-empty-title">No logs yet</span>
+                    <span class="log-empty-hint">Launch the game or perform actions to see output here.</span>
+                  </div>
+                  <div id="settingsLogContent"></div>
+                </div>
+                <div class="log-statusbar">
+                  <span id="logLineCount">0 entries</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -2390,6 +3144,36 @@
     /* ── TEMPLATE HELPERS (mirror EJS logic for dynamic refresh) ── */
     const profileIconCheck = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
     const profileIconRemove = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path><path d="M7 7l1 12a1 1 0 0 0 1 .9h6a1 1 0 0 0 1-.9L17 7"></path><path d="M10 11v5M14 11v5"></path></svg>';
+
+    function uiIcon(paths) {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+    }
+
+    const uiIcons = {
+      launch: uiIcon('<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path>'),
+      mods: uiIcon('<path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path>'),
+      logs: uiIcon('<polyline points="4 17 10 11 4 5"></polyline><line x1="12" x2="20" y1="19" y2="19"></line>'),
+      folder: uiIcon('<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path>'),
+      chevronRight: uiIcon('<path d="m9 18 6-6-6-6"></path>'),
+      chevronDown: uiIcon('<path d="m6 9 6 6 6-6"></path>'),
+      trash: uiIcon('<path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line>'),
+      copy: uiIcon('<rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>'),
+      terminal: uiIcon('<polyline points="4 17 10 11 4 5"></polyline><line x1="12" x2="20" y1="19" y2="19"></line>'),
+      search: uiIcon('<circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>'),
+      loader: uiIcon('<path d="M21 12a9 9 0 1 1-6.219-8.56"></path>'),
+    };
+
+    const modIconRemove = uiIcons.trash;
+
+    function initSettingsIcons(root) {
+      (root || document).querySelectorAll('[data-icon]').forEach(el => {
+        const icon = uiIcons[el.dataset.icon];
+        if (icon) el.innerHTML = icon;
+      });
+      (root || document).querySelectorAll('.mod-remove-icon').forEach(el => {
+        el.innerHTML = modIconRemove;
+      });
+    }
 
     /* ── PLAYER SKIN VIEWER ── */
     let playerSkinViewer = null;
@@ -2606,7 +3390,7 @@
     }
 
     function updatePlayerSkin(uuid, username) {
-      applyPlayerSkin(uuid, username);
+      return applyPlayerSkin(uuid, username);
     }
 
     function getPlayerModelSize() {
@@ -2617,7 +3401,7 @@
       return { w, h };
     }
 
-    function initPlayerModel() {
+    async function initPlayerModel() {
       if (typeof skinview3d === 'undefined') return;
       const canvas = document.getElementById('playerSkinCanvas');
       if (!canvas) return;
@@ -2650,7 +3434,9 @@
       setupSkinSpinPhysics(playerSkinViewer, canvas);
 
       if (initialName !== 'Account' && initialName !== 'Select Account') {
-        updatePlayerSkin(initialUuid, initialName);
+        await applyPlayerSkin(initialUuid, initialName);
+      } else {
+        await applyPlayerSkin(null, 'Steve');
       }
 
       window.addEventListener('resize', () => {
@@ -2658,6 +3444,107 @@
         const size = getPlayerModelSize();
         playerSkinViewer.width = size.w;
         playerSkinViewer.height = size.h;
+      });
+    }
+
+    async function runStartup() {
+      const STARTUP_TIMEOUT_MS = 12000;
+
+      try {
+        await Promise.race([
+          (async () => {
+            await initPlayerModel();
+            initProfileAvatarImages();
+          })(),
+          new Promise((resolve) => setTimeout(resolve, STARTUP_TIMEOUT_MS)),
+        ]);
+      } catch (err) {
+        console.error('Startup skin load failed:', err);
+      } finally {
+        document.body.classList.remove('booting');
+        document.body.classList.add('app-ready');
+        if (window.ipcRenderer) {
+          window.ipcRenderer.send('startup-ready');
+        } else if (window.triggerOpenAnimation) {
+          window.triggerOpenAnimation();
+        }
+      }
+    }
+
+    const MOD_FALLBACK_ICON = 'data:image/svg+xml,' + encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect fill="#6b6860" width="32" height="32"/><text x="16" y="22" text-anchor="middle" font-size="18" fill="#f0ece4">?</text></svg>'
+    );
+
+    function isSvgIconUrl(url) {
+      if (!url) return false;
+      const lower = url.toLowerCase();
+      if (lower.includes('image/svg+xml')) return true;
+      try {
+        return new URL(url, window.location.href).pathname.toLowerCase().endsWith('.svg');
+      } catch {
+        return lower.includes('.svg');
+      }
+    }
+
+    function revokeModIconBlob(imgEl) {
+      if (imgEl && imgEl._modIconBlob) {
+        URL.revokeObjectURL(imgEl._modIconBlob);
+        imgEl._modIconBlob = null;
+      }
+    }
+
+    function applyModIconFallback(imgEl) {
+      revokeModIconBlob(imgEl);
+      imgEl.onerror = null;
+      imgEl.src = MOD_FALLBACK_ICON;
+    }
+
+    async function loadModIconViaFetch(imgEl, iconUrl) {
+      try {
+        const res = await fetch(iconUrl);
+        if (!res.ok) throw new Error('icon fetch failed');
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        imgEl._modIconBlob = blobUrl;
+        imgEl.onerror = () => applyModIconFallback(imgEl);
+        imgEl.onload = () => { imgEl.onerror = null; };
+        imgEl.src = blobUrl;
+      } catch {
+        applyModIconFallback(imgEl);
+      }
+    }
+
+    async function setModIconImg(imgEl, iconUrl) {
+      if (!imgEl) return;
+      revokeModIconBlob(imgEl);
+
+      if (!iconUrl) {
+        applyModIconFallback(imgEl);
+        return;
+      }
+
+      if (isSvgIconUrl(iconUrl)) {
+        imgEl.src = MOD_FALLBACK_ICON;
+        await loadModIconViaFetch(imgEl, iconUrl);
+        return;
+      }
+
+      imgEl.onerror = () => {
+        imgEl.onerror = null;
+        loadModIconViaFetch(imgEl, iconUrl);
+      };
+      imgEl.onload = () => { imgEl.onerror = null; };
+      imgEl.src = iconUrl;
+    }
+
+    function modIconTag(iconUrl) {
+      return `<img class="mod-icon" alt="" data-mod-icon="${encodeURIComponent(iconUrl || '')}">`;
+    }
+
+    function initModIconImages(root) {
+      (root || document).querySelectorAll('.mod-icon[data-mod-icon]').forEach(img => {
+        const iconUrl = img.dataset.modIcon ? decodeURIComponent(img.dataset.modIcon) : '';
+        setModIconImg(img, iconUrl);
       });
     }
 
@@ -2677,10 +3564,9 @@
 
     function renderModCard(id, mod) {
       const isCompatible = mod.gameVersions && mod.gameVersions.includes(selectedVersion);
-      const iconUrl = mod.icon_url || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect fill="%236b6860" width="32" height="32"/><text x="16" y="22" text-anchor="middle" font-size="18" fill="%23f0ece4">?</text></svg>';
       return `<div class="mod-card">
         <div class="mod-card-top">
-          <img class="mod-icon" src="${iconUrl}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
+          ${modIconTag(mod.icon_url)}
           <div class="mod-info-main">
             <div class="mod-title" style="${!isCompatible ? 'color:var(--muted);text-decoration:line-through' : ''}">${mod.title}</div>
             <div class="mod-author-tag">${mod.loaders ? mod.loaders.join(', ') : 'Unknown'}</div>
@@ -2692,7 +3578,7 @@
             <div class="mod-switch"></div>
             <span>${mod.enabled ? 'Enabled' : 'Disabled'}</span>
           </div>
-          <button class="mod-btn remove" data-id="${id}">&#x1F5D1; Remove</button>
+          <button class="mod-btn remove" data-id="${id}"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
         </div>
       </div>`;
     }
@@ -2710,13 +3596,38 @@
       });
     }
 
+    function updateModToggleUI(wrap, enabled) {
+      wrap.dataset.enabled = enabled ? 'true' : 'false';
+      wrap.classList.toggle('on', enabled);
+      const label = wrap.querySelector('span');
+      if (label) label.textContent = enabled ? 'Enabled' : 'Disabled';
+    }
+
+    function removeModCardFromGrid(projectId) {
+      const grid = document.getElementById('installedModsList');
+      if (!grid) return;
+      const wrap = grid.querySelector(`.mod-toggle-wrap[data-id="${projectId}"]`);
+      const card = wrap ? wrap.closest('.mod-card') : null;
+      if (card) card.remove();
+      installedModIds.delete(projectId);
+      updateBrowseInstallButtons();
+      if (!grid.querySelector('.mod-card')) {
+        grid.innerHTML = '<div class="mods-empty">No mods currently installed.<br>Head over to Browse to find some!</div>';
+      }
+    }
+
     function initModHandlers() {
       document.querySelectorAll('.mod-toggle-wrap').forEach(wrap => {
         wrap.onclick = async () => {
           const pid = wrap.dataset.id;
-          const newState = wrap.dataset.enabled === 'true' ? false : true;
-          await ipcRenderer.invoke('mods:setEnabled', pid, newState);
-          await refreshInstalledMods();
+          const newState = wrap.dataset.enabled !== 'true';
+          wrap.style.pointerEvents = 'none';
+          try {
+            const result = await ipcRenderer.invoke('mods:setEnabled', pid, newState);
+            if (result.success) updateModToggleUI(wrap, newState);
+          } finally {
+            wrap.style.pointerEvents = '';
+          }
         };
       });
       document.querySelectorAll('.mod-btn.remove').forEach(btn => {
@@ -2725,8 +3636,13 @@
           const title = card ? card.querySelector('.mod-title').textContent : 'this mod';
           const confirmed = await showModal('Remove Mod', `Are you sure you want to remove ${title}?`, false, true);
           if (!confirmed) return;
-          await ipcRenderer.invoke('mods:remove', btn.dataset.id);
-          await refreshInstalledMods();
+          btn.disabled = true;
+          try {
+            const result = await ipcRenderer.invoke('mods:remove', btn.dataset.id);
+            if (result.success) removeModCardFromGrid(btn.dataset.id);
+          } finally {
+            btn.disabled = false;
+          }
         };
       });
     }
@@ -2867,37 +3783,69 @@
 
       initProfileHandlers();
 
-/* ── LOADER TOGGLE LOGIC ── */
+/* ── LOADER SWITCHER LOGIC ── */
     let selectedLoader = 'fabric';
 
-    function toggleLoader() {
-      selectedLoader = selectedLoader === 'vanilla' ? 'fabric' : 'vanilla';
+    const loaderOptions = {
+      vanilla: { label: 'Vanilla', type: 'Unmodified' },
+      fabric: { label: 'Fabric', type: 'Mod loader' },
+    };
+
+    function setLoader(value) {
+      if (value !== 'vanilla' && value !== 'fabric') return;
+      selectedLoader = value;
       updateLoaderUI();
+      closeLoaderMenu();
       if (window.ipcRenderer) {
         window.ipcRenderer.invoke('saveSelectedLoader', selectedLoader);
       }
     }
 
     function updateLoaderUI() {
-      const switchEl = document.getElementById('loaderSwitch');
-      const vanillaLabel = document.getElementById('loaderVanilla');
-      const fabricLabel = document.getElementById('loaderFabric');
-      const toggleValue = document.getElementById('loaderToggleValue');
-      const toggleDesc = document.getElementById('loaderToggleDesc');
+      const triggerName = document.getElementById('loaderTriggerName');
+      const triggerType = document.getElementById('loaderTriggerType');
+      const option = loaderOptions[selectedLoader] || loaderOptions.vanilla;
 
-      if (selectedLoader === 'fabric') {
-        switchEl.classList.add('fabric');
-        vanillaLabel.classList.remove('active');
-        fabricLabel.classList.add('active');
-        if (toggleValue) toggleValue.textContent = 'Fabric';
-        if (toggleDesc) toggleDesc.textContent = 'Mod loader for running mods';
-      } else {
-        switchEl.classList.remove('fabric');
-        vanillaLabel.classList.add('active');
-        fabricLabel.classList.remove('active');
-        if (toggleValue) toggleValue.textContent = 'Vanilla';
-        if (toggleDesc) toggleDesc.textContent = 'Unmodified Minecraft';
-      }
+      if (triggerName) triggerName.textContent = option.label;
+      if (triggerType) triggerType.textContent = option.type;
+
+      document.querySelectorAll('.loader-item[data-loader]').forEach(el => {
+        const isActive = el.dataset.loader === selectedLoader;
+        el.classList.toggle('active', isActive);
+        el.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+    }
+
+    function closeLoaderMenu() {
+      const wrap = document.getElementById('loaderWrap');
+      const trigger = document.getElementById('loaderTrigger');
+      if (!wrap || !trigger) return;
+      wrap.classList.remove('open');
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+
+    function initLoaderSwitcher() {
+      const wrap = document.getElementById('loaderWrap');
+      const trigger = document.getElementById('loaderTrigger');
+      const menu = document.getElementById('loaderMenu');
+      if (!wrap || !trigger || !menu) return;
+
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = wrap.classList.toggle('open');
+        trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+
+      menu.querySelectorAll('.loader-item[data-loader]').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setLoader(item.dataset.loader);
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!wrap.contains(e.target)) closeLoaderMenu();
+      });
     }
 
     async function loadLoaderPreference() {
@@ -2913,11 +3861,67 @@
     }
 
 /* ── SETTINGS PANEL ── */
+    let activeLogFilter = 'all';
+    let modsSubTabsAnimated = false;
+    let modsInstalledAnimated = false;
+    let modsBrowseAnimated = false;
+
+    function animateModsSubTabs() {
+      if (modsSubTabsAnimated) return;
+      modsSubTabsAnimated = true;
+      document.querySelector('#settingsTabMods .mods-sub-tabs')?.classList.add('animate-in');
+    }
+
+    function animateModsInstalledView() {
+      if (modsInstalledAnimated) return;
+      modsInstalledAnimated = true;
+      animateModsSubTabs();
+      const view = document.getElementById('modsViewInstalled');
+      if (!view) return;
+      view.querySelectorAll('.mod-card, .mods-empty').forEach((el, i) => {
+        el.style.setProperty('--stagger', i);
+        el.classList.add('animate-in');
+      });
+    }
+
+    function animateModsBrowseView() {
+      if (modsBrowseAnimated) return;
+      modsBrowseAnimated = true;
+      animateModsSubTabs();
+      document.querySelector('#modsViewBrowse .mod-search-panel')?.classList.add('animate-in');
+      document.querySelectorAll('#modsViewBrowse .mods-empty').forEach(el => {
+        el.classList.add('animate-in');
+      });
+    }
+
+    function animateActiveModsSubview() {
+      const installedView = document.getElementById('modsViewInstalled');
+      if (installedView?.classList.contains('active')) animateModsInstalledView();
+      else animateModsBrowseView();
+    }
+
+    function retriggerSettingsAnimations(tabEl) {
+      if (!tabEl) return;
+      if (tabEl.id === 'settingsTabMods') {
+        animateActiveModsSubview();
+        return;
+      }
+      const animated = tabEl.querySelectorAll('.settings-section, .log-panel');
+      animated.forEach(el => {
+        el.style.animation = 'none';
+        void el.offsetHeight;
+        el.style.animation = '';
+      });
+    }
+
     function openSettings() {
       document.getElementById('settingsOverlay').classList.add('show');
+      const activeTab = document.querySelector('.settings-tab-content.active');
+      retriggerSettingsAnimations(activeTab);
     }
 
     function closeSettings() {
+      closeLoaderMenu();
       document.getElementById('settingsOverlay').classList.remove('show');
     }
 
@@ -2925,23 +3929,34 @@
       document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.settings-tab-content').forEach(c => c.classList.remove('active'));
       document.querySelector(`.settings-tab[data-tab="${tab}"]`).classList.add('active');
+      let tabEl;
       if (tab === 'launch') {
-        document.getElementById('settingsTabLaunch').classList.add('active');
+        tabEl = document.getElementById('settingsTabLaunch');
       } else if (tab === 'mods') {
-        document.getElementById('settingsTabMods').classList.add('active');
-        refreshInstalledMods();
+        tabEl = document.getElementById('settingsTabMods');
       } else if (tab === 'logs') {
-        document.getElementById('settingsTabLogs').classList.add('active');
+        tabEl = document.getElementById('settingsTabLogs');
+      }
+      if (tabEl) {
+        tabEl.classList.add('active');
+        if (tab === 'mods') {
+          refreshInstalledMods().then(() => animateActiveModsSubview());
+        } else {
+          retriggerSettingsAnimations(tabEl);
+        }
       }
     }
 
-    async function openModsFolder() {
-      if (window.ipcRenderer) {
-        window.ipcRenderer.invoke('openModsFolder');
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeLoaderMenu();
+        const overlay = document.getElementById('settingsOverlay');
+        if (overlay && overlay.classList.contains('show')) {
+          closeSettings();
+        }
       }
-    }
+    });
 
-    /* ── MODS LOGIC & NEW UI ── */
     function switchModsTab(view) {
       document.querySelectorAll('.mods-sub-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.mods-view').forEach(v => v.classList.remove('active'));
@@ -2949,20 +3964,110 @@
       if (view === 'installed') {
         document.getElementById('modsTabInstalledBtn').classList.add('active');
         document.getElementById('modsViewInstalled').classList.add('active');
-        refreshInstalledMods();
+        refreshInstalledMods().then(() => animateModsInstalledView());
       } else {
         document.getElementById('modsTabBrowseBtn').classList.add('active');
         document.getElementById('modsViewBrowse').classList.add('active');
+        animateModsBrowseView();
       }
+    }
+
+    let modSearchLoading = false;
+    let installedModIds = new Set();
+
+    async function refreshInstalledModIds() {
+      installedModIds = new Set();
+      try {
+        const result = await ipcRenderer.invoke('mods:list');
+        if (result.success && result.mods) {
+          Object.keys(result.mods).forEach(id => installedModIds.add(id));
+        }
+      } catch (e) {
+        console.error('Failed to refresh installed mod ids:', e);
+      }
+      return installedModIds;
+    }
+
+    function updateBrowseInstallButtons() {
+      document.querySelectorAll('#modSearchResults .mod-btn.install[data-project]').forEach(btn => {
+        const projectId = btn.dataset.project;
+        const isInstalled = installedModIds.has(projectId);
+        btn.classList.toggle('installed', isInstalled);
+        btn.disabled = isInstalled;
+        btn.textContent = isInstalled ? 'Installed' : 'Install';
+        if (isInstalled) {
+          btn.onclick = null;
+        } else if (!btn.onclick) {
+          btn.onclick = (e) => installMod(e, projectId, btn.dataset.title);
+        }
+      });
+    }
+
+    function browseInstallButtonHtml(projectId, title, isInstalled) {
+      return `<button class="mod-btn install${isInstalled ? ' installed' : ''}" data-project="${projectId}" data-title="${title.replace(/"/g, '&quot;')}"${isInstalled ? ' disabled' : ''}>${isInstalled ? 'Installed' : 'Install'}</button>`;
+    }
+
+    function updateModSearchClear() {
+      const input = document.getElementById('modSearchInput');
+      const clearBtn = document.getElementById('modSearchClear');
+      if (!input || !clearBtn) return;
+      clearBtn.classList.toggle('visible', input.value.trim().length > 0);
+    }
+
+    function setModSearchLoading(loading) {
+      modSearchLoading = loading;
+      const submitBtn = document.getElementById('modSearchSubmit');
+      const submitIcon = submitBtn ? submitBtn.querySelector('.mod-search-submit-icon') : null;
+      const submitLabel = submitBtn ? submitBtn.querySelector('.mod-search-submit-label') : null;
+      const input = document.getElementById('modSearchInput');
+      if (submitBtn) submitBtn.disabled = loading;
+      if (submitBtn) submitBtn.classList.toggle('loading', loading);
+      if (input) input.disabled = loading;
+      if (submitIcon) submitIcon.innerHTML = loading ? uiIcons.loader : uiIcons.search;
+      if (submitLabel) submitLabel.textContent = loading ? 'Searching' : 'Search';
+    }
+
+    function clearModSearch() {
+      const input = document.getElementById('modSearchInput');
+      if (!input || modSearchLoading) return;
+      input.value = '';
+      updateModSearchClear();
+      input.focus();
+    }
+
+    function initModSearch() {
+      const input = document.getElementById('modSearchInput');
+      const clearBtn = document.getElementById('modSearchClear');
+      if (!input) return;
+
+      input.addEventListener('input', updateModSearchClear);
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          searchMods();
+        } else if (e.key === 'Escape') {
+          clearModSearch();
+        }
+      });
+
+      if (clearBtn) {
+        clearBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          clearModSearch();
+        });
+      }
+
+      updateModSearchClear();
     }
 
     async function searchMods() {
       const input = document.getElementById('modSearchInput');
       const resultsDiv = document.getElementById('modSearchResults');
       const query = input.value.trim();
-      if (!query) return;
+      if (!query || modSearchLoading) return;
 
-      resultsDiv.innerHTML = '<div class="mods-empty">Searching universe...</div>';
+      setModSearchLoading(true);
+      resultsDiv.innerHTML = '<div class="mods-empty">Searching Modrinth...</div>';
 
       try {
         const result = await ipcRenderer.invoke('mods:search', query);
@@ -2972,19 +4077,21 @@
         }
 
         if (!result.results || result.results.length === 0) {
-          resultsDiv.innerHTML = '<div class="mods-empty">No mods found matching your query.</div>';
+          resultsDiv.innerHTML = '<div class="mods-empty">No mods found for that search.<br>Try different keywords.</div>';
           return;
         }
 
+        await refreshInstalledModIds();
         resultsDiv.innerHTML = '';
         for (const mod of result.results) {
+          const projectId = mod.project_id;
+          const isInstalled = installedModIds.has(projectId);
           const card = document.createElement('div');
           card.className = 'mod-card';
-          const iconUrl = mod.icon_url || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect fill="%236b6860" width="32" height="32"/><text x="16" y="22" text-anchor="middle" font-size="18" fill="%23f0ece4">?</text></svg>';
           
           card.innerHTML = `
             <div class="mod-card-top">
-              <img class="mod-icon" src="${iconUrl}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><rect fill=%22%236b6860%22 width=%2232%22 height=%2232%22/><text x=%2216%22 y=%2222%22 text-anchor=%22middle%22 font-size=%2218%22 fill=%22%23f0ece4%22>?</text></svg>'">
+              ${modIconTag(mod.icon_url)}
               <div class="mod-info-main">
                 <div class="mod-title" title="${mod.title}">${mod.title}</div>
                 <div class="mod-author-tag">${mod.author || 'Modrinth'}</div>
@@ -2993,21 +4100,22 @@
             <div class="mod-desc">${mod.description || 'No description provided.'}</div>
             <div class="mod-actions">
               <span class="mod-meta">v${mod.latest_version || 'Unknown'}</span>
-              <button class="mod-btn install" data-project="${mod.project_id}" data-title="${mod.title}">Install</button>
+              ${browseInstallButtonHtml(projectId, mod.title, isInstalled)}
             </div>
           `;
 
-          card.querySelector('.mod-btn').onclick = (e) => installMod(e, mod.project_id, mod.title);
+          if (!isInstalled) {
+            card.querySelector('.mod-btn').onclick = (e) => installMod(e, projectId, mod.title);
+          }
           resultsDiv.appendChild(card);
         }
+        initModIconImages(resultsDiv);
       } catch (err) {
         resultsDiv.innerHTML = `<div class="mods-empty" style="color:#ff6666">Search failed: ${err.message}</div>`;
+      } finally {
+        setModSearchLoading(false);
       }
     }
-
-    document.getElementById('modSearchInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') searchMods();
-    });
 
     async function installMod(e, projectId, title) {
       const btn = e.currentTarget;
@@ -3023,8 +4131,9 @@
             msg += '. Auto-installed ' + data.installedDeps.length + ' dependency(ies)';
           }
           btn.textContent = 'Installed';
-          btn.style.background = 'rgba(100,200,100,0.2)';
-          btn.style.color = '#66dd66';
+          btn.classList.add('installed');
+          installedModIds.add(projectId);
+          updateBrowseInstallButtons();
           await refreshInstalledMods();
           if (data.conflicts && data.conflicts.length > 0) {
             const conflictMsg = data.conflicts.map(c => c.reason).join('<br>');
@@ -3063,13 +4172,25 @@
 
         if (entries.length === 0) {
           grid.innerHTML = '<div class="mods-empty">No mods currently installed.<br>Head over to Browse to find some!</div>';
+          await refreshInstalledModIds();
+          updateBrowseInstallButtons();
           return;
         }
 
         grid.innerHTML = entries.map(([id, mod]) => renderModCard(id, mod)).join('');
+        await refreshInstalledModIds();
+        updateBrowseInstallButtons();
         initModHandlers();
+        initSettingsIcons(grid);
+        initModIconImages(grid);
       } catch (err) {
         grid.innerHTML = `<div class="mods-empty" style="color:#ff6666">${err.message}</div>`;
+      }
+    }
+
+    async function openModsFolder() {
+      if (window.ipcRenderer) {
+        window.ipcRenderer.invoke('openModsFolder');
       }
     }
 
@@ -3317,9 +4438,15 @@ function openVersionPopup() {
 
     loadVersions();
     loadTickSound();
+    loadLoaderPreference();
+    initLoaderSwitcher();
+    initModSearch();
+    refreshInstalledModIds();
+    initModIconImages();
+    initSettingsIcons();
     initModHandlers();
-    setTimeout(() => { if (window.triggerOpenAnimation) window.triggerOpenAnimation(); }, 100);
-    
+    updateLogEmptyState();
+
     if (window.ipcRenderer) {
       window.ipcRenderer.on('triggerOpenAnimation', () => {
         if (window.triggerOpenAnimation) window.triggerOpenAnimation();
@@ -3439,39 +4566,111 @@ function openVersionPopup() {
       }
     }
 
-    function addLog(message) {
-      const logContent = document.getElementById('settingsLogContent');
-      if (!logContent) return;
+    function getLogLevel(message) {
+      const upper = message.toUpperCase();
+      if (upper.includes('ERROR') || upper.includes('FAILED') || upper.includes('EXCEPTION')) return 'error';
+      if (upper.includes('WARN')) return 'warn';
+      return 'info';
+    }
+
+    function createLogLine(message, source) {
+      const isGame = source === 'game';
+      const level = getLogLevel(message);
       const line = document.createElement('div');
-      if (message.includes('ERROR') || message.includes('error') || message.includes('Failed')) {
-        line.className = 'error';
-      } else if (message.includes('WARN') || message.includes('warn')) {
-        line.className = 'warn';
+      line.className = 'log-line' + (isGame ? ' game' : '') + (level === 'error' ? ' error' : level === 'warn' ? ' warn' : '');
+      line.dataset.source = source;
+      if (isGame && level === 'info') line.classList.add('no-badge');
+
+      const time = document.createElement('span');
+      time.className = 'log-time';
+      time.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+      line.appendChild(time);
+
+      if (!isGame || level !== 'info') {
+        const badge = document.createElement('span');
+        badge.className = 'log-badge ' + level;
+        badge.textContent = level === 'error' ? 'Error' : level === 'warn' ? 'Warn' : 'Info';
+        line.appendChild(badge);
       }
-      line.textContent = new Date().toLocaleTimeString() + ' ' + message;
+
+      const msg = document.createElement('span');
+      msg.className = 'log-message';
+      msg.textContent = message;
+
+      line.appendChild(msg);
+      return line;
+    }
+
+    function updateLogEmptyState() {
+      const logContent = document.getElementById('settingsLogContent');
+      const emptyState = document.getElementById('logEmptyState');
+      if (!logContent || !emptyState) return;
+      emptyState.style.display = logContent.children.length === 0 ? 'flex' : 'none';
+    }
+
+    function updateLogCount() {
+      const logContent = document.getElementById('settingsLogContent');
+      const countEl = document.getElementById('logLineCount');
+      if (!logContent || !countEl) return;
+      const visible = logContent.querySelectorAll('.log-line:not(.hidden)').length;
+      const total = logContent.children.length;
+      countEl.textContent = activeLogFilter === 'all'
+        ? `${total} ${total === 1 ? 'entry' : 'entries'}`
+        : `${visible} of ${total} shown`;
+    }
+
+    function setLogFilter(filter) {
+      activeLogFilter = filter;
+      document.querySelectorAll('.log-filter').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+      });
+      document.querySelectorAll('#settingsLogContent .log-line').forEach(line => {
+        const source = line.dataset.source || 'launcher';
+        const show = filter === 'all' || source === filter;
+        line.classList.toggle('hidden', !show);
+      });
+      updateLogCount();
+    }
+
+    function appendLogLine(line) {
+      const logContent = document.getElementById('settingsLogContent');
+      const viewport = document.getElementById('logViewport');
+      if (!logContent) return;
+
       logContent.appendChild(line);
-      logContent.scrollTop = logContent.scrollHeight;
+      const source = line.dataset.source || 'launcher';
+      if (activeLogFilter !== 'all' && source !== activeLogFilter) {
+        line.classList.add('hidden');
+      }
+
+      updateLogEmptyState();
+      updateLogCount();
+
+      const autoScroll = document.getElementById('logAutoScroll');
+      if (viewport && autoScroll && autoScroll.checked) {
+        viewport.scrollTop = viewport.scrollHeight;
+      }
+    }
+
+    function addLog(message) {
+      appendLogLine(createLogLine(message, 'launcher'));
     }
 
     function addGameLog(message) {
-      const logContent = document.getElementById('settingsLogContent');
-      if (!logContent) return;
-      const line = document.createElement('div');
-      line.className = 'game-log';
-      if (message.includes('ERROR') || message.includes('error') || message.includes('Exception') || message.includes('FAILED')) {
-        line.className = 'game-log error';
-      } else if (message.includes('WARN') || message.includes('warn')) {
-        line.className = 'game-log warn';
-      }
-      line.textContent = new Date().toLocaleTimeString() + ' [GAME] ' + message;
-      logContent.appendChild(line);
-      logContent.scrollTop = logContent.scrollHeight;
+      appendLogLine(createLogLine(message, 'game'));
     }
 
     function copyLogs() {
       const logContent = document.getElementById('settingsLogContent');
       if (!logContent) return;
-      const text = Array.from(logContent.children).map(el => el.textContent).join('\n');
+      const lines = Array.from(logContent.querySelectorAll('.log-line:not(.hidden)'));
+      const text = lines.map(el => {
+        const time = el.querySelector('.log-time')?.textContent || '';
+        const badge = el.querySelector('.log-badge')?.textContent || '';
+        const msg = el.querySelector('.log-message')?.textContent || '';
+        return `${time} [${badge}] ${msg}`;
+      }).join('\n');
       navigator.clipboard.writeText(text).then(() => {
         showToast('Copied', 'Logs copied to clipboard');
       }).catch(() => {
@@ -3488,6 +4687,8 @@ function openVersionPopup() {
     function clearLogs() {
       const logContent = document.getElementById('settingsLogContent');
       if (logContent) logContent.innerHTML = '';
+      updateLogEmptyState();
+      updateLogCount();
     }
 
     ipcRenderer.on('launchProgress', (event, data) => {
@@ -3540,8 +4741,7 @@ function openVersionPopup() {
       });
     }
 
-    initPlayerModel();
-    initProfileAvatarImages();
+    runStartup();
   </script>
 </body>
 

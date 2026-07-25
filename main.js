@@ -545,6 +545,7 @@ function createTray() {
                         frame: false,
                         maximizable: false,
                         transparent: false,
+                        show: false,
                         backgroundColor: '#0a0a1a',
                         webPreferences: {
                             nodeIntegration: true,
@@ -553,9 +554,6 @@ function createTray() {
                         }
                     });
                     mainWindowRef.loadFile(compileTemplate());
-                    mainWindowRef.webContents.once('did-finish-load', () => {
-                        mainWindowRef.webContents.send('triggerOpenAnimation');
-                    });
                     createTray();
                 } else {
                     mainWindowRef.show();
@@ -567,6 +565,13 @@ function createTray() {
     });
 }
 
+function showMainWindowWithAnimation() {
+    if (!mainWindowRef || mainWindowRef.isDestroyed()) return;
+    mainWindowRef.show();
+    mainWindowRef.focus();
+    mainWindowRef.webContents.send('triggerOpenAnimation');
+}
+
 function createWindow() {
     win = new BrowserWindow({
         width: 960,
@@ -574,6 +579,7 @@ function createWindow() {
         frame: false,
         maximizable: false,
         transparent: false,
+        show: false,
         backgroundColor: '#0a0a1a',
         icon: path.join(__dirname, 'app', 'assets', 'logo.png'),
         webPreferences: {
@@ -609,6 +615,10 @@ ipcMain.on('showFromTray', () => {
     if (mainWindowRef && !mainWindowRef.isDestroyed()) {
         mainWindowRef.webContents.send('triggerOpenAnimation');
     }
+});
+
+ipcMain.on('startup-ready', () => {
+    showMainWindowWithAnimation();
 });
 
 app.whenReady().then(createWindow);
