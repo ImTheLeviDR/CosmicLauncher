@@ -40,6 +40,14 @@ function compileTemplate() {
 
 ConfigManager.load();
 
+process.on('uncaughtException', (error) => {
+    console.error('Uncaught exception in main process:', error);
+});
+
+process.on('unhandledRejection', (reason) => {
+    console.error('Unhandled promise rejection in main process:', reason);
+});
+
 // Single instance lock - prevent multiple instances
 const gotTheLock = app.requestSingleInstanceLock();
 
@@ -284,6 +292,19 @@ ipcMain.handle('saveSelectedLoader', (event, loader) => {
     return { success: true }
 })
 
+ipcMain.handle('mods:needsSync', (event, versionId, loader) => {
+    return { success: true, needsSync: ConfigManager.needsModSync(versionId, loader) }
+})
+
+ipcMain.handle('mods:getSyncState', () => {
+    return { success: true, ...ConfigManager.getModsSyncState() }
+})
+
+ipcMain.handle('mods:markSynced', (event, versionId, loader) => {
+    ConfigManager.markModsSynced(versionId, loader)
+    return { success: true }
+})
+
 ipcMain.handle('getLaunchOptions', () => {
     return {
         launcherAction: ConfigManager.getLauncherAction(),
@@ -432,7 +453,7 @@ ipcMain.handle('mods:install', async (event, projectId, versionId, gameVersion, 
 
 ipcMain.handle('mods:remove', async (event, projectId) => {
     try {
-        ModManager.removeMod(projectId)
+        await ModManager.removeMod(projectId)
         return { success: true }
     } catch (error) {
         return { success: false, error: error.message }
@@ -495,26 +516,39 @@ ipcMain.handle('mods:checkCompatibility', async (event, gameVersion, loader) => 
 
 ipcMain.handle('mods:autoUpdateForVersion', async (event, gameVersion, loader) => {
     try {
-        const compat = await ModManager.checkModsCompatibility(gameVersion, loader)
-        const results = { updated: [], failed: [], installedDeps: [], depConflicts: compat.depConflicts || [] }
+        const results = { updated: [], failed: [], installedDeps: [], depConflicts: [] }
 
-        for (const mod of compat.updatable) {
-            try {
-                const res = await ModManager.updateMod(mod.projectId, gameVersion, loader)
-                results.updated.push({ projectId: mod.projectId, title: mod.title, newVersion: res.mod.versionNumber })
-                if (res.deps && res.deps.length > 0) {
-                    results.installedDeps.push(...res.deps.filter(Boolean).map(d => ({ projectId: d.projectId, title: d.title })))
+        for (let pass = 0; pass < 5; pass++) {
+            const compat = await ModManager.checkModsCompatibility(gameVersion, loader)
+            if (compat.updatable.length === 0) break
+
+            results.depConflicts = compat.depConflicts || []
+
+            for (const mod of compat.updatable) {
+                try {
+                    const res = await ModManager.updateMod(mod.projectId, gameVersion, loader)
+                    if (res.updated) {
+                        results.updated.push({ projectId: mod.projectId, title: mod.title, newVersion: res.mod.versionNumber })
+                    }
+                    if (res.deps && res.deps.length > 0) {
+                        results.installedDeps.push(...res.deps.filter(Boolean).map(d => ({ projectId: d.projectId, title: d.title })))
+                    }
+                    if (res.depConflicts) {
+                        results.depConflicts.push(...res.depConflicts)
+                    }
+                } catch (e) {
+                    results.failed.push({ projectId: mod.projectId, title: mod.title, error: e.message })
                 }
-                if (res.depConflicts) {
-                    results.depConflicts.push(...res.depConflicts)
-                }
-            } catch (e) {
-                results.failed.push({ projectId: mod.projectId, title: mod.title, error: e.message })
             }
         }
 
-        for (const mod of compat.incompatible) {
-            ModManager.setModEnabled(mod.projectId, false)
+        const finalCompat = await ModManager.checkModsCompatibility(gameVersion, loader)
+        for (const mod of finalCompat.incompatible) {
+            try {
+                ModManager.setModEnabled(mod.projectId, false)
+            } catch (error) {
+                results.failed.push({ projectId: mod.projectId, title: mod.title, error: error.message })
+            }
         }
 
         return { success: true, ...results }

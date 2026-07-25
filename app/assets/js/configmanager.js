@@ -19,6 +19,8 @@ const DEFAULT_CONFIG = {
     authenticationDatabase: {},
     selectedVersion: null,
     selectedLoader: 'vanilla',
+    modsSyncedVersion: null,
+    modsSyncedLoader: null,
     launcherAction: 'hide',
     allowMultipleInstances: false
 }
@@ -162,6 +164,24 @@ exports.getSelectedLoader = function(){
 
 exports.setSelectedLoader = function(loader){
     config.selectedLoader = loader
+    exports.save()
+}
+
+exports.needsModSync = function(versionId, loader){
+    const loaderId = loader || 'vanilla'
+    return config.modsSyncedVersion !== versionId || (config.modsSyncedLoader || 'vanilla') !== loaderId
+}
+
+exports.getModsSyncState = function(){
+    return {
+        version: config.modsSyncedVersion || null,
+        loader: config.modsSyncedLoader || null,
+    }
+}
+
+exports.markModsSynced = function(versionId, loader){
+    config.modsSyncedVersion = versionId
+    config.modsSyncedLoader = loader || 'vanilla'
     exports.save()
 }
 

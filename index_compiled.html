@@ -42,7 +42,6 @@
 
     body.booting .titlebar,
     body.booting .layout,
-    body.booting .panel-settings-wrap,
     body.booting .particles-canvas {
       opacity: 0;
       visibility: hidden;
@@ -219,6 +218,33 @@
     .tb-win-btn.close:active {
       background: #c42b2b;
       color: #fff;
+    }
+
+    .tb-settings-btn {
+      width: 48px;
+      min-width: 48px;
+      height: 100%;
+      padding: 0;
+      flex-shrink: 0;
+      line-height: 0;
+      color: var(--muted);
+      transition: background 0.1s ease, color 0.1s ease;
+    }
+
+    .tb-settings-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .tb-settings-btn:active {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .tb-settings-btn svg {
+      width: 15px;
+      height: 15px;
+      display: block;
+      flex-shrink: 0;
     }
 
     .header-btn {
@@ -403,62 +429,6 @@
       .player-model-panel {
         display: none;
       }
-    }
-
-    .panel-settings-wrap {
-      position: fixed;
-      bottom: 28px;
-      right: 32px;
-      z-index: 50;
-    }
-
-    .settings-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      height: 40px;
-      padding: 0 14px;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-family: 'Space Mono', monospace;
-      font-size: 0.68rem;
-      font-weight: 400;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease;
-      line-height: 1;
-    }
-
-    .settings-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.15);
-    }
-
-    .settings-btn:active {
-      background: rgba(255, 255, 255, 0.12);
-    }
-
-    .settings-btn:focus-visible {
-      outline: 2px solid var(--accent2);
-      outline-offset: -2px;
-    }
-
-    .settings-btn-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .settings-btn-icon svg {
-      width: 18px;
-      height: 18px;
-      display: block;
-      opacity: 0.9;
     }
 
     /* ── PROFILE CHANGER ── */
@@ -662,13 +632,14 @@
     }
 
     .custom-modal {
-      background: var(--panel);
+      background: #0a0a16;
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 24px;
       min-width: 300px;
       max-width: 400px;
       text-align: center;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.65);
     }
 
     .custom-modal-title {
@@ -2858,6 +2829,13 @@
           </div>
         </div>
 
+        <button type="button" class="tb-seg-btn tb-settings-btn" onclick="openSettings()" title="Settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+
         <button type="button" class="tb-seg-btn tb-win-btn" onclick="minimize()" title="Minimize" aria-label="Minimize">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
             <line x1="3" y1="8" x2="13" y2="8"></line>
@@ -2877,18 +2855,6 @@
   <div class="layout" id="layout">
 
     <div class="right-panel">
-      <div class="panel-settings-wrap">
-        <button type="button" class="settings-btn" onclick="openSettings()" title="Settings">
-          <span class="settings-btn-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-            </svg>
-          </span>
-          <span>Settings</span>
-        </button>
-      </div>
-
       <div class="game-title">Cosmic<br>Launcher</div>
       <div class="game-subtitle">A beautiful lightweight launcher</div>
 
@@ -3015,8 +2981,8 @@
                 <div class="loader-wrap" id="launcherActionWrap">
                   <button type="button" class="loader-trigger" id="launcherActionTrigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Launcher action">
                     <div class="loader-trigger-info">
-                      <span class="loader-trigger-name" id="launcherActionTriggerName">Do nothing</span>
-                      <span class="loader-trigger-type" id="launcherActionTriggerType">Keep open</span>
+                      <span class="loader-trigger-name" id="launcherActionTriggerName">Hide launcher</span>
+                      <span class="loader-trigger-type" id="launcherActionTriggerType">Default</span>
                     </div>
                     <span class="loader-trigger-chevron" aria-hidden="true">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -3024,7 +2990,7 @@
                   </button>
                   <div class="loader-menu" id="launcherActionMenu" role="listbox" aria-label="Launcher action options">
                     <div class="loader-list">
-                      <button type="button" class="loader-item" data-action="hide" role="option" aria-selected="false">
+                      <button type="button" class="loader-item active" data-action="hide" role="option" aria-selected="true">
                         <div class="loader-item-info">
                           <span class="loader-item-name">Hide launcher</span>
                           <span class="loader-item-type">Default</span>
@@ -3042,7 +3008,7 @@
                           <span class="loader-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
                         </div>
                       </button>
-                      <button type="button" class="loader-item active" data-action="nothing" role="option" aria-selected="true">
+                      <button type="button" class="loader-item" data-action="nothing" role="option" aria-selected="false">
                         <div class="loader-item-info">
                           <span class="loader-item-name">Do nothing</span>
                           <span class="loader-item-type">Keep open</span>
@@ -3093,16 +3059,15 @@
                 
                 
                   
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FYL57xq9U%2F18d0e7f076d3d6ed5bedd472b853909aac5da202_96.webp">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Iris Shaders</div>
+                          <div class="mod-title">Iris Shaders</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2</div>
+                      <div class="mod-desc">Supports: 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="YL57xq9U" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3112,16 +3077,15 @@
                       </div>
                     </div>
                   
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FAANobbMI%2F295862f4724dc3f78df3447ad6072b2dcd3ef0c9_96.webp">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Sodium</div>
+                          <div class="mod-title">Sodium</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.1.2</div>
+                      <div class="mod-desc">Supports: 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="AANobbMI" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3131,16 +3095,15 @@
                       </div>
                     </div>
                   
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FUIexcMP1%2F2d578a1f4d4bebebf19c7847eb9a1575a8a0b825_96.webp">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Borderless Fullscreen</div>
+                          <div class="mod-title">Borderless Fullscreen</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.1.2</div>
+                      <div class="mod-desc">Supports: 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="UIexcMP1" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3150,16 +3113,15 @@
                       </div>
                     </div>
                   
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2Fw7ThoJFB%2Fe2de67a0bfb9e8aa2347982ab3ec5463f26cca31_96.webp">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Zoomify (Zoom)</div>
+                          <div class="mod-title">Zoomify (Zoom)</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2</div>
+                      <div class="mod-desc">Supports: 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="w7ThoJFB" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3169,16 +3131,15 @@
                       </div>
                     </div>
                   
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FmOgUt4GM%2F5a20ed1450a0e1e79a1fe04e61bb4e5878bf1d20.png">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Mod Menu</div>
+                          <div class="mod-title">Mod Menu</div>
                           <div class="mod-author-tag">fabric, quilt</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2</div>
+                      <div class="mod-desc">Supports: 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="mOgUt4GM" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3188,16 +3149,15 @@
                       </div>
                     </div>
                   
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FeXts2L7r%2Fe9c9990896e6422bffc5f73d2c41b8f077348f83.png">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Text Placeholder API</div>
+                          <div class="mod-title">Text Placeholder API</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2</div>
+                      <div class="mod-desc">Supports: 26.2-pre-1, 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="eXts2L7r" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3207,16 +3167,15 @@
                       </div>
                     </div>
                   
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FP7dR8mSH%2Ficon.png">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Fabric API</div>
+                          <div class="mod-title">Fabric API</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2</div>
+                      <div class="mod-desc">Supports: 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="P7dR8mSH" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3226,16 +3185,15 @@
                       </div>
                     </div>
                   
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2F1eAoo2KR%2F08c0cd32515e260f4bb20bbc0696510041523f9a_96.webp">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">YetAnotherConfigLib (YACL)</div>
+                          <div class="mod-title">YetAnotherConfigLib (YACL)</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2</div>
+                      <div class="mod-desc">Supports: 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="1eAoo2KR" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3245,12 +3203,11 @@
                       </div>
                     </div>
                   
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FHa28R6CL%2F72c3d74aeb665e45aea93a945a01474cbce3b7da_96.webp">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="">Fabric Language Kotlin</div>
+                          <div class="mod-title">Fabric Language Kotlin</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
@@ -3264,35 +3221,33 @@
                       </div>
                     </div>
                   
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FHwGFylw6%2Fb5f13d29d9b23956e00c490afb2a83a48eda2368_96.webp">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Borderless Windowed Vulkan</div>
+                          <div class="mod-title">Borderless Windowed Vulkan</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2</div>
+                      <div class="mod-desc">Supports: 1.21, 1.21.1, 1.21.2, 1.21.3, 1.21.4, 1.21.5, 1.21.6, 1.21.7, 1.21.8, 1.21.9, 1.21.10, 1.21.11</div>
                       <div class="mod-actions">
-                        <div class="mod-toggle-wrap on" data-id="HwGFylw6" data-enabled="true">
+                        <div class="mod-toggle-wrap " data-id="HwGFylw6" data-enabled="false">
                           <div class="mod-switch"></div>
-                          <span>Enabled</span>
+                          <span>Disabled</span>
                         </div>
                         <button class="mod-btn remove" data-id="HwGFylw6"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
                       </div>
                     </div>
                   
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FPtjYWJkn%2F0df4fb22a11e1dcb5e83cb0aadd275b571aca7a9_96.webp">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Sodium Extra</div>
+                          <div class="mod-title">Sodium Extra</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.1.2</div>
+                      <div class="mod-desc">Supports: 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="PtjYWJkn" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3302,12 +3257,11 @@
                       </div>
                     </div>
                   
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FEE4vxUHj%2F5739f79c724116d782076b79c5859de481ac975b.png">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="">Greenlight</div>
+                          <div class="mod-title">Greenlight</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
@@ -3321,16 +3275,15 @@
                       </div>
                     </div>
                   
-                    
                     <div class="mod-card">
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="https%3A%2F%2Fcdn.modrinth.com%2Fdata%2FBh37bMuy%2Ficon.png">
                         <div class="mod-info-main">
-                          <div class="mod-title" style="color:var(--muted);text-decoration:line-through">Reese&#39;s Sodium Options</div>
+                          <div class="mod-title">Reese&#39;s Sodium Options</div>
                           <div class="mod-author-tag">fabric</div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: 26.1, 26.1.1, 26.1.2</div>
+                      <div class="mod-desc">Supports: 26.2</div>
                       <div class="mod-actions">
                         <div class="mod-toggle-wrap on" data-id="Bh37bMuy" data-enabled="true">
                           <div class="mod-switch"></div>
@@ -3969,13 +3922,17 @@
       </div>`;
     }
 
+    function isModCompatibleWithSelection(mod) {
+      if (!mod.gameVersions || !mod.loaders) return false;
+      return mod.gameVersions.includes(selectedVersion) && mod.loaders.includes(selectedLoader);
+    }
+
     function renderModCard(id, mod) {
-      const isCompatible = mod.gameVersions && mod.gameVersions.includes(selectedVersion);
       return `<div class="mod-card">
         <div class="mod-card-top">
           ${modIconTag(mod.icon_url)}
           <div class="mod-info-main">
-            <div class="mod-title" style="${!isCompatible ? 'color:var(--muted);text-decoration:line-through' : ''}">${mod.title}</div>
+            <div class="mod-title">${mod.title}</div>
             <div class="mod-author-tag">${mod.loaders ? mod.loaders.join(', ') : 'Unknown'}</div>
           </div>
         </div>
@@ -4203,6 +4160,7 @@
       selectedLoader = value;
       updateLoaderUI();
       closeLoaderMenu();
+      refreshInstalledMods();
       if (window.ipcRenderer) {
         window.ipcRenderer.invoke('saveSelectedLoader', selectedLoader);
       }
@@ -4268,8 +4226,75 @@
       }
     }
 
+    const MODS_SYNC_STORAGE_KEY = 'cosmicLauncher.modsSynced';
+    let modsSyncedVersion = null;
+    let modsSyncedLoader = null;
+
+    function readModsSyncFromStorage() {
+      try {
+        const raw = localStorage.getItem(MODS_SYNC_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function writeModsSyncToStorage(version, loader) {
+      modsSyncedVersion = version;
+      modsSyncedLoader = loader || 'vanilla';
+      try {
+        localStorage.setItem(MODS_SYNC_STORAGE_KEY, JSON.stringify({
+          version: modsSyncedVersion,
+          loader: modsSyncedLoader,
+        }));
+      } catch (e) {
+        console.warn('Could not persist mod sync state to localStorage:', e);
+      }
+    }
+
+    function needsModSyncForLaunch() {
+      if (modsSyncedVersion == null) return true;
+      return modsSyncedVersion !== selectedVersion || (modsSyncedLoader || 'vanilla') !== selectedLoader;
+    }
+
+    async function loadModsSyncState() {
+      const local = readModsSyncFromStorage();
+      if (local?.version) {
+        modsSyncedVersion = local.version;
+        modsSyncedLoader = local.loader || 'vanilla';
+      }
+
+      try {
+        const remote = await ipcRenderer.invoke('mods:getSyncState');
+        if (remote.success && remote.version) {
+          modsSyncedVersion = remote.version;
+          modsSyncedLoader = remote.loader || 'vanilla';
+          writeModsSyncToStorage(modsSyncedVersion, modsSyncedLoader);
+        } else if (local?.version) {
+          await ipcRenderer.invoke('mods:markSynced', local.version, local.loader || 'vanilla');
+        }
+      } catch (e) {
+        console.warn('Could not load mod sync state:', e);
+      }
+    }
+
+    async function markModsSyncedForLaunch() {
+      writeModsSyncToStorage(selectedVersion, selectedLoader);
+      try {
+        await ipcRenderer.invoke('mods:markSynced', selectedVersion, selectedLoader);
+      } catch (e) {
+        console.warn('Could not persist mod sync state:', e);
+      }
+    }
+
+    async function initLaunchState() {
+      await loadVersions();
+      await loadLoaderPreference();
+      await loadModsSyncState();
+    }
+
 /* ── LAUNCH OPTIONS ── */
-    let launcherAction = 'nothing';
+    let launcherAction = 'hide';
     let allowMultipleInstances = false;
     let gameRunning = false;
 
@@ -4387,6 +4412,29 @@
 
       icon.innerHTML = isStop ? PLAY_ICON_STOP : PLAY_ICON_LAUNCH;
       status.textContent = isStop ? 'Stop' : 'Launch';
+    }
+
+    function setPlayButtonBusy(statusText) {
+      const btn = document.getElementById('playBtn');
+      const status = document.getElementById('playBtnStatus');
+      const icon = document.getElementById('playBtnIcon');
+      if (!btn || !status || !icon) return;
+
+      btn.classList.remove('launching');
+      void btn.offsetWidth;
+      btn.classList.add('launching');
+      icon.innerHTML = '<span class="btn-spinner"></span>';
+      status.textContent = statusText;
+      btn.disabled = true;
+      updatePlayButton();
+    }
+
+    function resetPlayButtonIdle() {
+      const btn = document.getElementById('playBtn');
+      if (!btn) return;
+      btn.classList.remove('launching');
+      btn.disabled = false;
+      updatePlayButton();
     }
 
     function finishLaunchUI({ hideLayout = true } = {}) {
@@ -4856,14 +4904,13 @@
         closeVersionPopup();
         return;
       }
-      const oldVersion = selectedVersion;
       selectedVersion = versionId;
       updateVersionUI();
       if (window.ipcRenderer) {
         window.ipcRenderer.invoke('saveSelectedVersion', selectedVersion);
       }
       setTimeout(closeVersionPopup, 150);
-      checkModCompatibilityOnVersionChange(selectedVersion, oldVersion);
+      refreshInstalledMods();
     }
 
     async function loadVersions() {
@@ -4882,6 +4929,7 @@
             selectedVersion = availableVersions[0].id;
           }
           updateVersionUI();
+          await refreshInstalledMods();
         }
       } catch (err) {
         console.error('Failed to load versions:', err);
@@ -4894,6 +4942,7 @@
         ];
         selectedVersion = savedVersion && availableVersions.some(v => v.id === savedVersion) ? savedVersion : availableVersions[0].id;
         updateVersionUI();
+        await refreshInstalledMods();
       }
     }
 
@@ -4946,74 +4995,88 @@
       });
     }
 
-    let _versionChangePending = false;
-    async function checkModCompatibilityOnVersionChange(newVersion, oldVersion) {
-      if (_versionChangePending) return;
-      const installedModsResult = await ipcRenderer.invoke('mods:list');
-      if (!installedModsResult.success) return;
-      const modCount = Object.keys(installedModsResult.mods).length;
-      if (modCount === 0) return;
-
-      _versionChangePending = true;
-      try {
-        const result = await ipcRenderer.invoke('mods:checkCompatibility', newVersion, selectedLoader);
-        if (!result.success) { _versionChangePending = false; return; }
-
-        if (result.updatable.length > 0 && result.incompatible.length === 0 && (result.depConflicts || []).length === 0) {
-          const statusEl = document.getElementById('playBtnStatus');
-          if (statusEl) statusEl.textContent = 'Updating mods...';
-          const updateResult = await ipcRenderer.invoke('mods:autoUpdateForVersion', newVersion, selectedLoader);
-          if (updateResult.success) {
-            let msg = '';
-            if (updateResult.updated.length > 0) msg += updateResult.updated.length + ' mod(s) updated';
-            if (updateResult.installedDeps.length > 0) msg += (msg ? ', ' : '') + updateResult.installedDeps.length + ' dependency(ies) installed';
-            if (msg) showToast('Mods updated for ' + newVersion, msg);
-            if (statusEl) statusEl.textContent = 'Launch';
-          }
-          _versionChangePending = false;
-          return;
-        }
-
-        if (result.incompatible.length > 0) {
-          const compatResult = await showIncompatibleModsDialog(result.incompatible, result.updatable, newVersion);
-          if (compatResult.action === 'disable') {
-            for (const mod of result.incompatible) {
-              await ipcRenderer.invoke('mods:setEnabled', mod.projectId, false);
-            }
-            if (result.updatable.length > 0) {
-              const statusEl = document.getElementById('playBtnStatus');
-              if (statusEl) statusEl.textContent = 'Updating mods...';
-              await ipcRenderer.invoke('mods:autoUpdateForVersion', newVersion, selectedLoader);
-              if (statusEl) statusEl.textContent = 'Launch';
-            }
-            showToast('Mods synced', result.incompatible.length + ' mod(s) disabled, ' + result.updatable.length + ' updated');
-          } else {
-            selectedVersion = oldVersion;
-            updateVersionUI();
-            if (window.ipcRenderer) window.ipcRenderer.invoke('saveSelectedVersion', oldVersion);
-          }
-          _versionChangePending = false;
-          return;
-        }
-
-        if (result.updatable.length > 0) {
-          const statusEl = document.getElementById('playBtnStatus');
-          if (statusEl) statusEl.textContent = 'Updating mods...';
-          const updateResult = await ipcRenderer.invoke('mods:autoUpdateForVersion', newVersion, selectedLoader);
-          if (updateResult.success) {
-            let msg = '';
-            if (updateResult.updated.length > 0) msg += updateResult.updated.length + ' mod(s) updated';
-            if (updateResult.installedDeps.length > 0) msg += (msg ? ', ' : '') + updateResult.installedDeps.length + ' dependency(ies) installed';
-            if (msg) showToast('Mods updated for ' + newVersion, msg);
-            if (statusEl) statusEl.textContent = 'Launch';
-          }
-        }
-
-        _versionChangePending = false;
-      } catch (e) {
-        console.error('Mod compatibility check failed:', e);
-        _versionChangePending = false;
+    async function prepareModsForLaunch() {
+      if (!needsModSyncForLaunch()) {
+        return { ok: true };
       }
+
+      const installedModsResult = await ipcRenderer.invoke('mods:list');
+      if (!installedModsResult.success) return { ok: true };
+      const modCount = Object.keys(installedModsResult.mods).length;
+      if (modCount === 0) {
+        await markModsSyncedForLaunch();
+        return { ok: true };
+      }
+
+      const result = await ipcRenderer.invoke('mods:checkCompatibility', selectedVersion, selectedLoader);
+      if (!result.success) return { ok: true };
+
+      const needsUpdate = result.updatable.length > 0;
+      const hasIncompatible = result.incompatible.length > 0;
+
+      if (hasIncompatible) {
+        resetPlayButtonIdle();
+        const compatResult = await showIncompatibleModsDialog(result.incompatible, result.updatable, selectedVersion);
+        if (compatResult.action === 'cancel') return { ok: false };
+        setPlayButtonBusy('Updating mods');
+      }
+
+      if (needsUpdate || hasIncompatible) {
+        try {
+          const updateResult = await ipcRenderer.invoke('mods:autoUpdateForVersion', selectedVersion, selectedLoader);
+          if (updateResult.success) {
+            let msg = '';
+            if (updateResult.updated.length > 0) msg += updateResult.updated.length + ' mod(s) updated';
+            if (updateResult.installedDeps.length > 0) msg += (msg ? ', ' : '') + updateResult.installedDeps.length + ' dependency(ies) installed';
+            if (msg) showToast('Mods updated for ' + selectedVersion, msg);
+            await refreshInstalledMods();
+
+            if (updateResult.failed?.length > 0) {
+              const failedList = updateResult.failed.map(f => `• ${f.title}: ${f.error}`).join('<br>');
+              const continueAnyway = await showModal(
+                'Some Mods Failed to Update',
+                `${failedList}<br><br>Launch anyway?`,
+                true,
+                true
+              );
+              if (!continueAnyway) {
+                resetPlayButtonIdle();
+                return { ok: false };
+              }
+            }
+          } else {
+            resetPlayButtonIdle();
+            showModal('Update Failed', updateResult.error || 'Could not update mods.', true);
+            return { ok: false };
+          }
+        } catch (e) {
+          console.error('Mod update failed:', e);
+          resetPlayButtonIdle();
+          showModal('Update Failed', e.message, true);
+          return { ok: false };
+        }
+      }
+
+      const modsCheck = await ipcRenderer.invoke('mods:list');
+      if (modsCheck.success) {
+        const enabledMods = Object.values(modsCheck.mods).filter(m => m.enabled);
+        const incompatibleMods = enabledMods.filter(m => !isModCompatibleWithSelection(m));
+        if (incompatibleMods.length > 0) {
+          const names = incompatibleMods.map(m => m.title).join(', ');
+          const confirmed = await showModal('Incompatible Mods Enabled', `${names} don't support ${selectedVersion}. Disable them or switch version.`, true, true);
+          if (!confirmed) {
+            resetPlayButtonIdle();
+            return { ok: false };
+          }
+          for (const m of incompatibleMods) {
+            await ipcRenderer.invoke('mods:setEnabled', m.projectId, false);
+          }
+          await refreshInstalledMods();
+        }
+      }
+
+      await markModsSyncedForLaunch();
+      return { ok: true };
     }
 
     function showIncompatibleModsDialog(incompatible, updatable, newVersion) {
@@ -5051,9 +5114,8 @@
       setTimeout(() => toast.remove(), 3500);
     }
 
-    loadVersions();
+    initLaunchState();
     initVersionSearch();
-    loadLoaderPreference();
     loadLaunchOptions();
     initLoaderSwitcher();
     initLauncherActionSwitcher();
@@ -5092,8 +5154,6 @@
     /* ── PLAY ── */
     async function play() {
       const btn = document.getElementById('playBtn');
-      const status = document.getElementById('playBtnStatus');
-      const icon = document.getElementById('playBtnIcon');
       if (btn.disabled) return;
 
       if (btn.classList.contains('stop-mode')) {
@@ -5101,25 +5161,24 @@
         return;
       }
 
-      const modsCheck = await ipcRenderer.invoke('mods:list');
-      if (modsCheck.success) {
-        const enabledMods = Object.values(modsCheck.mods).filter(m => m.enabled);
-        const incompatibleMods = enabledMods.filter(m => !m.gameVersions.includes(selectedVersion) || !m.loaders.includes(selectedLoader));
-        if (incompatibleMods.length > 0) {
-          const names = incompatibleMods.map(m => m.title).join(', ');
-          const confirmed = await showModal('Incompatible Mods Enabled', `${names} don't support ${selectedVersion}. Disable them or switch version.`, true, true);
-          if (!confirmed) return;
-          for (const m of incompatibleMods) {
-            await ipcRenderer.invoke('mods:setEnabled', m.projectId, false);
-          }
-          await refreshInstalledMods();
-        }
+      const needsModSync = needsModSyncForLaunch();
+      setPlayButtonBusy(needsModSync && installedModIds.size > 0 ? 'Updating mods' : 'Launching');
+
+      if (needsModSync) {
+        const prepared = await prepareModsForLaunch();
+        if (!prepared.ok) return;
+
         const conflictCheck = await ipcRenderer.invoke('mods:validateConflicts');
         if (conflictCheck.success && conflictCheck.conflicts && conflictCheck.conflicts.length > 0) {
           const conflictMsg = conflictCheck.conflicts.map(c => `• ${c.reason}`).join('<br>');
           const confirmed = await showModal('Mod Conflicts Detected', `Some mods are incompatible with each other:<br><br>${conflictMsg}<br><br>Launch anyway? This may crash.`, true, true);
-          if (!confirmed) return;
+          if (!confirmed) {
+            resetPlayButtonIdle();
+            return;
+          }
         }
+
+        setPlayButtonBusy('Launching');
       }
 
       const rect = btn.getBoundingClientRect();
@@ -5127,15 +5186,6 @@
       const keepOpen = keepLauncherOpenOnLaunch();
       const layout = document.getElementById('layout');
       const overlay = document.getElementById('launchOverlay');
-
-      btn.classList.remove('launching');
-      void btn.offsetWidth;
-      btn.classList.add('launching');
-      
-      icon.innerHTML = '<span class="btn-spinner"></span>';
-      status.textContent = 'Launching';
-      btn.disabled = true;
-      updatePlayButton();
 
       const launchSound = document.getElementById('launchSound');
       if (launchSound) {
