@@ -543,6 +543,7 @@ function createTray() {
                         width: 960,
                         height: 640,
                         frame: false,
+                        maximizable: false,
                         transparent: false,
                         backgroundColor: '#0a0a1a',
                         webPreferences: {
@@ -571,6 +572,7 @@ function createWindow() {
         width: 960,
         height: 640,
         frame: false,
+        maximizable: false,
         transparent: false,
         backgroundColor: '#0a0a1a',
         icon: path.join(__dirname, 'app', 'assets', 'logo.png'),

@@ -63,71 +63,269 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 44px;
+      height: 52px;
       display: flex;
-      align-items: center;
+      align-items: stretch;
       justify-content: space-between;
-      padding: 0 18px;
+      padding: 0 0 0 16px;
       -webkit-app-region: drag;
       z-index: 100;
       border-bottom: 1px solid var(--border);
-      background: rgba(4, 4, 13, 0.6);
-      backdrop-filter: blur(12px);
+      background: rgba(4, 4, 13, 0.88);
+      backdrop-filter: blur(16px);
+      gap: 12px;
     }
 
-    .tb-left {
+    .tb-brand {
       display: flex;
       align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      min-width: 0;
+      align-self: center;
+      padding-right: 12px;
+    }
+
+    .tb-logo {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      object-fit: cover;
+      flex-shrink: 0;
     }
 
     .tb-name {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      white-space: nowrap;
     }
 
-    .tb-controls {
+    .tb-drag-spacer {
+      flex: 1;
+      min-width: 24px;
+      height: 100%;
+      align-self: stretch;
+    }
+
+    .tb-control-group .profile-wrap {
       display: flex;
-      gap: 6px;
+      align-items: stretch;
+      height: 100%;
+    }
+
+    .tb-actions {
+      display: flex;
+      align-items: stretch;
+      -webkit-app-region: no-drag;
+      flex-shrink: 0;
+      height: 100%;
+    }
+
+    .tb-control-group {
+      display: flex;
+      align-items: stretch;
+      height: 100%;
+    }
+
+    .tb-seg-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 100%;
+      padding: 0 14px;
+      background: transparent;
+      border: none;
+      border-left: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
       -webkit-app-region: no-drag;
     }
 
-    .tb-btn {
-      width: 32px;
-      height: 26px;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      color: var(--muted);
-      font-size: 0.9rem;
-      cursor: pointer;
+    .tb-control-group > :first-child .tb-seg-btn,
+    .tb-control-group > .tb-seg-btn:first-child {
+      border-left: none;
+      border-radius: 0;
+    }
+
+    .tb-control-group > .tb-seg-btn:last-child {
+      border-radius: 0;
+    }
+
+    .tb-seg-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tb-seg-btn:active {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .tb-seg-btn:focus-visible {
+      outline: 2px solid var(--accent2);
+      outline-offset: -2px;
+      z-index: 1;
+    }
+
+    .tb-win-btn {
+      width: 52px;
+      min-width: 52px;
+      height: 100%;
+      padding: 0;
+      flex-shrink: 0;
+      line-height: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.15s;
+      transition: background 0.1s ease, color 0.1s ease;
     }
 
-    .tb-btn:hover {
-      color: var(--text);
-      background: var(--panel);
+    .tb-win-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
     }
 
-    .tb-btn.close:hover {
-      background: rgba(220, 50, 50, 0.7);
-      border-color: rgba(220, 50, 50, 0.9);
+    .tb-win-btn:active {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .tb-win-btn svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .tb-win-btn.close:hover {
+      background: #dc3232;
       color: #fff;
+    }
+
+    .tb-win-btn.close:active {
+      background: #c42b2b;
+      color: #fff;
+    }
+
+    .header-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 36px;
+      padding: 0 14px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.12s, box-shadow 0.15s;
+      white-space: nowrap;
+    }
+
+    .header-btn:hover {
+      background: rgba(255, 255, 255, 0.11);
+      border-color: rgba(255, 255, 255, 0.22);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    .header-btn:active {
+      transform: translateY(1px);
+    }
+
+    .header-btn:focus-visible {
+      outline: 2px solid var(--accent2);
+      outline-offset: 2px;
+    }
+
+    .header-btn svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      opacity: 0.9;
+    }
+
+    .header-btn-icon-only {
+      width: 36px;
+      min-width: 36px;
+      padding: 0;
+    }
+
+    .header-btn-profile {
+      padding: 0 12px 0 10px;
+      max-width: 220px;
+      transition: background 0.1s ease, color 0.1s ease;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+    }
+
+    .header-btn-profile:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .header-btn-profile:active {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .header-btn-profile .profile-head-img {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      box-shadow: none;
+    }
+
+    .header-btn-profile .profile-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+      font-size: inherit;
+      font-weight: inherit;
+      color: var(--text);
+    }
+
+    .header-btn-profile .profile-chevron {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      transition: transform 0.2s ease, color 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .header-btn-profile .profile-chevron svg {
+      width: 12px;
+      height: 12px;
+      display: block;
+    }
+
+    .profile-wrap.open .header-btn-profile {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .profile-wrap.open .header-btn-profile .profile-chevron {
+      transform: rotate(180deg);
+      color: var(--accent2);
     }
 
     .layout {
       position: relative;
       z-index: 10;
       width: 100%;
-      height: 100%;
-      display: grid;
-      grid-template-columns: 420px 1fr;
-      padding-top: 44px;
+      height: 100vh;
+      padding-top: 52px;
+      box-sizing: border-box;
+      min-height: 0;
       transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
@@ -137,201 +335,91 @@
       filter: blur(20px);
     }
 
-    .left-panel {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      padding: 40px;
-      border-left: 1px solid var(--border);
-    }
-
-    .planet-wrap {
-      position: relative;
-      width: 320px;
-      height: 320px;
-      margin-bottom: 32px;
-    }
-
-    .planet {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background:
-        radial-gradient(ellipse at 32% 28%, rgba(240, 168, 66, 0.25) 0%, transparent 55%),
-        radial-gradient(ellipse at 70% 65%, rgba(232, 98, 42, 0.2) 0%, transparent 50%),
-        radial-gradient(ellipse at 50% 50%, #1a0e06 0%, #0d0505 60%, #04040d 100%);
-      box-shadow:
-        inset -40px -20px 80px rgba(0, 0, 0, 0.8),
-        inset 20px 15px 60px rgba(240, 168, 66, 0.1),
-        0 0 80px rgba(232, 98, 42, 0.2),
-        0 0 160px rgba(232, 98, 42, 0.08);
-      position: relative;
-      overflow: hidden;
-      animation: planet-drift 18s ease-in-out infinite;
-    }
-
-    @keyframes planet-drift {
-
-      0%,
-      100% {
-        transform: translateY(0px) rotate(0deg);
-      }
-
-      33% {
-        transform: translateY(-8px) rotate(0.5deg);
-      }
-
-      66% {
-        transform: translateY(5px) rotate(-0.3deg);
-      }
-    }
-
-    .planet::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        repeating-linear-gradient(172deg,
-          transparent 0%, transparent 8%,
-          rgba(180, 80, 20, 0.06) 8%, rgba(180, 80, 20, 0.06) 9%,
-          transparent 9%, transparent 17%,
-          rgba(120, 50, 10, 0.05) 17%, rgba(120, 50, 10, 0.05) 18.5%);
-      border-radius: 50%;
-    }
-
-    .planet::after {
-      content: '';
-      position: absolute;
-      inset: -8px;
-      border-radius: 50%;
-      background: transparent;
-      box-shadow: inset 0 0 40px 20px rgba(232, 98, 42, 0.12);
-      pointer-events: none;
-    }
-
-    .planet-ring {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 440px;
-      height: 90px;
-      transform: translate(-50%, -50%) rotateX(75deg);
-      border-radius: 50%;
-      border: 14px solid transparent;
-      border-top-color: rgba(240, 168, 66, 0.35);
-      border-bottom-color: rgba(232, 98, 42, 0.15);
-      box-shadow: 0 0 30px rgba(240, 168, 66, 0.1);
-      pointer-events: none;
-      animation: ring-glow 4s ease-in-out infinite;
-    }
-
-    @keyframes ring-glow {
-
-      0%,
-      100% {
-        border-top-color: rgba(240, 168, 66, 0.35);
-      }
-
-      50% {
-        border-top-color: rgba(240, 168, 66, 0.55);
-      }
-    }
-
-    .orbit {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 380px;
-      height: 380px;
-      transform: translate(-50%, -50%);
-      animation: orbit-spin 12s linear infinite;
-    }
-
-    .moon {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #c8b89a, #6b5a45);
-      box-shadow: 0 0 12px rgba(200, 184, 154, 0.4);
-    }
-
-    @keyframes orbit-spin {
-      from {
-        transform: translate(-50%, -50%) rotate(0deg);
-      }
-
-      to {
-        transform: translate(-50%, -50%) rotate(360deg);
-      }
-    }
-
-    .planet-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.6rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-align: center;
-      margin-top: 4px;
-    }
-
     .right-panel {
       position: relative;
-      /* Added for absolute positioning inside */
+      width: 540px;
+      max-width: 100%;
+      height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      min-height: 0;
       padding: 48px 32px 48px 48px;
-      border-right: 1px solid var(--border);
-      background: linear-gradient(160deg, rgba(255, 255, 255, 0.025) 0%, transparent 100%);
+      background: transparent;
       gap: 0;
+      box-sizing: border-box;
     }
 
-    /* ── PROFILE CHANGER (NEW) ── */
-    .profile-wrap {
-      position: absolute;
-      top: 32px;
+    .panel-settings-wrap {
+      position: fixed;
+      bottom: 28px;
       right: 32px;
       z-index: 50;
     }
 
-    .profile-trigger {
-      display: flex;
+    .settings-btn {
+      display: inline-flex;
       align-items: center;
-      gap: 12px;
-      padding: 6px 14px 6px 6px;
-      background: rgba(255, 255, 255, 0.03);
+      justify-content: center;
+      gap: 8px;
+      height: 40px;
+      padding: 0 14px;
+      background: transparent;
       border: 1px solid var(--border);
       border-radius: 10px;
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
       cursor: pointer;
-      backdrop-filter: blur(8px);
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: background 0.1s ease, color 0.1s ease, border-color 0.1s ease;
+      line-height: 1;
     }
 
-    .profile-trigger:hover {
+    .settings-btn:hover {
       background: rgba(255, 255, 255, 0.08);
       border-color: rgba(255, 255, 255, 0.15);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      transform: translateY(-1px);
     }
 
-    .profile-trigger:active {
-      transform: translateY(1px);
+    .settings-btn:active {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .settings-btn:focus-visible {
+      outline: 2px solid var(--accent2);
+      outline-offset: -2px;
+    }
+
+    .settings-btn-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .settings-btn-icon svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+      opacity: 0.9;
+    }
+
+    /* ── PROFILE CHANGER ── */
+    .profile-wrap {
+      position: relative;
+      z-index: 110;
     }
 
     .profile-head-img {
-      width: 28px;
-      height: 28px;
-      border-radius: 10px;
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
       image-rendering: pixelated;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+      box-shadow: none;
       background: var(--muted);
+      flex-shrink: 0;
     }
 
     .profile-name {
@@ -340,56 +428,52 @@
       color: var(--text);
     }
 
-    .profile-chevron {
-      font-size: 0.6rem;
-      color: var(--muted);
-      transition: transform 0.3s ease;
-    }
-
-    .profile-wrap.open .profile-chevron {
-      transform: rotate(180deg);
-    }
-
     .profile-dropdown {
       position: absolute;
-      top: calc(100% + 12px);
+      top: 100%;
       right: 0;
-      width: 260px;
-      background: rgba(10, 10, 15, 0.95);
+      width: 280px;
+      background: rgba(4, 4, 13, 0.88);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      border-top: none;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
       opacity: 0;
       visibility: hidden;
-      transform: translateY(-10px) scale(0.96);
+      transform: translateY(-4px);
       transform-origin: top right;
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
       backdrop-filter: blur(16px);
     }
 
     .profile-wrap.open .profile-dropdown {
       opacity: 1;
       visibility: visible;
-      transform: translateY(0) scale(1);
+      transform: translateY(0);
     }
 
     .profile-list {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 0;
     }
 
     .profile-item {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 8px 10px;
-      border-radius: 8px;
+      padding: 12px 14px;
+      border-radius: 0;
       cursor: pointer;
-      transition: all 0.2s;
-      border: 1px solid transparent;
+      transition: background 0.1s ease;
+      border: none;
+      border-bottom: 1px solid var(--border);
       position: relative;
+    }
+
+    .profile-item:last-child {
+      border-bottom: none;
     }
 
     .profile-item:hover {
@@ -397,20 +481,23 @@
     }
 
     .profile-item.active {
-      background: rgba(232, 98, 42, 0.1);
-      border-color: rgba(232, 98, 42, 0.25);
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: inset 2px 0 0 var(--accent);
     }
 
     .profile-info {
       display: flex;
       flex-direction: column;
       flex: 1;
+      min-width: 0;
     }
 
     .profile-item-name {
-      font-size: 0.85rem;
-      font-weight: 700;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 400;
       color: var(--text);
+      letter-spacing: 0.02em;
     }
 
     .profile-item-type {
@@ -419,7 +506,7 @@
       color: var(--muted);
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      margin-top: 2px;
+      margin-top: 3px;
     }
 
     .profile-check {
@@ -428,12 +515,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.9rem;
       color: var(--accent);
       opacity: 0;
       transform: scale(0.5);
-      transition: all 0.2s;
+      transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
       pointer-events: none;
+    }
+
+    .profile-check svg {
+      width: 14px;
+      height: 14px;
+      display: block;
     }
 
     .profile-item.active .profile-check {
@@ -459,27 +551,48 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.75rem;
-      color: #ff4444;
+      color: #ff5555;
       opacity: 0;
-      border-radius: 10px;
-      transition: all 0.2s;
+      transform: scale(0.35) rotate(-90deg);
+      transform-origin: 50% 50%;
+      border-radius: 4px;
+      background: transparent;
+      box-shadow: inset 0 0 0 1px transparent;
+      line-height: 0;
+      transition:
+        opacity 0.22s ease,
+        transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+        color 0.2s ease,
+        background 0.22s ease,
+        box-shadow 0.22s ease;
       cursor: pointer;
+    }
+
+    .profile-delete svg {
+      width: 13px;
+      height: 13px;
+      display: block;
+      flex-shrink: 0;
     }
 
     .profile-item:hover .profile-delete {
       opacity: 1;
+      transform: scale(1) rotate(0deg);
+      background: rgba(255, 68, 68, 0.14);
+      box-shadow: inset 0 0 0 1px rgba(255, 68, 68, 0.28);
     }
 
-    .profile-delete:hover {
-      color: #ff6666;
-      background: rgba(255, 68, 68, 0.18);
+    .profile-item:hover .profile-delete:hover {
+      background: rgba(255, 68, 68, 0.22);
+      box-shadow: inset 0 0 0 1px rgba(255, 68, 68, 0.4);
+      color: #ff7777;
+      transform: scale(1.04) rotate(0deg);
     }
 
     .profile-divider {
       height: 1px;
       background: var(--border);
-      margin: 10px 0;
+      margin: 0;
     }
 
     /* Custom Modal */
@@ -554,13 +667,16 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 8px 10px;
-      border-radius: 8px;
+      padding: 12px 14px;
+      border-radius: 0;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: background 0.1s ease, color 0.1s ease;
       color: var(--text);
-      font-size: 0.85rem;
-      font-weight: 700;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
     .add-account-btn:hover {
@@ -569,25 +685,28 @@
     }
 
     .add-icon-wrap {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
       color: inherit;
-      transition: all 0.2s;
+      transition: border-color 0.1s ease, color 0.1s ease;
+      flex-shrink: 0;
     }
 
     .add-icon-wrap svg {
-      width: 14px;
-      height: 14px;
+      width: 12px;
+      height: 12px;
       display: block;
     }
 
     .add-account-btn:hover .add-icon-wrap {
-      background: rgba(240, 168, 66, 0.15);
+      background: transparent;
+      border-color: rgba(240, 168, 66, 0.35);
       color: var(--accent2);
     }
 
@@ -844,7 +963,7 @@
       gap: 8px;
       transform: scale(0.92);
       transition: transform 0.25s ease;
-      max-height: 340px;
+      max-height: min(420px, calc(100vh - 180px));
       overflow-y: auto;
       overflow-x: hidden;
       padding: 8px;
@@ -954,9 +1073,9 @@
       align-items: center;
       justify-content: space-between;
       padding: 14px 18px;
-      background: var(--panel);
+      background: transparent;
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 0;
     }
 
     .loader-toggle-left {
@@ -966,24 +1085,26 @@
     }
 
     .loader-toggle-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.05em;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
       color: var(--text);
     }
 
     .loader-toggle-sublabel {
       font-family: 'Space Mono', monospace;
-      font-size: 0.55rem;
+      font-size: 0.68rem;
       color: var(--muted);
-      letter-spacing: 0.05em;
+      letter-spacing: 0.02em;
+      line-height: 1.5;
+      margin-top: 4px;
     }
 
     .loader-label {
       font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.03em;
       color: var(--muted);
       transition: color 0.3s;
     }
@@ -1038,37 +1159,40 @@
       align-items: center;
       gap: 10px;
       padding: 14px 18px;
-      background: var(--panel);
+      background: transparent;
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 0;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: background 0.1s ease, border-color 0.1s ease;
       color: var(--text);
-      font-family: 'Space Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.05em;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
       width: 100%;
     }
 
     .open-mods-btn:hover {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.05);
       border-color: rgba(255, 255, 255, 0.12);
     }
 
     .open-mods-icon {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 6px;
-      font-size: 0.9rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.75rem;
       flex-shrink: 0;
     }
 
     .open-mods-btn:hover .open-mods-icon {
-      background: rgba(232, 98, 42, 0.15);
+      background: transparent;
+      border-color: rgba(232, 98, 42, 0.35);
       color: var(--accent);
     }
 
@@ -1081,96 +1205,139 @@
     /* ── SETTINGS PANEL (Redesigned) ── */
     .settings-overlay {
       position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      top: 52px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(4, 4, 13, 0.88);
+      z-index: 90;
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      transition: opacity 0.3s ease, backdrop-filter 0.3s ease, visibility 0.3s;
-      backdrop-filter: blur(0px);
+      transition: opacity 0.15s ease, visibility 0.15s;
+      backdrop-filter: blur(16px);
     }
 
     .settings-overlay.show {
       opacity: 1;
       visibility: visible;
       pointer-events: all;
-      backdrop-filter: blur(12px);
     }
 
     .settings-panel {
-      background: rgba(10, 10, 18, 0.85);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      width: 860px;
-      height: 600px;
-      max-width: 95vw;
-      max-height: 90vh;
+      background: transparent;
+      border: none;
+      border-top: 1px solid var(--border);
+      border-radius: 0;
+      width: 100%;
+      height: 100%;
       display: flex;
       flex-direction: row;
       overflow: hidden;
-      box-shadow: 0 32px 80px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.05);
-      transform: translateY(20px) scale(0.96);
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      backdrop-filter: blur(24px);
-    }
-
-    .settings-overlay.show .settings-panel {
-      transform: translateY(0) scale(1);
+      box-shadow: none;
+      font-family: 'Syne', sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
 
     .settings-sidebar {
       width: 240px;
-      background: rgba(0, 0, 0, 0.3);
+      background: transparent;
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      padding: 24px 16px;
+      padding: 0;
+      min-height: 0;
+    }
+
+    .settings-sidebar-main {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
     }
 
     .settings-title {
       font-family: 'Syne', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 800;
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.35;
       color: var(--text);
-      margin-bottom: 32px;
-      padding-left: 12px;
-      letter-spacing: 0.05em;
+      margin-bottom: 0;
+      padding: 20px 16px 22px;
+      letter-spacing: -0.02em;
+      border-bottom: 1px solid var(--border);
     }
 
     .settings-tabs {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 0;
     }
 
     .settings-tab {
-      padding: 12px 16px;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      padding: 14px 16px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
       color: var(--muted);
       cursor: pointer;
-      border-radius: 10px;
-      transition: all 0.2s;
+      border-radius: 0;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s ease, color 0.1s ease;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .settings-tab:hover {
       color: var(--text);
-      background: rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.05);
     }
 
     .settings-tab.active {
       color: var(--text);
-      background: var(--glow);
+      background: rgba(255, 255, 255, 0.04);
       box-shadow: inset 2px 0 0 var(--accent);
+    }
+
+    .settings-back {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 16px;
+      margin-top: auto;
+      background: transparent;
+      border: none;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.1s ease, color 0.1s ease;
+      flex-shrink: 0;
+    }
+
+    .settings-back svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .settings-back:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+    }
+
+    .settings-back:active {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .settings-back:focus-visible {
+      outline: 2px solid var(--accent2);
+      outline-offset: -2px;
     }
 
     .settings-content-wrapper {
@@ -1178,42 +1345,15 @@
       display: flex;
       flex-direction: column;
       position: relative;
-    }
-
-    .settings-header-right {
-      position: absolute;
-      top: 20px;
-      right: 24px;
-      z-index: 10;
-    }
-
-    .settings-close {
-      font-size: 1.6rem;
-      color: var(--muted);
-      cursor: pointer;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid transparent;
-      transition: all 0.2s;
-      line-height: 1;
-    }
-
-    .settings-close:hover {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.08);
-      border-color: var(--border);
-      transform: rotate(90deg);
+      min-width: 0;
+      min-height: 0;
     }
 
     .settings-body {
       flex: 1;
+      min-height: 0;
       overflow-y: auto;
-      padding: 40px;
+      padding: 40px 48px 48px;
     }
 
     .settings-body::-webkit-scrollbar { width: 6px; }
@@ -1230,73 +1370,128 @@
 
     .settings-section-title {
       font-family: 'Syne', sans-serif;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
     }
 
     .settings-section-description {
       font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
+      font-size: 0.72rem;
       color: var(--muted);
       margin-bottom: 20px;
-      line-height: 1.6;
+      line-height: 1.65;
+      letter-spacing: 0.02em;
+    }
+
+    .settings-log-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .settings-log-header > div {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .settings-log-clear {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color 0.1s ease;
+      flex-shrink: 0;
+      padding-top: 4px;
+    }
+
+    .settings-log-clear:hover {
+      color: var(--accent2);
+    }
+
+    .settings-log-clear + .settings-log-clear {
+      margin-left: 0;
+    }
+
+    .settings-log-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+      padding-top: 4px;
     }
 
     /* ── MODS UI (Redesigned Grid) ── */
     .mods-sub-tabs {
       display: flex;
-      gap: 4px;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 6px;
-      border-radius: 12px;
+      gap: 0;
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
       border: 1px solid var(--border);
       margin-bottom: 24px;
       width: fit-content;
     }
 
     .mods-sub-tab {
-      padding: 8px 24px;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      padding: 10px 24px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
       color: var(--muted);
       cursor: pointer;
-      border-radius: 8px;
-      transition: all 0.2s;
+      border-radius: 0;
+      border-right: 1px solid var(--border);
+      transition: background 0.1s ease, color 0.1s ease;
     }
 
-    .mods-sub-tab:hover { color: var(--text); }
-    .mods-sub-tab.active { background: rgba(255,255,255,0.1); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    .mods-sub-tab:last-child {
+      border-right: none;
+    }
+
+    .mods-sub-tab:hover { color: var(--text); background: rgba(255, 255, 255, 0.05); }
+    .mods-sub-tab.active { background: rgba(255, 255, 255, 0.04); color: var(--text); box-shadow: inset 0 -2px 0 var(--accent); }
 
     .mods-view { display: none; }
     .mods-view.active { display: block; animation: fadeIn 0.3s ease; }
 
     .mod-search-bar-wrap {
       display: flex;
-      gap: 12px;
+      gap: 0;
       margin-bottom: 24px;
       position: sticky;
       top: -40px;
-      background: rgba(10,10,18,0.95);
+      background: rgba(4, 4, 13, 0.95);
       padding: 16px 0;
       z-index: 5;
       backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
     }
 
     .mod-search-input {
       flex: 1;
       padding: 14px 20px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      background: transparent;
+      border: none;
+      border-right: 1px solid var(--border);
+      border-radius: 0;
       color: var(--text);
       font-family: 'Space Mono', monospace;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
       outline: none;
       transition: all 0.2s;
+    }
+
+    .mod-search-input::placeholder {
+      color: var(--muted);
+      opacity: 0.85;
     }
 
     .mod-search-input:focus {
@@ -1307,17 +1502,18 @@
 
     .mod-search-btn {
       padding: 0 28px;
-      background: var(--accent);
+      background: transparent;
       border: none;
-      border-radius: 12px;
-      color: #fff;
+      border-radius: 0;
+      color: var(--text);
       font-family: 'Syne', sans-serif;
       font-weight: 700;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
+      letter-spacing: 0.01em;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: background 0.1s ease, color 0.1s ease;
     }
-    .mod-search-btn:hover { background: #f07040; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232, 98, 42, 0.3); }
+    .mod-search-btn:hover { background: rgba(255, 255, 255, 0.08); color: var(--accent2); }
 
     .mods-grid {
       display: grid;
@@ -1381,13 +1577,14 @@
 
     .mod-desc {
       font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
+      font-size: 0.68rem;
       color: var(--muted);
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      line-height: 1.5;
+      line-height: 1.55;
+      letter-spacing: 0.02em;
       margin-bottom: 16px;
       flex: 1;
     }
@@ -1461,11 +1658,22 @@
       border-radius: 16px;
       color: var(--muted);
       font-family: 'Space Mono', monospace;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
+      line-height: 1.65;
+      letter-spacing: 0.02em;
     }
 
     /* Logs inner adjustments for new layout */
-    .settings-log-content { min-height: 380px; max-height: 400px; overflow-y: auto; font-family: 'Space Mono', monospace; font-size: 0.65rem; line-height: 1.6; }
+    .settings-log-content {
+      min-height: 320px;
+      max-height: none;
+      height: calc(100vh - 52px - 220px);
+      overflow-y: auto;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      line-height: 1.65;
+      letter-spacing: 0.02em;
+    }
     .settings-log-content div { color: var(--muted); padding: 1px 0; }
     .settings-log-content div.error { color: #ff6666; }
     .settings-log-content div.warn { color: #ffb86c; }
@@ -1563,12 +1771,79 @@
   <audio id="launchSound" src="file:///C:/Users/solym_bek3dvj/SynologyDrive/Drive/Drive/Experiments/CosmicLauncher/sounds/launch.mp3" preload="auto"></audio>
 
   <div class="titlebar">
-    <div class="tb-left">
+    <div class="tb-brand">
+      <img src="file:///C:/Users/solym_bek3dvj/SynologyDrive/Drive/Drive/Experiments/CosmicLauncher/app/assets/logo.png" alt="" class="tb-logo">
       <span class="tb-name">Cosmic Launcher</span>
     </div>
-    <div class="tb-controls">
-      <button class="tb-btn" onclick="minimize()">&#x2212;</button>
-      <button class="tb-btn close" onclick="closeLauncher()">&times;</button>
+    <div class="tb-drag-spacer" aria-hidden="true"></div>
+    <div class="tb-actions">
+      <div class="tb-control-group">
+        <div class="profile-wrap" id="profileWrap">
+          <button type="button" class="tb-seg-btn header-btn-profile" id="profileTrigger" aria-expanded="false" aria-haspopup="true" title="Switch account">
+            <img src="https://mc-heads.net/avatar/TheLeviDR/64" alt="" class="profile-head-img" id="activeProfileImg">
+            <span class="profile-name" id="activeProfileName">TheLeviDR</span>
+            <span class="profile-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+          </button>
+
+          <div class="profile-dropdown" id="profileDropdown">
+            <div class="profile-list" id="profileList">
+              
+              
+                
+                  
+                  <div class="profile-item active" data-name="TheLeviDR" data-head="TheLeviDR" data-uuid="02163933cfbf431cab26f48860c2f9a1">
+                    <img src="https://mc-heads.net/avatar/TheLeviDR/64" alt="Head" class="profile-head-img">
+                    <div class="profile-info">
+                      <span class="profile-item-name">TheLeviDR</span>
+                      <span class="profile-item-type">Microsoft</span>
+                    </div>
+                    <div class="profile-actions">
+                      <span class="profile-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                      <span class="profile-delete" title="Remove account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path><path d="M7 7l1 12a1 1 0 0 0 1 .9h6a1 1 0 0 0 1-.9L17 7"></path><path d="M10 11v5M14 11v5"></path></svg></span>
+                    </div>
+                  </div>
+                
+                  
+                  <div class="profile-item" data-name="Terrimett" data-head="Terrimett" data-uuid="61ccdfded7a349729cfbbd3c14efced3">
+                    <img src="https://mc-heads.net/avatar/Terrimett/64" alt="Head" class="profile-head-img">
+                    <div class="profile-info">
+                      <span class="profile-item-name">Terrimett</span>
+                      <span class="profile-item-type">Microsoft</span>
+                    </div>
+                    <div class="profile-actions">
+                      <span class="profile-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                      <span class="profile-delete" title="Remove account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path><path d="M7 7l1 12a1 1 0 0 0 1 .9h6a1 1 0 0 0 1-.9L17 7"></path><path d="M10 11v5M14 11v5"></path></svg></span>
+                    </div>
+                  </div>
+                
+              
+            </div>
+
+            <div class="profile-divider"></div>
+
+            <div class="add-account-btn" id="addAccountBtn">
+              <div class="add-icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </div>
+              <span>Add Microsoft Account</span>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="tb-seg-btn tb-win-btn" onclick="minimize()" title="Minimize" aria-label="Minimize">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+            <line x1="3" y1="8" x2="13" y2="8"></line>
+          </svg>
+        </button>
+        <button type="button" class="tb-seg-btn tb-win-btn close" onclick="closeLauncher()" title="Close" aria-label="Close">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+            <path d="M4.5 4.5l7 7M11.5 4.5l-7 7"></path>
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1576,81 +1851,18 @@
 
   <div class="layout" id="layout">
 
-    <!-- Left: Planet Display -->
-    <div class="left-panel">
-      <div class="planet-wrap">
-        <div class="orbit">
-          <div class="moon"></div>
-        </div>
-        <div class="planet"></div>
-        <div class="planet-ring"></div>
-      </div>
-      <div class="planet-label">Sector VII — Aetheria System</div>
-    </div>
-    
-    <!-- Right: Controls -->
     <div class="right-panel">
-      <!-- Settings Button -->
-      <div style="position: absolute; bottom: 20px; right: 24px; z-index: 50;">
-        <button class="tb-btn" onclick="openSettings()" title="Settings">&#x2699;</button>
+      <div class="panel-settings-wrap">
+        <button type="button" class="settings-btn" onclick="openSettings()" title="Settings">
+          <span class="settings-btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </span>
+          <span>Settings</span>
+        </button>
       </div>
-
-<!-- Profile Changer -->
-<div class="profile-wrap" id="profileWrap">
-  <div class="profile-trigger" id="profileTrigger">
-    <img src="https://mc-heads.net/avatar/TheLeviDR/64" alt="Head" class="profile-head-img" id="activeProfileImg">
-    <span class="profile-name" id="activeProfileName">TheLeviDR</span>
-    <span class="profile-chevron">&#x25BE;</span>
-  </div>
-
-  <div class="profile-dropdown" id="profileDropdown">
-    <div class="profile-list" id="profileList">
-      
-      
-        
-          
-          <div class="profile-item active" data-name="TheLeviDR" data-head="TheLeviDR" data-uuid="02163933cfbf431cab26f48860c2f9a1">
-            <img src="https://mc-heads.net/avatar/TheLeviDR/64" alt="Head" class="profile-head-img">
-            <div class="profile-info">
-              <span class="profile-item-name">TheLeviDR</span>
-              <span class="profile-item-type">Microsoft</span>
-            </div>
-            <div class="profile-actions">
-              <span class="profile-check">&#x2713;</span>
-              <span class="profile-delete" title="Remove account">&#x2715;</span>
-            </div>
-          </div>
-        
-          
-          <div class="profile-item" data-name="Terrimett" data-head="Terrimett" data-uuid="61ccdfded7a349729cfbbd3c14efced3">
-            <img src="https://mc-heads.net/avatar/Terrimett/64" alt="Head" class="profile-head-img">
-            <div class="profile-info">
-              <span class="profile-item-name">Terrimett</span>
-              <span class="profile-item-type">Microsoft</span>
-            </div>
-            <div class="profile-actions">
-              <span class="profile-check">&#x2713;</span>
-              <span class="profile-delete" title="Remove account">&#x2715;</span>
-            </div>
-          </div>
-        
-      
-    </div>
-
-    <div class="profile-divider"></div>
-
-    <div class="add-account-btn" id="addAccountBtn">
-      <div class="add-icon-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-      </div>
-      <span>Add Microsoft Account</span>
-    </div>
-  </div>
-</div>
-<!-- End Profile Changer -->
 
       <div class="game-title">Cosmic<br>Launcher</div>
       <div class="game-subtitle">A beautiful lightweight launcher</div>
@@ -1682,30 +1894,34 @@
   </div>
 
   <!-- Settings Overlay -->
-  <div class="settings-overlay" id="settingsOverlay" onclick="handleSettingsBackdropClick(event)">
+  <div class="settings-overlay" id="settingsOverlay">
     <div class="settings-panel">
       <!-- Sidebar Navigation -->
       <div class="settings-sidebar">
-        <div class="settings-title">Cosmic Settings</div>
-        <div class="settings-tabs">
-          <div class="settings-tab active" data-tab="launch" onclick="switchSettingsTab('launch')">
-            <span style="font-size: 1rem;">&#x1F680;</span> Launch
-          </div>
-          <div class="settings-tab" data-tab="mods" onclick="switchSettingsTab('mods')">
-            <span style="font-size: 1rem;">&#x1F9E9;</span> Mods
-          </div>
-          <div class="settings-tab" data-tab="logs" onclick="switchSettingsTab('logs')">
-            <span style="font-size: 1rem;">&#x1F4DC;</span> Logs
+        <div class="settings-sidebar-main">
+          <div class="settings-title">Settings</div>
+          <div class="settings-tabs">
+            <div class="settings-tab active" data-tab="launch" onclick="switchSettingsTab('launch')">
+              <span style="font-size: 1rem;">&#x1F680;</span> Launch
+            </div>
+            <div class="settings-tab" data-tab="mods" onclick="switchSettingsTab('mods')">
+              <span style="font-size: 1rem;">&#x1F9E9;</span> Mods
+            </div>
+            <div class="settings-tab" data-tab="logs" onclick="switchSettingsTab('logs')">
+              <span style="font-size: 1rem;">&#x1F4DC;</span> Logs
+            </div>
           </div>
         </div>
+        <button type="button" class="settings-back" onclick="closeSettings()" title="Back to launcher">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>Back</span>
+        </button>
       </div>
 
       <!-- Main Content Area -->
       <div class="settings-content-wrapper">
-        <div class="settings-header-right">
-          <div class="settings-close" onclick="closeSettings()" title="Close">&times;</div>
-        </div>
-
         <div class="settings-body">
           <!-- Launch Settings Tab -->
           <div class="settings-tab-content active" id="settingsTabLaunch">
@@ -1979,8 +2195,10 @@
                   <div class="settings-section-title">Launcher Console</div>
                   <div class="settings-section-description" style="margin-bottom:0">View real-time launcher and game output events.</div>
                 </div>
-                <span class="settings-log-clear" onclick="copyLogs()">Copy Logs</span>
-                <span class="settings-log-clear" onclick="clearLogs()">Clear Logs</span>
+                <div class="settings-log-actions">
+                  <span class="settings-log-clear" onclick="copyLogs()">Copy Logs</span>
+                  <span class="settings-log-clear" onclick="clearLogs()">Clear Logs</span>
+                </div>
               </div>
               <div class="settings-log-content" id="settingsLogContent"></div>
             </div>
@@ -2100,6 +2318,9 @@
     })();
 
     /* ── TEMPLATE HELPERS (mirror EJS logic for dynamic refresh) ── */
+    const profileIconCheck = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+    const profileIconRemove = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path><path d="M7 7l1 12a1 1 0 0 0 1 .9h6a1 1 0 0 0 1-.9L17 7"></path><path d="M10 11v5M14 11v5"></path></svg>';
+
     function renderProfileItem(uuid, acc, isSelected) {
       return `<div class="profile-item${isSelected ? ' active' : ''}" data-name="${acc.displayName}" data-head="${acc.displayName}" data-uuid="${uuid}">
         <img src="https://mc-heads.net/avatar/${encodeURIComponent(acc.displayName)}/64" alt="Head" class="profile-head-img">
@@ -2108,8 +2329,8 @@
           <span class="profile-item-type">${acc.type === 'microsoft' ? 'Microsoft' : 'Mojang'}</span>
         </div>
         <div class="profile-actions">
-          <span class="profile-check">&#x2713;</span>
-          <span class="profile-delete" title="Remove account">&#x2715;</span>
+          <span class="profile-check">${profileIconCheck}</span>
+          <span class="profile-delete" title="Remove account">${profileIconRemove}</span>
         </div>
       </div>`;
     }
@@ -2177,12 +2398,14 @@
 
       profileTrigger.addEventListener('click', (e) => {
         e.stopPropagation();
-        profileWrap.classList.toggle('open');
+        const isOpen = profileWrap.classList.toggle('open');
+        profileTrigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       });
 
       document.addEventListener('click', (e) => {
         if (!profileDropdown.contains(e.target) && !profileTrigger.contains(e.target)) {
           profileWrap.classList.remove('open');
+          profileTrigger.setAttribute('aria-expanded', 'false');
         }
       });
 
@@ -2202,6 +2425,7 @@
         }
 
         profileWrap.classList.remove('open');
+        profileTrigger.setAttribute('aria-expanded', 'false');
       }
 
       // Use ipcRenderer from preload
@@ -2223,7 +2447,7 @@
       function addMicrosoftAccount() {
         console.log('addMicrosoftAccount called', ipcRenderer);
         profileWrap.classList.remove('open');
-        
+        profileTrigger.setAttribute('aria-expanded', 'false');
         if (!ipcRenderer) {
           console.error('ipcRenderer not available');
           showModal('Error', 'Cannot access Electron. Check console.', true);
@@ -2340,10 +2564,6 @@
 
     function closeSettings() {
       document.getElementById('settingsOverlay').classList.remove('show');
-    }
-
-    function handleSettingsBackdropClick(event) {
-      if (event.target === document.getElementById('settingsOverlay')) closeSettings();
     }
 
     function switchSettingsTab(tab) {
@@ -2733,7 +2953,7 @@ function openVersionPopup() {
 
     function showToast(title, message) {
       const toast = document.createElement('div');
-      toast.style.cssText = 'position:fixed;top:20px;right:20px;background:rgba(15,15,30,0.95);border:1px solid var(--accent);border-radius:8px;padding:12px 18px;z-index:10000;animation:fadeIn .3s;max-width:350px;';
+      toast.style.cssText = 'position:fixed;top:64px;right:20px;background:rgba(15,15,30,0.95);border:1px solid var(--accent);border-radius:8px;padding:12px 18px;z-index:10000;animation:fadeIn .3s;max-width:350px;';
       toast.innerHTML = `<div style="font-weight:600;color:var(--accent);margin-bottom:4px;">${title}</div><div style="color:#aaa;font-size:13px;">${message}</div>`;
       document.body.appendChild(toast);
       setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .5s'; }, 3000);
