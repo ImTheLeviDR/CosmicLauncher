@@ -6,6 +6,7 @@ const https = require('https')
 const http = require('http')
 const crypto = require('crypto')
 const ConfigManager = require('./configmanager')
+const ModpackManager = require('./modpackmanager')
 
 const MINECRAFT_VERSION_MANIFEST = 'https://piston-meta.mojang.com/mc/game/version_manifest_v2.json'
 const FABRIC_META = "https://meta.fabricmc.net/v2";
@@ -16,6 +17,7 @@ class LaunchManager {
     this.proc = null;
     this._exitCode = null;
     this._gameRunning = false;
+    this._activeGameDir = null;
     this.on("progress", () => {});
     this.on("launch", () => {});
     this.on("log", () => {});
@@ -51,27 +53,21 @@ class LaunchManager {
     return true;
   }
 
+  /** Shared store for versions / libraries / assets (not per-modpack). */
+  getSharedMinecraftDirectory() {
+    return path.join(ConfigManager.getLauncherDirectory(), "minecraft");
+  }
+
+  /** @deprecated Use getSharedMinecraftDirectory or getGameDirectory */
   getMinecraftDirectory() {
-    const minecraftPath = path.join(
-      os.homedir(),
-      "AppData",
-      "Roaming",
-      ".cosmiclauncher",
-      "minecraft",
-    );
-    if (process.platform === "darwin") {
-      return path.join(
-        os.homedir(),
-        "Library",
-        "Application Support",
-        ".cosmiclauncher",
-        "minecraft",
-      );
-    }
-    if (process.platform === "linux") {
-      return path.join(os.homedir(), ".cosmiclauncher", "minecraft");
-    }
-    return minecraftPath;
+    return this._activeGameDir || this.getGameDirectory();
+  }
+
+  getGameDirectory(modpackId) {
+    const id = modpackId || ModpackManager.getSelectedId();
+    const dir = ModpackManager.getInstanceDirectory(id);
+    fs.ensureDirSync(path.join(dir, "mods"));
+    return dir;
   }
 
   getVanillaMinecraftDirectory() {
@@ -95,9 +91,9 @@ class LaunchManager {
     return minecraftPath;
   }
 
-  migrateOptions() {
+  migrateOptions(gameDir) {
     const vanillaDir = this.getVanillaMinecraftDirectory();
-    const cosmicDir = this.getMinecraftDirectory();
+    const cosmicDir = gameDir || this.getGameDirectory();
 
     try {
       const vanillaOptions = path.join(vanillaDir, "options.txt");
@@ -125,16 +121,38 @@ class LaunchManager {
     }
   }
 
+  prepareGameDirectory(modpackId) {
+    const gameDir = this.getGameDirectory(modpackId);
+    this._activeGameDir = gameDir;
+    fs.ensureDirSync(path.join(gameDir, "mods"));
+
+    const syncResult = ModpackManager.syncOptionsToInstance(modpackId || ModpackManager.getSelectedId());
+    if (syncResult.synced) {
+      this.log(`Synced options.txt from newest modpack instance`);
+    }
+
+    this.migrateOptions(gameDir);
+    return gameDir;
+  }
+
   getVersionsDirectory() {
-    return path.join(this.getMinecraftDirectory(), "versions");
+    return path.join(this.getSharedMinecraftDirectory(), "versions");
   }
 
   getAssetsDirectory() {
-    return path.join(this.getMinecraftDirectory(), "assets");
+    return path.join(this.getSharedMinecraftDirectory(), "assets");
   }
 
   getLibrariesDirectory() {
-    return path.join(this.getMinecraftDirectory(), "libraries");
+    return path.join(this.getSharedMinecraftDirectory(), "libraries");
+  }
+
+  async resolveVersionId(versionSpec) {
+    if (versionSpec && versionSpec !== "latest") return versionSpec;
+    const manifest = await this.getVersionManifest(true);
+    const latest = manifest?.latest?.release || manifest?.versions?.find((v) => v.type === "release")?.id;
+    if (!latest) throw new Error("Could not resolve latest Minecraft version");
+    return latest;
   }
 
   log(message) {
@@ -585,15 +603,17 @@ class LaunchManager {
     };
   }
 
-  async launchVanilla(versionId, account) {
+  async launchVanilla(versionId, account, modpackId) {
     this._exitCode = null;
-    this.log(`=== Starting launchVanilla for ${versionId} ===`);
+    const resolvedVersion = await this.resolveVersionId(versionId);
+    this.log(`=== Starting launchVanilla for ${resolvedVersion} ===`);
     this.log(`Account: ${account.displayName} (${account.uuid})`);
-    this.emit("launch", { versionId, account });
+    this.emit("launch", { versionId: resolvedVersion, account });
 
-    this.migrateOptions();
+    const gameDir = this.prepareGameDirectory(modpackId);
+    this.log(`Game directory (modpack): ${gameDir}`);
 
-    const versionData = await this.ensureVersion(versionId);
+    const versionData = await this.ensureVersion(resolvedVersion);
     this.log(
       `Version data loaded: ${JSON.stringify(versionData).substring(0, 500)}...`,
     );
@@ -609,18 +629,14 @@ class LaunchManager {
     this.emit("progress", { task: "Preparing game", progress: 0 });
 
     const launcherProfiles = this.getLauncherProfiles(account);
-    const profilesPath = path.join(
-      this.getMinecraftDirectory(),
-      "launcher_profiles.json",
-    );
+    const profilesPath = path.join(gameDir, "launcher_profiles.json");
     this.log(`Writing launcher_profiles.json to: ${profilesPath}`);
-    fs.ensureDirSync(this.getMinecraftDirectory());
+    fs.ensureDirSync(gameDir);
     fs.writeFileSync(profilesPath, JSON.stringify(launcherProfiles, null, 4));
 
-    const gameDir = this.getMinecraftDirectory();
     const assetsDir = this.getAssetsDirectory();
-    const versionDir = path.join(this.getVersionsDirectory(), versionId);
-    const clientJar = path.join(versionDir, `${versionId}.jar`);
+    const versionDir = path.join(this.getVersionsDirectory(), resolvedVersion);
+    const clientJar = path.join(versionDir, `${resolvedVersion}.jar`);
 
     this.log(`Game directory: ${gameDir}`);
     this.log(`Client JAR: ${clientJar}`);
@@ -673,16 +689,18 @@ class LaunchManager {
     return true;
   }
 
-  async launchFabric(versionId, account) {
+  async launchFabric(versionId, account, modpackId) {
     this._exitCode = null;
-    this.log(`=== Starting launchFabric for ${versionId} ===`);
+    const resolvedVersion = await this.resolveVersionId(versionId);
+    this.log(`=== Starting launchFabric for ${resolvedVersion} ===`);
     this.log(`Account: ${account.displayName} (${account.uuid})`);
-    this.emit("launch", { versionId, account });
+    this.emit("launch", { versionId: resolvedVersion, account });
 
-    this.migrateOptions();
+    const gameDir = this.prepareGameDirectory(modpackId);
+    this.log(`Game directory (modpack): ${gameDir}`);
 
-    const versionData = await this.ensureVersion(versionId);
-    this.log(`Vanilla version data loaded for ${versionId}`);
+    const versionData = await this.ensureVersion(resolvedVersion);
+    this.log(`Vanilla version data loaded for ${resolvedVersion}`);
 
     this.emit("progress", { task: "Fetching Fabric loader info", progress: 0 });
 
@@ -690,17 +708,17 @@ class LaunchManager {
     try {
       // Fetch the highest available loader version for the Minecraft version
       const loaderVersions = await this.fetchJson(
-        `${FABRIC_META}/versions/loader/${versionId}`,
+        `${FABRIC_META}/versions/loader/${resolvedVersion}`,
       );
       if (!loaderVersions || loaderVersions.length === 0) {
-        throw new Error(`No Fabric loader found for version ${versionId}`);
+        throw new Error(`No Fabric loader found for version ${resolvedVersion}`);
       }
       loaderInfo = loaderVersions[0];
       this.log(`Fabric loader: ${loaderInfo.loader.version}`);
     } catch (e) {
       this.log(`Failed to fetch Fabric loader: ${e.message}`);
       throw new Error(
-        `Fabric loader not available for ${versionId}: ${e.message}`,
+        `Fabric loader not available for ${resolvedVersion}: ${e.message}`,
       );
     }
 
@@ -808,14 +826,10 @@ class LaunchManager {
 
     // Write launcher_profiles.json
     const launcherProfiles = this.getLauncherProfiles(account);
-    const profilesPath = path.join(
-      this.getMinecraftDirectory(),
-      "launcher_profiles.json",
-    );
-    fs.ensureDirSync(this.getMinecraftDirectory());
+    const profilesPath = path.join(gameDir, "launcher_profiles.json");
+    fs.ensureDirSync(gameDir);
     fs.writeFileSync(profilesPath, JSON.stringify(launcherProfiles, null, 4));
 
-    const gameDir = this.getMinecraftDirectory();
     const assetsDir = this.getAssetsDirectory();
 
     // Build classpath: vanilla client jar + vanilla libs + Fabric libs
@@ -869,7 +883,7 @@ class LaunchManager {
       gameDir,
       assetsDir,
       nativesPath: nativesDir,
-      versionDir: path.join(this.getVersionsDirectory(), versionId),
+      versionDir: path.join(this.getVersionsDirectory(), resolvedVersion),
       account,
     });
 

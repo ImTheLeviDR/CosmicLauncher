@@ -2565,6 +2565,8 @@
     }
 
     /* ── MODS UI (Redesigned Grid) ── */
+    .mods-sub-tabs.hidden-detail { display: none; }
+
     .mods-sub-tabs {
       display: flex;
       gap: 0;
@@ -2994,6 +2996,536 @@
     .mod-toggle-wrap.on .mod-switch::after { transform: translateX(16px); }
     .mod-toggle-wrap.on span { color: #66dd66; }
 
+    .mod-card { cursor: pointer; }
+    .mod-card .mod-actions { cursor: default; }
+
+    .mods-installed-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .modpack-popup-footer {
+      padding: 14px 4px 4px;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .modpack-settings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .modpack-settings-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .modpack-settings-item.active {
+      border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+
+    .modpack-settings-info { min-width: 0; flex: 1; }
+    .modpack-settings-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .modpack-settings-meta {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .modpack-settings-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .mod-detail-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 0;
+      margin-bottom: 18px;
+    }
+    .mod-detail-back svg { width: 18px; height: 18px; }
+    .mod-detail-back:hover { color: var(--text); }
+
+    .mod-detail-header {
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+    .mod-detail-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 14px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.4);
+      flex-shrink: 0;
+    }
+    .mod-detail-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .mod-detail-meta {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .mod-detail-tabs {
+      display: flex;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 18px;
+      width: fit-content;
+    }
+    .mod-detail-tab {
+      padding: 10px 18px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+    .mod-detail-tab.active {
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+      box-shadow: inset 0 -2px 0 var(--accent);
+    }
+    .mod-detail-body {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.65;
+      background: rgba(0,0,0,0.18);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 14px 18px 18px;
+      max-height: 420px;
+      overflow: auto;
+      scrollbar-width: thin;
+      scrollbar-color: color-mix(in srgb, var(--accent) 45%, transparent) transparent;
+    }
+    .mod-detail-body::-webkit-scrollbar { width: 6px; }
+    .mod-detail-body::-webkit-scrollbar-track { background: transparent; }
+    .mod-detail-body::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.12);
+      border-radius: 999px;
+    }
+    .mod-detail-body::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+    .mod-detail-body > *:first-child { margin-top: 0; }
+    .mod-detail-body > *:last-child { margin-bottom: 0; }
+    .mod-detail-body h1,
+    .mod-detail-body h2,
+    .mod-detail-body h3,
+    .mod-detail-body h4 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin: 1.1em 0 0.45em;
+      line-height: 1.3;
+    }
+    .mod-detail-body h1 { font-size: 1.35rem; }
+    .mod-detail-body h2 { font-size: 1.15rem; }
+    .mod-detail-body h3 { font-size: 1.02rem; }
+    .mod-detail-body h4 { font-size: 0.95rem; color: var(--accent2); }
+    .mod-detail-body p { margin: 0.65em 0; color: color-mix(in srgb, var(--text) 88%, var(--muted)); }
+    .mod-detail-body a {
+      color: var(--accent2);
+      text-decoration: none;
+      border-bottom: 1px solid color-mix(in srgb, var(--accent2) 35%, transparent);
+    }
+    .mod-detail-body a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+    .mod-detail-body strong { color: var(--text); font-weight: 700; }
+    .mod-detail-body em { color: color-mix(in srgb, var(--text) 85%, var(--accent2)); }
+    .mod-detail-body ul,
+    .mod-detail-body ol {
+      margin: 0.55em 0;
+      padding-left: 1.35em;
+      color: color-mix(in srgb, var(--text) 88%, var(--muted));
+    }
+    .mod-detail-body li { margin: 0.28em 0; }
+    .mod-detail-body li::marker { color: var(--accent); }
+    .mod-detail-body img {
+      display: inline-block;
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 0.35em 0.25em 0.35em 0;
+      vertical-align: middle;
+      background: rgba(0,0,0,0.25);
+    }
+    .mod-detail-body p > img:only-child,
+    .mod-detail-body p > a:only-child > img,
+    .mod-detail-body > img {
+      display: block;
+      margin: 0.9em 0;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .mod-detail-body center,
+    .mod-detail-body [align="center"] {
+      display: block;
+      text-align: center;
+    }
+    .mod-detail-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.9em 0;
+      font-size: 0.85rem;
+    }
+    .mod-detail-body th,
+    .mod-detail-body td {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      text-align: left;
+    }
+    .mod-detail-body th {
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+    }
+    .mod-detail-body code {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8em;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 0.1em 0.4em;
+      color: var(--accent2);
+    }
+    .mod-detail-body pre {
+      background: rgba(0,0,0,0.35);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      overflow-x: auto;
+      margin: 0.85em 0;
+    }
+    .mod-detail-body pre code {
+      border: none;
+      background: transparent;
+      padding: 0;
+      font-size: 0.78rem;
+      color: var(--text);
+    }
+    .mod-detail-body blockquote {
+      margin: 0.85em 0;
+      padding: 0.2em 0 0.2em 14px;
+      border-left: 3px solid var(--accent);
+      color: var(--muted);
+    }
+    .mod-detail-body hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.2em 0;
+    }
+    .mod-version-toolbar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .mod-version-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .mod-version-filter-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-right: 2px;
+    }
+    .mod-version-chip {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .mod-version-chip:hover {
+      color: var(--text);
+      border-color: rgba(255,255,255,0.18);
+    }
+    .mod-version-chip.active {
+      color: var(--text);
+      border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+      background: color-mix(in srgb, var(--accent) 16%, transparent);
+    }
+    .mod-version-select {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.35);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 6px 32px 6px 12px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+      background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+      background-position: calc(100% - 14px) 11px, calc(100% - 9px) 11px;
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
+    }
+    .mod-version-select:focus {
+      border-color: var(--accent);
+    }
+    .mod-version-count {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .mod-version-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 380px;
+      overflow: auto;
+      scrollbar-width: thin;
+      scrollbar-color: color-mix(in srgb, var(--accent) 45%, transparent) transparent;
+    }
+    .mod-version-list::-webkit-scrollbar { width: 6px; }
+    .mod-version-list::-webkit-scrollbar-track { background: transparent; }
+    .mod-version-list::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.12);
+      border-radius: 999px;
+    }
+    .mod-version-list::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+    .mod-version-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.03);
+    }
+    .mod-version-row.current {
+      border-color: color-mix(in srgb, #66dd66 40%, transparent);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, #66dd66 12%, transparent);
+    }
+    .mod-version-info { min-width: 0; flex: 1; }
+    .mod-version-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .mod-version-name {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text);
+      letter-spacing: 0.01em;
+    }
+    .mod-version-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .mod-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      border: 1px solid transparent;
+      text-transform: uppercase;
+    }
+    .mod-tag.channel-release {
+      color: #86efac;
+      background: rgba(34, 197, 94, 0.12);
+      border-color: rgba(34, 197, 94, 0.25);
+    }
+    .mod-tag.channel-beta {
+      color: #fde047;
+      background: rgba(234, 179, 8, 0.12);
+      border-color: rgba(234, 179, 8, 0.28);
+    }
+    .mod-tag.channel-alpha {
+      color: #fda4af;
+      background: rgba(244, 63, 94, 0.12);
+      border-color: rgba(244, 63, 94, 0.28);
+    }
+    .mod-tag.mc {
+      color: var(--accent2);
+      background: color-mix(in srgb, var(--accent2) 12%, transparent);
+      border-color: color-mix(in srgb, var(--accent2) 28%, transparent);
+      text-transform: none;
+    }
+    .mod-tag.loader {
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+      border-color: var(--border);
+      text-transform: none;
+    }
+    .mod-tag.current {
+      color: #86efac;
+      background: rgba(34, 197, 94, 0.14);
+      border-color: rgba(34, 197, 94, 0.3);
+    }
+    .mod-version-meta {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .modpack-form-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 12000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modpack-form {
+      width: min(440px, 100%);
+      background: color-mix(in srgb, var(--bg) 92%, #111);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+    }
+    .modpack-form-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .modpack-form-desc {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .modpack-form label {
+      display: block;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 6px;
+      margin-top: 12px;
+    }
+    .modpack-form input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.35);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .modpack-form input:focus {
+      border-color: var(--accent);
+    }
+    .modpack-form .loader-wrap {
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+    .modpack-form .loader-wrap.open {
+      z-index: 5;
+    }
+    .modpack-form .loader-trigger {
+      width: 100%;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid var(--border);
+    }
+    .modpack-form .loader-wrap.open .loader-trigger {
+      border-radius: 8px 8px 0 0;
+      border-color: var(--accent);
+    }
+    .modpack-form .loader-menu {
+      width: 100%;
+      left: 0;
+      right: 0;
+      border-radius: 0 0 8px 8px;
+      overflow: hidden;
+      max-height: 220px;
+    }
+    .modpack-form .loader-list {
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .modpack-form .loader-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .modpack-form .loader-list::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.15);
+      border-radius: 4px;
+    }
+    .modpack-form-field.open-above {
+      position: relative;
+      z-index: 6;
+    }
+    .modpack-form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+      position: relative;
+      z-index: 0;
+    }
+
     /* Empty states */
     .mods-empty {
       grid-column: 1 / -1;
@@ -3195,7 +3727,7 @@
             <span class="play-btn-ver-icon">&#x25BE;</span>
           </div>
         </button>
-        <div class="version-label" id="versionLabel">Version: <span id="versionLabelText"><%= selectedVersion %></span></div>
+        <div class="version-label" id="versionLabel">Modpack: <span id="versionLabelText"><%= selectedModpack ? selectedModpack.name : 'Latest' %></span></div>
       </div>
 
     </div>
@@ -3206,13 +3738,13 @@
 
   </div>
 
-  <!-- Version Popup -->
+  <!-- Modpack Popup -->
   <div class="version-popup" id="versionPopup" onclick="handlePopupBackdropClick(event)">
     <div class="version-popup-panel" onclick="event.stopPropagation()">
       <div class="version-popup-header">
         <div class="version-popup-header-text">
-          <div class="version-popup-heading">Minecraft Version</div>
-          <div class="version-popup-desc">Choose which release to launch.</div>
+          <div class="version-popup-heading">Modpacks</div>
+          <div class="version-popup-desc">Choose which modpack to launch. Each has its own Minecraft folder.</div>
         </div>
         <button type="button" class="version-popup-close" onclick="closeVersionPopup()" aria-label="Close">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -3224,9 +3756,12 @@
         <span class="version-popup-search-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
         </span>
-        <input type="search" id="versionSearchInput" class="version-popup-search-input" placeholder="Search versions..." autocomplete="off" spellcheck="false" aria-label="Search versions">
+        <input type="search" id="versionSearchInput" class="version-popup-search-input" placeholder="Search modpacks..." autocomplete="off" spellcheck="false" aria-label="Search modpacks">
       </div>
-      <div class="version-popup-list loader-list" id="versionList" role="listbox" aria-label="Minecraft versions"></div>
+      <div class="version-popup-list loader-list" id="versionList" role="listbox" aria-label="Modpacks"></div>
+      <div class="modpack-popup-footer">
+        <button type="button" class="mod-btn install" id="createModpackPopupBtn" onclick="openCreateModpackModal()">Create modpack</button>
+      </div>
     </div>
   </div>
 
@@ -3266,39 +3801,22 @@
           <!-- Launch Settings Tab -->
           <div class="settings-tab-content active" id="settingsTabLaunch">
             <div class="settings-section">
-              <div class="settings-section-title">Mod Loader</div>
-              <div class="settings-section-description">Choose between unmodified Minecraft (Vanilla) or the Fabric mod loader.</div>
-              <div class="loader-wrap" id="loaderWrap">
-                <button type="button" class="loader-trigger" id="loaderTrigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Mod loader selection">
-                  <div class="loader-trigger-info">
-                    <span class="loader-trigger-name" id="loaderTriggerName"><%= loader === 'fabric' ? 'Fabric' : 'Vanilla' %></span>
-                    <span class="loader-trigger-type" id="loaderTriggerType"><%= loader === 'fabric' ? 'Mod loader' : 'Unmodified' %></span>
-                  </div>
-                  <span class="loader-trigger-chevron" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                  </span>
-                </button>
-                <div class="loader-menu" id="loaderMenu" role="listbox" aria-label="Mod loader options">
-                  <div class="loader-list">
-                    <button type="button" class="loader-item<%= loader !== 'fabric' ? ' active' : '' %>" data-loader="vanilla" role="option" aria-selected="<%= loader !== 'fabric' ? 'true' : 'false' %>">
-                      <div class="loader-item-info">
-                        <span class="loader-item-name">Vanilla</span>
-                        <span class="loader-item-type">Unmodified</span>
-                      </div>
-                      <div class="loader-item-actions">
-                        <span class="loader-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
-                      </div>
-                    </button>
-                    <button type="button" class="loader-item<%= loader === 'fabric' ? ' active' : '' %>" data-loader="fabric" role="option" aria-selected="<%= loader === 'fabric' ? 'true' : 'false' %>">
-                      <div class="loader-item-info">
-                        <span class="loader-item-name">Fabric</span>
-                        <span class="loader-item-type">Mod loader</span>
-                      </div>
-                      <div class="loader-item-actions">
-                        <span class="loader-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
-                      </div>
-                    </button>
-                  </div>
+              <div class="settings-section-title">Modpacks</div>
+              <div class="settings-section-description">Each modpack has its own Minecraft folder, mods, and saves. The default Latest pack is always the newest release with no mods.</div>
+              <div id="modpackSettingsList" class="modpack-settings-list"></div>
+              <button type="button" class="open-mods-btn" style="margin-top:14px" onclick="openCreateModpackModal()">
+                <div class="open-mods-icon" data-icon="folder" aria-hidden="true"></div>
+                <span>Create modpack</span>
+                <span class="open-mods-arrow" data-icon="chevronRight" aria-hidden="true"></span>
+              </button>
+              <div class="launch-option-row" style="margin-top:18px">
+                <div class="launch-option-copy">
+                  <div class="launch-option-label">Sync options.txt between modpacks</div>
+                  <div class="launch-option-desc">Copy the newest options.txt into the pack you launch so keybinds and settings follow you.</div>
+                </div>
+                <div class="mod-toggle-wrap <%= syncOptionsAcrossModpacks ? 'on' : '' %>" id="syncOptionsToggle" data-enabled="<%= syncOptionsAcrossModpacks ? 'true' : 'false' %>">
+                  <div class="mod-switch"></div>
+                  <span><%= syncOptionsAcrossModpacks ? 'On' : 'Off' %></span>
                 </div>
               </div>
             </div>
@@ -3367,10 +3885,15 @@
 
             <div class="settings-section">
               <div class="settings-section-title">Local Files</div>
-              <div class="settings-section-description">Manage local mod files directly in your file explorer.</div>
+              <div class="settings-section-description">Open folders for the currently selected modpack.</div>
               <button class="open-mods-btn" onclick="openModsFolder()">
                 <div class="open-mods-icon" data-icon="folder" aria-hidden="true"></div>
                 <span>Open Mods Folder</span>
+                <span class="open-mods-arrow" data-icon="chevronRight" aria-hidden="true"></span>
+              </button>
+              <button class="open-mods-btn" style="margin-top:10px" onclick="openInstanceFolder()">
+                <div class="open-mods-icon" data-icon="folder" aria-hidden="true"></div>
+                <span>Open Instance Folder</span>
                 <span class="open-mods-arrow" data-icon="chevronRight" aria-hidden="true"></span>
               </button>
             </div>
@@ -3388,20 +3911,24 @@
           <!-- Mods Tab -->
           <div class="settings-tab-content" id="settingsTabMods">
             
-            <div class="mods-sub-tabs">
+            <div class="mods-sub-tabs" id="modsSubTabs">
               <div class="mods-sub-tab active" id="modsTabInstalledBtn" onclick="switchModsTab('installed')">Installed</div>
               <div class="mods-sub-tab" id="modsTabBrowseBtn" onclick="switchModsTab('browse')">Browse</div>
             </div>
 
             <!-- Installed View -->
             <div id="modsViewInstalled" class="mods-view active">
+              <div class="mods-installed-toolbar">
+                <div class="settings-section-description" style="margin:0">Mods for the selected modpack. Click a mod for details and versions.</div>
+                <button type="button" class="mod-btn install" id="updateModsBtn" onclick="updateAllMods()">Update mods</button>
+              </div>
               <div id="installedModsList" class="mods-grid">
                 <% const modEntries = Object.entries(installedMods); %>
                 <% if (modEntries.length === 0) { %>
                   <div class="mods-empty">No mods currently installed.<br>Head over to Browse to find some!</div>
                 <% } else { %>
                   <% modEntries.forEach(function([id, mod]) { %>
-                    <div class="mod-card">
+                    <div class="mod-card" data-project="<%= id %>" onclick="openModDetail('<%= id %>')">
                       <div class="mod-card-top">
                         <img class="mod-icon" alt="" data-mod-icon="<%= encodeURIComponent(mod.icon_url || '') %>">
                         <div class="mod-info-main">
@@ -3410,7 +3937,7 @@
                         </div>
                       </div>
                       <div class="mod-desc">Supports: <%= mod.gameVersions ? mod.gameVersions.join(', ') : 'Unknown versions' %></div>
-                      <div class="mod-actions">
+                      <div class="mod-actions" onclick="event.stopPropagation()">
                         <div class="mod-toggle-wrap <%= mod.enabled ? 'on' : '' %>" data-id="<%= id %>" data-enabled="<%= mod.enabled %>">
                           <div class="mod-switch"></div>
                           <span><%= mod.enabled ? 'Enabled' : 'Disabled' %></span>
@@ -3429,7 +3956,7 @@
               <div class="mod-search-panel" id="modSearchPanel">
                 <div class="mod-search-heading">
                   <div class="settings-section-title">Browse Modrinth</div>
-                  <div class="settings-section-description">Find and install mods for your selected Minecraft version.</div>
+                  <div class="settings-section-description">Find mods for the selected modpack. Click a result for details and version picking.</div>
                 </div>
                 <div class="mod-search-field">
                   <span class="mod-search-field-icon" data-icon="search" aria-hidden="true"></span>
@@ -3443,12 +3970,23 @@
                   </button>
                 </div>
                 <div class="mod-search-meta">
-                  <span class="mod-search-hint">Press <kbd>Enter</kbd> to search</span>
+                  <span class="mod-search-hint">Press <kbd>Enter</kbd> to search · Click a mod for versions</span>
                   <span class="mod-search-powered">Powered by Modrinth</span>
                 </div>
               </div>
               <div id="modSearchResults" class="mods-grid">
                 <div class="mods-empty">Discover new mods by searching above.</div>
+              </div>
+            </div>
+
+            <!-- Mod Detail View -->
+            <div id="modsViewDetail" class="mods-view">
+              <button type="button" class="mod-detail-back" id="modDetailBackBtn" onclick="closeModDetail()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                Back
+              </button>
+              <div id="modDetailContent" class="mod-detail-content">
+                <div class="mods-empty">Loading mod…</div>
               </div>
             </div>
 
@@ -4080,20 +4618,21 @@
 
     function isModCompatibleWithSelection(mod) {
       if (!mod.gameVersions || !mod.loaders) return false;
-      return mod.gameVersions.includes(selectedVersion) && mod.loaders.includes(selectedLoader);
+      const gameVersion = typeof getEffectiveGameVersion === 'function' ? getEffectiveGameVersion() : selectedVersion;
+      return mod.gameVersions.includes(gameVersion) && mod.loaders.includes(selectedLoader);
     }
 
     function renderModCard(id, mod) {
-      return `<div class="mod-card">
+      return `<div class="mod-card" data-project="${id}" onclick="openModDetail('${id}')">
         <div class="mod-card-top">
           ${modIconTag(mod.icon_url)}
           <div class="mod-info-main">
-            <div class="mod-title">${mod.title}</div>
+            <div class="mod-title">${escapeHtml(mod.title)}</div>
             <div class="mod-author-tag">${mod.loaders ? mod.loaders.join(', ') : 'Unknown'}</div>
           </div>
         </div>
         <div class="mod-desc">Supports: ${mod.gameVersions ? mod.gameVersions.join(', ') : 'Unknown versions'}</div>
-        <div class="mod-actions">
+        <div class="mod-actions" onclick="event.stopPropagation()">
           <div class="mod-toggle-wrap ${mod.enabled ? 'on' : ''}" data-id="${id}" data-enabled="${mod.enabled}">
             <div class="mod-switch"></div>
             <span>${mod.enabled ? 'Enabled' : 'Disabled'}</span>
@@ -4101,6 +4640,156 @@
           <button class="mod-btn remove" data-id="${id}"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
         </div>
       </div>`;
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    const markedLib = (() => {
+      try {
+        return require('marked');
+      } catch (e) {
+        console.warn('marked not available:', e);
+        return null;
+      }
+    })();
+
+    if (markedLib?.setOptions) {
+      markedLib.setOptions({
+        gfm: true,
+        breaks: false,
+        pedantic: false,
+      });
+    }
+
+    const MARKDOWN_ALLOWED_TAGS = new Set([
+      'A', 'ABBR', 'B', 'BLOCKQUOTE', 'BR', 'CENTER', 'CIRCLE', 'CODE', 'COL',
+      'COLGROUP', 'DD', 'DEL', 'DETAILS', 'DIV', 'DL', 'DT', 'EM', 'FIGCAPTION',
+      'FIGURE', 'FONT', 'G', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'HR', 'I', 'IMG',
+      'KBD', 'LI', 'LINE', 'MARK', 'OL', 'P', 'PATH', 'PICTURE', 'POLYGON',
+      'POLYLINE', 'PRE', 'RECT', 'S', 'SECTION', 'SMALL', 'SOURCE', 'SPAN',
+      'STRONG', 'SUB', 'SUMMARY', 'SUP', 'SVG', 'TABLE', 'TBODY', 'TD', 'TEXT',
+      'TFOOT', 'TH', 'THEAD', 'TR', 'U', 'UL', 'USE'
+    ]);
+    MARKDOWN_ALLOWED_TAGS.add('CEN' + 'TER');
+
+    const MARKDOWN_ALLOWED_ATTRS = new Set([
+      'align', 'alt', 'class', 'color', 'colspan', 'cx', 'cy', 'd', 'fill', 'height',
+      'href', 'id', 'loading', 'name', 'r', 'rel', 'rowspan', 'rx', 'ry', 'sizes',
+      'src', 'srcset', 'stroke', 'stroke-width', 'style', 'target', 'title',
+      'transform', 'viewbox', 'width', 'x', 'x1', 'x2', 'xmlns', 'y', 'y1', 'y2'
+    ]);
+
+    function isSafeUrl(value) {
+      if (!value) return false;
+      const v = String(value).trim();
+      return /^(https?:)?\/\//i.test(v) || v.startsWith('data:image/') || v.startsWith('#');
+    }
+
+    function sanitizeMarkdownHtml(dirty) {
+      const template = document.createElement('template');
+      template.innerHTML = dirty;
+
+      const elements = Array.from(template.content.querySelectorAll('*')).reverse();
+      for (const el of elements) {
+        if (!el.isConnected && el.parentNode == null) continue;
+        const tag = el.tagName.toUpperCase();
+
+        if (!MARKDOWN_ALLOWED_TAGS.has(tag)) {
+          el.replaceWith(...Array.from(el.childNodes));
+          continue;
+        }
+
+        for (const attr of Array.from(el.attributes)) {
+          const name = attr.name.toLowerCase();
+          const value = attr.value || '';
+          if (name.startsWith('on') || name === 'srcdoc') {
+            el.removeAttribute(attr.name);
+            continue;
+          }
+          if (!MARKDOWN_ALLOWED_ATTRS.has(name)) {
+            el.removeAttribute(attr.name);
+            continue;
+          }
+          if ((name === 'href' || name === 'src') && /^\s*javascript:/i.test(value)) {
+            el.removeAttribute(attr.name);
+            continue;
+          }
+          if (name === 'style' && /(expression|javascript:)/i.test(value)) {
+            el.removeAttribute(attr.name);
+          }
+        }
+
+        if (tag === 'A') {
+          const href = el.getAttribute('href');
+          if (href && isSafeUrl(href) && !href.startsWith('#')) {
+            const abs = href.startsWith('//') ? ('https:' + href) : href;
+            if (/^https?:/i.test(abs)) {
+              el.setAttribute('href', abs);
+              el.setAttribute('data-external', 'true');
+              el.setAttribute('rel', 'noopener noreferrer');
+            }
+          } else if (href && !href.startsWith('#')) {
+            el.removeAttribute('href');
+          }
+        }
+
+        if (tag === 'IMG') {
+          let srcAttr = el.getAttribute('src') || '';
+          if (srcAttr.startsWith('//')) srcAttr = 'https:' + srcAttr;
+          if (!/^https?:\/\//i.test(srcAttr) && !srcAttr.startsWith('data:image/')) {
+            el.remove();
+            continue;
+          }
+          el.setAttribute('src', srcAttr);
+          el.setAttribute('loading', 'lazy');
+          const srcset = el.getAttribute('srcset');
+          if (srcset && /javascript:/i.test(srcset)) el.removeAttribute('srcset');
+        }
+
+        if (tag === 'SOURCE') {
+          const srcAttr = el.getAttribute('src') || '';
+          if (srcAttr.startsWith('//')) el.setAttribute('src', 'https:' + srcAttr);
+        }
+      }
+
+      template.content.querySelectorAll('comment, script, iframe, object, embed').forEach((n) => n.remove());
+      return template.innerHTML;
+    }
+
+    function renderMarkdown(src) {
+      const text = String(src || '').replace(/\r\n/g, '\n').trim();
+      if (!text) return '<p>No description provided.</p>';
+      try {
+        const parse = markedLib?.parse || markedLib?.marked?.parse;
+        if (typeof parse === 'function') {
+          const dirty = parse(text, { async: false });
+          return sanitizeMarkdownHtml(String(dirty));
+        }
+      } catch (err) {
+        console.error('Markdown render failed:', err);
+      }
+      return '<p>' + escapeHtml(text).replace(/\n/g, '<br>') + '</p>';
+    }
+
+    function bindMarkdownLinks(root) {
+      root?.querySelectorAll('a[data-external="true"], a[href^="http"]').forEach(a => {
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          const href = a.getAttribute('href');
+          if (!href) return;
+          try {
+            require('electron').shell.openExternal(href);
+          } catch (_) {
+            window.open(href, '_blank', 'noopener,noreferrer');
+          }
+        });
+      });
     }
 
     /* ── INIT CLICK HANDLERS (for EJS pre-rendered elements) ── */
@@ -4618,150 +5307,376 @@
       applyTheme(selectedTheme, false);
     }
 
-/* ── LOADER SWITCHER LOGIC ── */
+/* ── MODPACK + LOADER STATE ── */
     let selectedLoader = '<%= loader %>';
+    let selectedModpackId = '<%= selectedModpack ? selectedModpack.id : "default" %>';
+    let modpacks = <%- JSON.stringify(modpacks || []) %>;
+    let resolvedLatestVersion = null;
+    let modDetailReturnTab = 'browse';
+    let currentModDetail = null;
 
     const loaderOptions = {
       vanilla: { label: 'Vanilla', type: 'Unmodified' },
       fabric: { label: 'Fabric', type: 'Mod loader' },
     };
 
-    function setLoader(value) {
-      if (value !== 'vanilla' && value !== 'fabric') return;
-      selectedLoader = value;
-      updateLoaderUI();
-      closeLoaderMenu();
-      refreshInstalledMods();
-      if (window.ipcRenderer) {
-        window.ipcRenderer.invoke('saveSelectedLoader', selectedLoader);
+    function getSelectedModpack() {
+      return modpacks.find(p => p.id === selectedModpackId) || modpacks[0] || null;
+    }
+
+    function formatModpackMeta(pack) {
+      if (!pack) return '';
+      const versionLabel = pack.version === 'latest'
+        ? (resolvedLatestVersion ? `Latest (${resolvedLatestVersion})` : 'Latest')
+        : pack.version;
+      const loaderLabel = pack.loader === 'fabric' ? 'Fabric' : 'Vanilla';
+      return `${versionLabel} · ${loaderLabel}`;
+    }
+
+    function syncSelectedFromModpack(pack) {
+      if (!pack) return;
+      selectedModpackId = pack.id;
+      selectedLoader = pack.loader || 'vanilla';
+      selectedVersion = pack.version === 'latest'
+        ? (resolvedLatestVersion || 'latest')
+        : pack.version;
+    }
+
+    async function loadModpacks() {
+      try {
+        const result = await ipcRenderer.invoke('modpacks:list');
+        if (result.success) {
+          modpacks = result.modpacks || [];
+          selectedModpackId = result.selectedId || selectedModpackId;
+          const pack = getSelectedModpack();
+          syncSelectedFromModpack(pack);
+          updateVersionUI();
+          renderModpackSettingsList();
+          const syncToggle = document.getElementById('syncOptionsToggle');
+          if (syncToggle && typeof result.syncOptionsAcrossModpacks === 'boolean') {
+            updateToggleUI(syncToggle, result.syncOptionsAcrossModpacks);
+          }
+        }
+      } catch (e) {
+        console.warn('Could not load modpacks:', e);
       }
     }
 
-    function updateLoaderUI() {
-      const triggerName = document.getElementById('loaderTriggerName');
-      const triggerType = document.getElementById('loaderTriggerType');
-      const option = loaderOptions[selectedLoader] || loaderOptions.vanilla;
+    function updateToggleUI(wrap, enabled) {
+      wrap.dataset.enabled = enabled ? 'true' : 'false';
+      wrap.classList.toggle('on', enabled);
+      const label = wrap.querySelector('span');
+      if (label) label.textContent = enabled ? 'On' : 'Off';
+    }
 
-      if (triggerName) triggerName.textContent = option.label;
-      if (triggerType) triggerType.textContent = option.type;
+    function renderModpackSettingsList() {
+      const list = document.getElementById('modpackSettingsList');
+      if (!list) return;
+      if (!modpacks.length) {
+        list.innerHTML = '<div class="mods-empty" style="padding:24px">No modpacks yet.</div>';
+        return;
+      }
+      list.innerHTML = modpacks.map(pack => {
+        const active = pack.id === selectedModpackId;
+        const canEdit = !pack.isDefault;
+        return `<div class="modpack-settings-item${active ? ' active' : ''}">
+          <div class="modpack-settings-info">
+            <div class="modpack-settings-name">${escapeHtml(pack.name)}</div>
+            <div class="modpack-settings-meta">${escapeHtml(formatModpackMeta(pack))}${active ? ' · Selected' : ''}</div>
+          </div>
+          <div class="modpack-settings-actions">
+            ${!active ? `<button type="button" class="mod-btn install" data-select="${pack.id}">Select</button>` : ''}
+            ${canEdit ? `<button type="button" class="mod-btn install" data-edit="${pack.id}">Edit</button>` : ''}
+            ${canEdit ? `<button type="button" class="mod-btn remove" data-delete="${pack.id}">Delete</button>` : ''}
+          </div>
+        </div>`;
+      }).join('');
 
-      document.querySelectorAll('.loader-item[data-loader]').forEach(el => {
-        const isActive = el.dataset.loader === selectedLoader;
-        el.classList.toggle('active', isActive);
-        el.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      list.querySelectorAll('[data-select]').forEach(btn => {
+        btn.onclick = () => selectModpack(btn.dataset.select);
+      });
+      list.querySelectorAll('[data-edit]').forEach(btn => {
+        btn.onclick = () => openEditModpackModal(btn.dataset.edit);
+      });
+      list.querySelectorAll('[data-delete]').forEach(btn => {
+        btn.onclick = () => deleteModpack(btn.dataset.delete);
       });
     }
 
-    function closeLoaderMenu() {
-      const wrap = document.getElementById('loaderWrap');
-      const trigger = document.getElementById('loaderTrigger');
-      if (!wrap || !trigger) return;
-      wrap.classList.remove('open');
-      trigger.setAttribute('aria-expanded', 'false');
+    async function selectModpack(id) {
+      const result = await ipcRenderer.invoke('modpacks:select', id);
+      if (!result.success) {
+        showModal('Error', result.error || 'Could not select modpack', true);
+        return;
+      }
+      syncSelectedFromModpack(result.modpack);
+      await loadModpacks();
+      closeModDetail();
+      await refreshInstalledMods();
+      showToast('Modpack selected', result.modpack.name);
     }
 
-    function initLoaderSwitcher() {
-      const wrap = document.getElementById('loaderWrap');
-      const trigger = document.getElementById('loaderTrigger');
-      const menu = document.getElementById('loaderMenu');
-      if (!wrap || !trigger || !menu) return;
+    function openCreateModpackModal() {
+      openModpackFormModal();
+    }
 
-      trigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeLauncherActionMenu();
-        const isOpen = wrap.classList.toggle('open');
-        trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      });
+    function openEditModpackModal(id) {
+      const pack = modpacks.find(p => p.id === id);
+      if (!pack || pack.isDefault) return;
+      openModpackFormModal(pack);
+    }
 
-      menu.querySelectorAll('.loader-item[data-loader]').forEach(item => {
-        item.addEventListener('click', (e) => {
+    function openModpackFormModal(existing) {
+      closeVersionPopup();
+      const overlay = document.createElement('div');
+      overlay.className = 'modpack-form-overlay';
+
+      const versions = availableVersions.length
+        ? availableVersions
+        : [{ id: resolvedLatestVersion || '1.21.4', type: 'release' }];
+      const initialVersion = (existing && versions.some(v => v.id === existing.version))
+        ? existing.version
+        : versions[0].id;
+      const initialLoader = existing && existing.loader === 'fabric' ? 'fabric' : 'vanilla';
+      const checkIcon = VERSION_CHECK_ICON;
+
+      const versionItems = versions.map(v => `
+        <button type="button" class="loader-item${v.id === initialVersion ? ' active' : ''}" data-value="${v.id}" role="option" aria-selected="${v.id === initialVersion ? 'true' : 'false'}">
+          <span class="loader-item-info">
+            <span class="loader-item-name">${escapeHtml(v.id)}</span>
+            <span class="loader-item-type">Release</span>
+          </span>
+          <span class="loader-item-actions">
+            <span class="loader-check" aria-hidden="true">${checkIcon}</span>
+          </span>
+        </button>
+      `).join('');
+
+      overlay.innerHTML = `
+        <div class="modpack-form">
+          <div class="modpack-form-title">${existing ? 'Edit modpack' : 'Create modpack'}</div>
+          <div class="modpack-form-desc">Each modpack gets its own Minecraft folder and mod list.</div>
+          <label for="modpackNameInput">Name</label>
+          <input id="modpackNameInput" type="text" maxlength="48" value="${existing ? escapeHtml(existing.name) : ''}" placeholder="My Fabric Pack">
+
+          <label>Minecraft version</label>
+          <div class="modpack-form-field" id="modpackVersionField">
+            <div class="loader-wrap" id="modpackVersionWrap" data-value="${escapeHtml(initialVersion)}">
+              <button type="button" class="loader-trigger" id="modpackVersionTrigger" aria-haspopup="listbox" aria-expanded="false">
+                <div class="loader-trigger-info">
+                  <span class="loader-trigger-name" id="modpackVersionTriggerName">${escapeHtml(initialVersion)}</span>
+                  <span class="loader-trigger-type" id="modpackVersionTriggerType">Release</span>
+                </div>
+                <span class="loader-trigger-chevron" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </span>
+              </button>
+              <div class="loader-menu" id="modpackVersionMenu" role="listbox" aria-label="Minecraft versions">
+                <div class="loader-list">${versionItems}</div>
+              </div>
+            </div>
+          </div>
+
+          <label>Loader</label>
+          <div class="modpack-form-field" id="modpackLoaderField">
+            <div class="loader-wrap" id="modpackLoaderWrap" data-value="${initialLoader}">
+              <button type="button" class="loader-trigger" id="modpackLoaderTrigger" aria-haspopup="listbox" aria-expanded="false">
+                <div class="loader-trigger-info">
+                  <span class="loader-trigger-name" id="modpackLoaderTriggerName">${initialLoader === 'fabric' ? 'Fabric' : 'Vanilla'}</span>
+                  <span class="loader-trigger-type" id="modpackLoaderTriggerType">${initialLoader === 'fabric' ? 'Mod loader' : 'Unmodified'}</span>
+                </div>
+                <span class="loader-trigger-chevron" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </span>
+              </button>
+              <div class="loader-menu" id="modpackLoaderMenu" role="listbox" aria-label="Mod loader options">
+                <div class="loader-list">
+                  <button type="button" class="loader-item${initialLoader !== 'fabric' ? ' active' : ''}" data-value="vanilla" role="option" aria-selected="${initialLoader !== 'fabric' ? 'true' : 'false'}">
+                    <span class="loader-item-info">
+                      <span class="loader-item-name">Vanilla</span>
+                      <span class="loader-item-type">Unmodified</span>
+                    </span>
+                    <span class="loader-item-actions">
+                      <span class="loader-check" aria-hidden="true">${checkIcon}</span>
+                    </span>
+                  </button>
+                  <button type="button" class="loader-item${initialLoader === 'fabric' ? ' active' : ''}" data-value="fabric" role="option" aria-selected="${initialLoader === 'fabric' ? 'true' : 'false'}">
+                    <span class="loader-item-info">
+                      <span class="loader-item-name">Fabric</span>
+                      <span class="loader-item-type">Mod loader</span>
+                    </span>
+                    <span class="loader-item-actions">
+                      <span class="loader-check" aria-hidden="true">${checkIcon}</span>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modpack-form-actions">
+            <button type="button" class="mod-btn remove" id="modpackFormCancel">Cancel</button>
+            <button type="button" class="mod-btn install" id="modpackFormSave">${existing ? 'Save' : 'Create'}</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      const versionWrap = document.getElementById('modpackVersionWrap');
+      const loaderWrap = document.getElementById('modpackLoaderWrap');
+      const versionField = document.getElementById('modpackVersionField');
+      const loaderField = document.getElementById('modpackLoaderField');
+
+      function closeFormDropdown(wrap, field) {
+        if (!wrap) return;
+        wrap.classList.remove('open');
+        field?.classList.remove('open-above');
+        wrap.querySelector('.loader-trigger')?.setAttribute('aria-expanded', 'false');
+      }
+
+      function closeAllFormDropdowns() {
+        closeFormDropdown(versionWrap, versionField);
+        closeFormDropdown(loaderWrap, loaderField);
+      }
+
+      function wireFormDropdown(wrap, field, onPick) {
+        const trigger = wrap.querySelector('.loader-trigger');
+        const menu = wrap.querySelector('.loader-menu');
+        trigger.addEventListener('click', (e) => {
           e.stopPropagation();
-          setLoader(item.dataset.loader);
+          const willOpen = !wrap.classList.contains('open');
+          closeAllFormDropdowns();
+          if (willOpen) {
+            wrap.classList.add('open');
+            field.classList.add('open-above');
+            trigger.setAttribute('aria-expanded', 'true');
+          }
+        });
+        menu.querySelectorAll('.loader-item[data-value]').forEach(item => {
+          item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            onPick(item.dataset.value, item);
+            closeFormDropdown(wrap, field);
+          });
+        });
+      }
+
+      wireFormDropdown(versionWrap, versionField, (value) => {
+        versionWrap.dataset.value = value;
+        document.getElementById('modpackVersionTriggerName').textContent = value;
+        versionWrap.querySelectorAll('.loader-item').forEach(el => {
+          const active = el.dataset.value === value;
+          el.classList.toggle('active', active);
+          el.setAttribute('aria-selected', active ? 'true' : 'false');
         });
       });
 
-      document.addEventListener('click', (e) => {
-        if (!wrap.contains(e.target)) closeLoaderMenu();
+      wireFormDropdown(loaderWrap, loaderField, (value) => {
+        loaderWrap.dataset.value = value;
+        document.getElementById('modpackLoaderTriggerName').textContent = value === 'fabric' ? 'Fabric' : 'Vanilla';
+        document.getElementById('modpackLoaderTriggerType').textContent = value === 'fabric' ? 'Mod loader' : 'Unmodified';
+        loaderWrap.querySelectorAll('.loader-item').forEach(el => {
+          const active = el.dataset.value === value;
+          el.classList.toggle('active', active);
+          el.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
       });
+
+      document.getElementById('modpackFormCancel').onclick = () => overlay.remove();
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.remove();
+        else closeAllFormDropdowns();
+      });
+      overlay.querySelector('.modpack-form').addEventListener('click', (e) => {
+        if (!e.target.closest('.loader-wrap')) closeAllFormDropdowns();
+      });
+
+      document.getElementById('modpackFormSave').onclick = async () => {
+        const name = document.getElementById('modpackNameInput').value.trim();
+        const version = versionWrap.dataset.value;
+        const loader = loaderWrap.dataset.value;
+        const btn = document.getElementById('modpackFormSave');
+        btn.disabled = true;
+        try {
+          const result = existing
+            ? await ipcRenderer.invoke('modpacks:update', existing.id, { name, version, loader })
+            : await ipcRenderer.invoke('modpacks:create', { name, version, loader });
+          if (!result.success) {
+            showModal('Error', result.error || 'Could not save modpack', true);
+            btn.disabled = false;
+            return;
+          }
+          overlay.remove();
+          if (!existing) {
+            await selectModpack(result.modpack.id);
+          } else {
+            await loadModpacks();
+            await refreshInstalledMods();
+          }
+        } catch (err) {
+          showModal('Error', err.message, true);
+          btn.disabled = false;
+        }
+      };
+      document.getElementById('modpackNameInput').focus();
+    }
+
+    async function deleteModpack(id) {
+      const pack = modpacks.find(p => p.id === id);
+      if (!pack || pack.isDefault) return;
+      const confirmed = await showModal('Delete Modpack', `Delete "${pack.name}" and its Minecraft folder? This cannot be undone.`, true, true);
+      if (!confirmed) return;
+      const result = await ipcRenderer.invoke('modpacks:remove', id);
+      if (!result.success) {
+        showModal('Error', result.error || 'Could not delete modpack', true);
+        return;
+      }
+      selectedModpackId = result.selectedId || 'default';
+      await loadModpacks();
+      await refreshInstalledMods();
+    }
+
+    function initSyncOptionsToggle() {
+      const wrap = document.getElementById('syncOptionsToggle');
+      if (!wrap) return;
+      wrap.onclick = async () => {
+        const next = wrap.dataset.enabled !== 'true';
+        wrap.style.pointerEvents = 'none';
+        try {
+          const result = await ipcRenderer.invoke('modpacks:setSyncOptions', next);
+          if (result.success) updateToggleUI(wrap, result.syncOptionsAcrossModpacks);
+        } finally {
+          wrap.style.pointerEvents = '';
+        }
+      };
+    }
+
+    function initLoaderSwitcher() {
+      // Loader is managed per modpack now.
     }
 
     async function loadLoaderPreference() {
-      try {
-        const loader = await ipcRenderer.invoke('getSelectedLoader');
-        if (loader === 'fabric' || loader === 'vanilla') {
-          selectedLoader = loader;
-          updateLoaderUI();
-        }
-      } catch (e) {
-        console.log('Could not load loader preference:', e);
-      }
-    }
-
-    const MODS_SYNC_STORAGE_KEY = 'cosmicLauncher.modsSynced';
-    let modsSyncedVersion = null;
-    let modsSyncedLoader = null;
-
-    function readModsSyncFromStorage() {
-      try {
-        const raw = localStorage.getItem(MODS_SYNC_STORAGE_KEY);
-        return raw ? JSON.parse(raw) : null;
-      } catch (e) {
-        return null;
-      }
-    }
-
-    function writeModsSyncToStorage(version, loader) {
-      modsSyncedVersion = version;
-      modsSyncedLoader = loader || 'vanilla';
-      try {
-        localStorage.setItem(MODS_SYNC_STORAGE_KEY, JSON.stringify({
-          version: modsSyncedVersion,
-          loader: modsSyncedLoader,
-        }));
-      } catch (e) {
-        console.warn('Could not persist mod sync state to localStorage:', e);
-      }
+      await loadModpacks();
     }
 
     function needsModSyncForLaunch() {
-      if (modsSyncedVersion == null) return true;
-      return modsSyncedVersion !== selectedVersion || (modsSyncedLoader || 'vanilla') !== selectedLoader;
+      return false;
     }
 
     async function loadModsSyncState() {
-      const local = readModsSyncFromStorage();
-      if (local?.version) {
-        modsSyncedVersion = local.version;
-        modsSyncedLoader = local.loader || 'vanilla';
-      }
-
-      try {
-        const remote = await ipcRenderer.invoke('mods:getSyncState');
-        if (remote.success && remote.version) {
-          modsSyncedVersion = remote.version;
-          modsSyncedLoader = remote.loader || 'vanilla';
-          writeModsSyncToStorage(modsSyncedVersion, modsSyncedLoader);
-        } else if (local?.version) {
-          await ipcRenderer.invoke('mods:markSynced', local.version, local.loader || 'vanilla');
-        }
-      } catch (e) {
-        console.warn('Could not load mod sync state:', e);
-      }
-    }
-
-    async function markModsSyncedForLaunch() {
-      writeModsSyncToStorage(selectedVersion, selectedLoader);
-      try {
-        await ipcRenderer.invoke('mods:markSynced', selectedVersion, selectedLoader);
-      } catch (e) {
-        console.warn('Could not persist mod sync state:', e);
-      }
+      // Launch-time mod auto-update removed; updates are manual from the Mods page.
     }
 
     async function initLaunchState() {
       await loadVersions();
       await loadLoaderPreference();
       await loadModsSyncState();
+      initSyncOptionsToggle();
+      renderModpackSettingsList();
+    }
+
+    function closeLoaderMenu() {
+      // Loader UI removed; kept as no-op for existing call sites.
     }
 
 /* ── LAUNCH OPTIONS ── */
@@ -5076,22 +5991,6 @@
       }
     });
 
-    function switchModsTab(view) {
-      document.querySelectorAll('.mods-sub-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.mods-view').forEach(v => v.classList.remove('active'));
-
-      if (view === 'installed') {
-        document.getElementById('modsTabInstalledBtn').classList.add('active');
-        document.getElementById('modsViewInstalled').classList.add('active');
-        document.getElementById('modSearchPanel')?.classList.remove('is-stuck');
-        refreshInstalledMods().then(() => animateModsInstalledView());
-      } else {
-        document.getElementById('modsTabBrowseBtn').classList.add('active');
-        document.getElementById('modsViewBrowse').classList.add('active');
-        animateModsBrowseView();
-      }
-    }
-
     let modSearchLoading = false;
     let installedModIds = new Set();
 
@@ -5229,24 +6128,29 @@
           const isInstalled = installedModIds.has(projectId);
           const card = document.createElement('div');
           card.className = 'mod-card';
+          card.dataset.project = projectId;
+          card.onclick = () => openModDetail(projectId, 'browse');
           
           card.innerHTML = `
             <div class="mod-card-top">
               ${modIconTag(mod.icon_url)}
               <div class="mod-info-main">
-                <div class="mod-title" title="${mod.title}">${mod.title}</div>
-                <div class="mod-author-tag">${mod.author || 'Modrinth'}</div>
+                <div class="mod-title" title="${escapeHtml(mod.title)}">${escapeHtml(mod.title)}</div>
+                <div class="mod-author-tag">${escapeHtml(mod.author || 'Modrinth')}</div>
               </div>
             </div>
-            <div class="mod-desc">${mod.description || 'No description provided.'}</div>
-            <div class="mod-actions">
-              <span class="mod-meta">v${mod.latest_version || 'Unknown'}</span>
+            <div class="mod-desc">${escapeHtml(mod.description || 'No description provided.')}</div>
+            <div class="mod-actions" onclick="event.stopPropagation()">
+              <span class="mod-meta">v${escapeHtml(mod.latest_version || 'Unknown')}</span>
               ${browseInstallButtonHtml(projectId, mod.title, isInstalled)}
             </div>
           `;
 
           if (!isInstalled) {
-            card.querySelector('.mod-btn').onclick = (e) => installMod(e, projectId, mod.title);
+            card.querySelector('.mod-btn').onclick = (e) => {
+              e.stopPropagation();
+              installMod(e, projectId, mod.title);
+            };
           }
           resultsDiv.appendChild(card);
         }
@@ -5264,7 +6168,7 @@
       btn.textContent = 'Working...';
 
       try {
-        const result = await ipcRenderer.invoke('mods:install', projectId, null, selectedVersion, 'fabric');
+        const result = await ipcRenderer.invoke('mods:install', projectId, null, getEffectiveGameVersion(), 'fabric');
         if (result.success) {
           const data = result.data || {};
           let msg = 'Installed successfully';
@@ -5309,6 +6213,7 @@
         }
 
         const mods = result.mods;
+        window.__installedModsCache = mods;
         const entries = Object.entries(mods);
 
         if (entries.length === 0) {
@@ -5335,7 +6240,13 @@
       }
     }
 
-/* ── VERSION POPUP ── */
+    async function openInstanceFolder() {
+      if (window.ipcRenderer) {
+        window.ipcRenderer.invoke('openInstanceFolder');
+      }
+    }
+
+/* ── MODPACK POPUP ── */
     let selectedVersion = '<%= selectedVersion %>';
     let popupVisible = false;
     let availableVersions = [];
@@ -5343,10 +6254,21 @@
 
     const VERSION_CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
 
-    function getFilteredVersions() {
+    function getEffectiveGameVersion() {
+      const pack = getSelectedModpack();
+      if (!pack) return selectedVersion;
+      if (pack.version === 'latest') return resolvedLatestVersion || selectedVersion;
+      return pack.version;
+    }
+
+    function getFilteredModpacks() {
       const query = versionSearchQuery.trim().toLowerCase();
-      if (!query) return availableVersions;
-      return availableVersions.filter(v => v.id.toLowerCase().includes(query));
+      if (!query) return modpacks;
+      return modpacks.filter(p =>
+        p.name.toLowerCase().includes(query) ||
+        String(p.version).toLowerCase().includes(query) ||
+        String(p.loader).toLowerCase().includes(query)
+      );
     }
 
     function openVersionPopup() {
@@ -5354,6 +6276,7 @@
       if (btn?.classList.contains('launching') || btn?.classList.contains('stop-mode')) return;
       popupVisible = true;
       document.getElementById('versionPopup').classList.add('show');
+      renderVersionList();
       requestAnimationFrame(() => {
         document.getElementById('versionSearchInput')?.focus();
       });
@@ -5372,37 +6295,12 @@
       if (event.target === document.getElementById('versionPopup')) closeVersionPopup();
     }
 
-    function setVersion(versionId) {
-      if (versionId === selectedVersion) {
-        closeVersionPopup();
-        return;
-      }
-      selectedVersion = versionId;
-      updateVersionUI();
-      if (window.ipcRenderer) {
-        window.ipcRenderer.invoke('saveSelectedVersion', selectedVersion);
-      }
-      setTimeout(closeVersionPopup, 150);
-      refreshInstalledMods();
-    }
-
     async function loadVersions() {
-      let savedVersion = null;
-      try {
-        savedVersion = await ipcRenderer.invoke('getSelectedVersion');
-      } catch (e) {}
-      
       try {
         const result = await ipcRenderer.invoke('getAvailableVersions');
         if (result.success) {
-          availableVersions = result.versions.filter(v => v.type === 'release').slice(0, 20);
-          if (savedVersion && availableVersions.some(v => v.id === savedVersion)) {
-            selectedVersion = savedVersion;
-          } else if (availableVersions.length > 0) {
-            selectedVersion = availableVersions[0].id;
-          }
-          updateVersionUI();
-          await refreshInstalledMods();
+          availableVersions = result.versions.filter(v => v.type === 'release').slice(0, 40);
+          resolvedLatestVersion = availableVersions[0]?.id || null;
         }
       } catch (err) {
         console.error('Failed to load versions:', err);
@@ -5413,34 +6311,43 @@
           { id: '1.19.4', type: 'release' },
           { id: '1.18.2', type: 'release' }
         ];
-        selectedVersion = savedVersion && availableVersions.some(v => v.id === savedVersion) ? savedVersion : availableVersions[0].id;
-        updateVersionUI();
-        await refreshInstalledMods();
+        resolvedLatestVersion = availableVersions[0].id;
       }
+
+      try {
+        const resolved = await ipcRenderer.invoke('modpacks:resolveVersion', 'latest');
+        if (resolved.success) resolvedLatestVersion = resolved.versionId;
+      } catch (e) {}
+
+      syncSelectedFromModpack(getSelectedModpack());
+      updateVersionUI();
+      await refreshInstalledMods();
     }
 
     function updateVersionUI() {
+      const pack = getSelectedModpack();
       const labelText = document.getElementById('versionLabelText');
-      if (labelText) labelText.textContent = selectedVersion;
+      if (labelText) labelText.textContent = pack ? pack.name : 'Latest';
       renderVersionList();
+      renderModpackSettingsList();
     }
 
     function renderVersionList() {
       const list = document.getElementById('versionList');
       if (!list) return;
 
-      const filtered = getFilteredVersions();
+      const filtered = getFilteredModpacks();
       if (filtered.length === 0) {
-        list.innerHTML = '<div class="version-popup-empty">No versions match your search.</div>';
+        list.innerHTML = '<div class="version-popup-empty">No modpacks match your search.</div>';
         return;
       }
 
-      list.innerHTML = filtered.map(v => {
-        const isActive = v.id === selectedVersion;
-        return `<button type="button" class="loader-item${isActive ? ' active' : ''}" data-version="${v.id}" role="option" aria-selected="${isActive ? 'true' : 'false'}">
+      list.innerHTML = filtered.map(pack => {
+        const isActive = pack.id === selectedModpackId;
+        return `<button type="button" class="loader-item${isActive ? ' active' : ''}" data-modpack="${pack.id}" role="option" aria-selected="${isActive ? 'true' : 'false'}">
           <span class="loader-item-info">
-            <span class="loader-item-name">${v.id}</span>
-            <span class="loader-item-type">Release</span>
+            <span class="loader-item-name">${escapeHtml(pack.name)}</span>
+            <span class="loader-item-type">${escapeHtml(formatModpackMeta(pack))}</span>
           </span>
           <span class="loader-item-actions">
             <span class="loader-check" aria-hidden="true">${VERSION_CHECK_ICON}</span>
@@ -5448,10 +6355,15 @@
         </button>`;
       }).join('');
 
-      list.querySelectorAll('.loader-item[data-version]').forEach(item => {
-        item.addEventListener('click', (e) => {
+      list.querySelectorAll('.loader-item[data-modpack]').forEach(item => {
+        item.addEventListener('click', async (e) => {
           e.stopPropagation();
-          setVersion(item.dataset.version);
+          if (item.dataset.modpack === selectedModpackId) {
+            closeVersionPopup();
+            return;
+          }
+          await selectModpack(item.dataset.modpack);
+          setTimeout(closeVersionPopup, 120);
         });
       });
     }
@@ -5468,114 +6380,353 @@
       });
     }
 
-    async function prepareModsForLaunch() {
-      if (!needsModSyncForLaunch()) {
-        return { ok: true };
+    async function updateAllMods() {
+      const btn = document.getElementById('updateModsBtn');
+      const gameVersion = getEffectiveGameVersion();
+      const loader = selectedLoader === 'fabric' ? 'fabric' : 'vanilla';
+      if (loader !== 'fabric') {
+        showToast('Nothing to update', 'Vanilla modpacks do not use Modrinth mods.');
+        return;
       }
-
-      const installedModsResult = await ipcRenderer.invoke('mods:list');
-      if (!installedModsResult.success) return { ok: true };
-      const modCount = Object.keys(installedModsResult.mods).length;
-      if (modCount === 0) {
-        await markModsSyncedForLaunch();
-        return { ok: true };
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Updating…';
       }
-
-      const result = await ipcRenderer.invoke('mods:checkCompatibility', selectedVersion, selectedLoader);
-      if (!result.success) return { ok: true };
-
-      const needsUpdate = result.updatable.length > 0;
-      const hasIncompatible = result.incompatible.length > 0;
-
-      if (hasIncompatible) {
-        resetPlayButtonIdle();
-        const compatResult = await showIncompatibleModsDialog(result.incompatible, result.updatable, selectedVersion);
-        if (compatResult.action === 'cancel') return { ok: false };
-        setPlayButtonBusy('Updating mods');
-      }
-
-      if (needsUpdate || hasIncompatible) {
-        try {
-          const updateResult = await ipcRenderer.invoke('mods:autoUpdateForVersion', selectedVersion, selectedLoader);
-          if (updateResult.success) {
-            let msg = '';
-            if (updateResult.updated.length > 0) msg += updateResult.updated.length + ' mod(s) updated';
-            if (updateResult.installedDeps.length > 0) msg += (msg ? ', ' : '') + updateResult.installedDeps.length + ' dependency(ies) installed';
-            if (msg) showToast('Mods updated for ' + selectedVersion, msg);
-            await refreshInstalledMods();
-
-            if (updateResult.failed?.length > 0) {
-              const failedList = updateResult.failed.map(f => `• ${f.title}: ${f.error}`).join('<br>');
-              const continueAnyway = await showModal(
-                'Some Mods Failed to Update',
-                `${failedList}<br><br>Launch anyway?`,
-                true,
-                true
-              );
-              if (!continueAnyway) {
-                resetPlayButtonIdle();
-                return { ok: false };
-              }
-            }
-          } else {
-            resetPlayButtonIdle();
-            showModal('Update Failed', updateResult.error || 'Could not update mods.', true);
-            return { ok: false };
-          }
-        } catch (e) {
-          console.error('Mod update failed:', e);
-          resetPlayButtonIdle();
-          showModal('Update Failed', e.message, true);
-          return { ok: false };
+      try {
+        const result = await ipcRenderer.invoke('mods:autoUpdateForVersion', gameVersion, 'fabric');
+        if (!result.success) {
+          showModal('Update Failed', result.error || 'Could not update mods.', true);
+          return;
+        }
+        let msg = '';
+        if (result.updated?.length) msg += result.updated.length + ' updated';
+        if (result.installedDeps?.length) msg += (msg ? ', ' : '') + result.installedDeps.length + ' deps';
+        if (result.failed?.length) msg += (msg ? ', ' : '') + result.failed.length + ' failed';
+        showToast('Mod update finished', msg || 'All mods are up to date');
+        await refreshInstalledMods();
+        if (currentModDetail?.project?.id || currentModDetail?.project?.project_id) {
+          await openModDetail(currentModDetail.project.id || currentModDetail.project.project_id);
+        }
+      } catch (err) {
+        showModal('Update Failed', err.message, true);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Update mods';
         }
       }
-
-      const modsCheck = await ipcRenderer.invoke('mods:list');
-      if (modsCheck.success) {
-        const enabledMods = Object.values(modsCheck.mods).filter(m => m.enabled);
-        const incompatibleMods = enabledMods.filter(m => !isModCompatibleWithSelection(m));
-        if (incompatibleMods.length > 0) {
-          const names = incompatibleMods.map(m => m.title).join(', ');
-          const confirmed = await showModal('Incompatible Mods Enabled', `${names} don't support ${selectedVersion}. Disable them or switch version.`, true, true);
-          if (!confirmed) {
-            resetPlayButtonIdle();
-            return { ok: false };
-          }
-          for (const m of incompatibleMods) {
-            await ipcRenderer.invoke('mods:setEnabled', m.projectId, false);
-          }
-          await refreshInstalledMods();
-        }
-      }
-
-      await markModsSyncedForLaunch();
-      return { ok: true };
     }
 
-    function showIncompatibleModsDialog(incompatible, updatable, newVersion) {
-      return new Promise((resolve) => {
-        const modal = document.createElement('div');
-        modal.className = 'custom-modal-overlay';
-        const modListHtml = incompatible.map(m => `<div style="padding:4px 0;color:#ff8888;">${m.title} <span style="color:#888;font-size:12px;">(v${m.currentVersion})</span></div>`).join('');
-        const updateInfo = updatable.length > 0 ? `<div style="margin-top:8px;color:#88cc88;font-size:13px;">${updatable.length} other mod(s) can be auto-updated.</div>` : '';
-        modal.innerHTML = `
-          <div class="custom-modal">
-            <div class="custom-modal-title" style="color:#ff6644">Incompatible Mods</div>
-            <div class="custom-modal-message">
-              The following mods have no compatible version for ${newVersion}:
-              <div style="margin-top:8px;max-height:200px;overflow-y:auto;">${modListHtml}</div>
-              ${updateInfo}
-            </div>
-            <div class="custom-modal-buttons">
-              <button class="custom-modal-btn cancel" id="modalCancel">Cancel</button>
-              <button class="custom-modal-btn confirm" id="modalConfirm">Disable & Continue</button>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(modal);
-        document.getElementById('modalCancel').onclick = () => { modal.remove(); resolve({ action: 'cancel' }); };
-        document.getElementById('modalConfirm').onclick = () => { modal.remove(); resolve({ action: 'disable' }); };
+    function switchModsTab(tab) {
+      document.querySelectorAll('.mods-sub-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.mods-view').forEach(v => v.classList.remove('active'));
+
+      if (tab === 'installed') {
+        document.getElementById('modsTabInstalledBtn')?.classList.add('active');
+        document.getElementById('modsViewInstalled')?.classList.add('active');
+        document.getElementById('modSearchPanel')?.classList.remove('is-stuck');
+        refreshInstalledMods().then(() => animateModsInstalledView());
+      } else if (tab === 'browse') {
+        document.getElementById('modsTabBrowseBtn')?.classList.add('active');
+        document.getElementById('modsViewBrowse')?.classList.add('active');
+        if (typeof animateModsBrowseView === 'function') animateModsBrowseView();
+        else animateActiveModsSubview();
+      } else if (tab === 'detail') {
+        document.getElementById('modsViewDetail')?.classList.add('active');
+      }
+      document.getElementById('modsSubTabs')?.classList.toggle('hidden-detail', tab === 'detail');
+    }
+
+    function getActiveModLoaders() {
+      return selectedLoader === 'fabric' ? ['fabric'] : [];
+    }
+
+    function filterVersionsForLoader(versions, loaders) {
+      if (!Array.isArray(versions)) return [];
+      if (!loaders.length) return versions;
+      return versions.filter(v => {
+        const versionLoaders = (v.loaders || []).map(l => String(l).toLowerCase());
+        return loaders.some(l => versionLoaders.includes(String(l).toLowerCase()));
       });
+    }
+
+    async function openModDetail(projectId, returnTab) {
+      if (!projectId) return;
+      modDetailReturnTab = returnTab || (document.getElementById('modsViewBrowse')?.classList.contains('active') ? 'browse' : 'installed');
+      switchModsTab('detail');
+      const content = document.getElementById('modDetailContent');
+      if (content) content.innerHTML = '<div class="mods-empty">Loading mod…</div>';
+
+      try {
+        const loaders = getActiveModLoaders();
+        const [projectResult, versionsResult] = await Promise.all([
+          ipcRenderer.invoke('mods:getProject', projectId),
+          ipcRenderer.invoke('mods:getVersions', projectId, [], loaders),
+        ]);
+        if (!projectResult.success) {
+          content.innerHTML = `<div class="mods-empty" style="color:#ff6666">${escapeHtml(projectResult.error || 'Failed to load mod')}</div>`;
+          return;
+        }
+        const versions = filterVersionsForLoader(
+          versionsResult.success ? (versionsResult.versions || []) : [],
+          loaders
+        );
+        currentModDetail = {
+          project: projectResult.project,
+          versions,
+          tab: 'overview',
+        };
+        renderModDetail();
+      } catch (err) {
+        content.innerHTML = `<div class="mods-empty" style="color:#ff6666">${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function closeModDetail() {
+      currentModDetail = null;
+      switchModsTab(modDetailReturnTab || 'browse');
+    }
+
+    function renderModDetail() {
+      const content = document.getElementById('modDetailContent');
+      if (!content || !currentModDetail) return;
+      const project = currentModDetail.project;
+      const projectId = project.id || project.project_id;
+      const isInstalled = installedModIds.has(projectId);
+      const body = project.body || project.description || 'No description provided.';
+      const categories = (project.categories || []).slice(0, 8).join(' · ');
+      const downloads = project.downloads != null ? Number(project.downloads).toLocaleString() : '—';
+      const followers = project.followers != null ? Number(project.followers).toLocaleString() : '—';
+
+      content.innerHTML = `
+        <div class="mod-detail-header">
+          ${modIconTag(project.icon_url)}
+          <div>
+            <div class="mod-detail-title">${escapeHtml(project.title)}</div>
+            <div class="mod-detail-meta">${escapeHtml(categories || 'Modrinth mod')}<br>${downloads} downloads · ${followers} followers${isInstalled ? ' · Installed' : ''}</div>
+          </div>
+        </div>
+        <div class="mod-detail-tabs">
+          <button type="button" class="mod-detail-tab${currentModDetail.tab === 'overview' ? ' active' : ''}" data-tab="overview">Overview</button>
+          <button type="button" class="mod-detail-tab${currentModDetail.tab === 'versions' ? ' active' : ''}" data-tab="versions">Versions</button>
+        </div>
+        <div id="modDetailPane"></div>
+      `;
+
+      const icon = content.querySelector('.mod-icon');
+      if (icon) {
+        icon.classList.add('mod-detail-icon');
+        setModIconImg(icon, project.icon_url || '');
+      }
+
+      content.querySelectorAll('.mod-detail-tab').forEach(tabBtn => {
+        tabBtn.onclick = () => {
+          currentModDetail.tab = tabBtn.dataset.tab;
+          renderModDetail();
+        };
+      });
+
+      const pane = document.getElementById('modDetailPane');
+      if (currentModDetail.tab === 'overview') {
+        pane.innerHTML = `<div class="mod-detail-body">${renderMarkdown(body)}</div>`;
+        bindMarkdownLinks(pane);
+      } else {
+        renderModVersionsPane(pane, project, projectId, isInstalled);
+      }
+    }
+
+    function normalizeVersionChannel(version) {
+      const type = String(version?.version_type || '').toLowerCase();
+      if (type === 'release' || type === 'beta' || type === 'alpha') return type;
+      const num = String(version?.version_number || version?.name || '').toLowerCase();
+      if (num.includes('alpha')) return 'alpha';
+      if (num.includes('beta') || num.includes('pre') || num.includes('rc')) return 'beta';
+      return 'release';
+    }
+
+    function getVersionFilterState(allVersions) {
+      const packMc = getEffectiveGameVersion();
+      if (!currentModDetail.versionFilters) {
+        const hasPackMatch = !!packMc && allVersions.some(v => (v.game_versions || []).includes(packMc));
+        currentModDetail.versionFilters = {
+          channel: 'all',
+          gameVersion: hasPackMatch ? packMc : 'all',
+        };
+      }
+      return currentModDetail.versionFilters;
+    }
+
+    function collectGameVersions(versions) {
+      const set = new Set();
+      versions.forEach(v => (v.game_versions || []).forEach(gv => set.add(gv)));
+      return Array.from(set).sort((a, b) => {
+        const pa = a.split('.').map(n => parseInt(n, 10) || 0);
+        const pb = b.split('.').map(n => parseInt(n, 10) || 0);
+        for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+          const diff = (pb[i] || 0) - (pa[i] || 0);
+          if (diff) return diff;
+        }
+        return b.localeCompare(a);
+      });
+    }
+
+    function applyVersionFilters(versions, filters) {
+      return versions.filter(v => {
+        const channel = normalizeVersionChannel(v);
+        if (filters.channel !== 'all' && channel !== filters.channel) return false;
+        if (filters.gameVersion !== 'all' && !(v.game_versions || []).includes(filters.gameVersion)) return false;
+        return true;
+      });
+    }
+
+    function renderChannelTag(channel) {
+      const label = channel === 'release' ? 'Release' : channel === 'beta' ? 'Beta' : 'Alpha';
+      return `<span class="mod-tag channel-${channel}">${label}</span>`;
+    }
+
+    function renderGameVersionTags(gameVersions) {
+      const list = gameVersions || [];
+      const shown = list.slice(0, 4);
+      const extra = list.length - shown.length;
+      return shown.map(gv => `<span class="mod-tag mc">${escapeHtml(gv)}</span>`).join('')
+        + (extra > 0 ? `<span class="mod-tag mc">+${extra}</span>` : '');
+    }
+
+    function renderModVersionsPane(pane, project, projectId, isInstalled) {
+      const allVersions = filterVersionsForLoader(currentModDetail.versions || [], getActiveModLoaders());
+      if (!allVersions.length) {
+        const loaderLabel = selectedLoader === 'fabric' ? 'Fabric' : selectedLoader;
+        pane.innerHTML = `<div class="mods-empty">No ${escapeHtml(loaderLabel)} versions found for this mod.</div>`;
+        return;
+      }
+
+      const filters = getVersionFilterState(allVersions);
+      const gameVersions = collectGameVersions(allVersions);
+      const filtered = applyVersionFilters(allVersions, filters);
+      const installedVersionId = (Object.values(window.__installedModsCache || {}).find(m => m.projectId === projectId) || {}).installedVersion;
+      const packMc = getEffectiveGameVersion();
+
+      const channelChips = ['all', 'release', 'beta', 'alpha'].map(ch => {
+        const label = ch === 'all' ? 'All' : ch[0].toUpperCase() + ch.slice(1);
+        return `<button type="button" class="mod-version-chip${filters.channel === ch ? ' active' : ''}" data-channel="${ch}">${label}</button>`;
+      }).join('');
+
+      const gameOptions = [
+        `<option value="all"${filters.gameVersion === 'all' ? ' selected' : ''}>All MC versions</option>`,
+        ...gameVersions.map(gv => {
+          const packHint = gv === packMc ? ' (pack)' : '';
+          return `<option value="${escapeHtml(gv)}"${filters.gameVersion === gv ? ' selected' : ''}>${escapeHtml(gv)}${packHint}</option>`;
+        }),
+      ].join('');
+
+      pane.innerHTML = `
+        <div class="mod-version-toolbar">
+          <div class="mod-version-filters">
+            <span class="mod-version-filter-label">Channel</span>
+            ${channelChips}
+          </div>
+          <div class="mod-version-filters">
+            <span class="mod-version-filter-label">Minecraft</span>
+            <select class="mod-version-select" id="modVersionGameFilter">${gameOptions}</select>
+            ${packMc ? `<button type="button" class="mod-version-chip${filters.gameVersion === packMc ? ' active' : ''}" id="modVersionPackChip">Pack: ${escapeHtml(packMc)}</button>` : ''}
+            <span class="mod-version-count">${filtered.length} of ${allVersions.length}</span>
+          </div>
+        </div>
+        <div class="mod-version-list" id="modVersionList"></div>
+      `;
+
+      const list = document.getElementById('modVersionList');
+      if (!filtered.length) {
+        list.innerHTML = '<div class="mods-empty" style="padding:36px 16px">No versions match these filters.</div>';
+      } else {
+        list.innerHTML = filtered.map(v => {
+          const channel = normalizeVersionChannel(v);
+          const date = v.date_published ? new Date(v.date_published).toLocaleDateString() : '';
+          const isCurrent = installedVersionId && v.id === installedVersionId;
+          const activeLoaders = getActiveModLoaders();
+          const loaders = (v.loaders || []).filter(l =>
+            !activeLoaders.length || activeLoaders.includes(String(l).toLowerCase())
+          );
+          const loaderTags = (loaders.length ? loaders : (v.loaders || []).slice(0, 1))
+            .map(l => `<span class="mod-tag loader">${escapeHtml(l)}</span>`).join('');
+          return `<div class="mod-version-row${isCurrent ? ' current' : ''}">
+            <div class="mod-version-info">
+              <div class="mod-version-top">
+                <div class="mod-version-name">${escapeHtml(v.version_number || v.name || 'Unknown')}</div>
+                ${isCurrent ? '<span class="mod-tag current">Current</span>' : ''}
+              </div>
+              <div class="mod-version-tags">
+                ${renderChannelTag(channel)}
+                ${loaderTags}
+                ${renderGameVersionTags(v.game_versions)}
+              </div>
+              <div class="mod-version-meta">${date ? escapeHtml(date) : ''}${v.name && v.name !== v.version_number ? ' · ' + escapeHtml(v.name) : ''}</div>
+            </div>
+            <button type="button" class="mod-btn install${isCurrent ? ' installed' : ''}" data-version="${v.id}" ${isCurrent ? 'disabled' : ''}>${isCurrent ? 'Installed' : (isInstalled ? 'Switch' : 'Install')}</button>
+          </div>`;
+        }).join('');
+      }
+
+      pane.querySelectorAll('[data-channel]').forEach(btn => {
+        btn.onclick = () => {
+          currentModDetail.versionFilters.channel = btn.dataset.channel;
+          renderModDetail();
+        };
+      });
+
+      const gameSelect = document.getElementById('modVersionGameFilter');
+      if (gameSelect) {
+        gameSelect.onchange = () => {
+          currentModDetail.versionFilters.gameVersion = gameSelect.value;
+          renderModDetail();
+        };
+      }
+
+      const packChip = document.getElementById('modVersionPackChip');
+      if (packChip && packMc) {
+        packChip.onclick = () => {
+          currentModDetail.versionFilters.gameVersion =
+            currentModDetail.versionFilters.gameVersion === packMc ? 'all' : packMc;
+          renderModDetail();
+        };
+      }
+
+      list.querySelectorAll('[data-version]:not(:disabled)').forEach(btn => {
+        const label = isInstalled ? 'Switch' : 'Install';
+        btn.onclick = (e) => installModVersion(e, projectId, project.title, btn.dataset.version, label);
+      });
+    }
+
+    async function installModVersion(e, projectId, title, versionId, actionLabel = 'Install') {
+      const btn = e.currentTarget;
+      btn.disabled = true;
+      btn.textContent = 'Working…';
+      try {
+        if (selectedLoader !== 'fabric') {
+          showModal('Fabric Required', 'Switch to a Fabric modpack to install mods.', true);
+          btn.disabled = false;
+          btn.textContent = actionLabel;
+          return;
+        }
+        const gameVersion = getEffectiveGameVersion();
+        const result = await ipcRenderer.invoke('mods:install', projectId, versionId, gameVersion, 'fabric');
+        if (result.success) {
+          btn.textContent = 'Installed';
+          btn.classList.add('installed');
+          installedModIds.add(projectId);
+          await refreshInstalledMods();
+          showToast(actionLabel === 'Switch' ? 'Version switched' : 'Installed', title);
+          if (currentModDetail) renderModDetail();
+        } else {
+          btn.textContent = actionLabel;
+          btn.disabled = false;
+          showModal('Install Failed', result.error, true);
+        }
+      } catch (err) {
+        btn.textContent = actionLabel;
+        btn.disabled = false;
+        showModal('Install Error', err.message, true);
+      }
     }
 
     function showToast(title, message) {
@@ -5635,25 +6786,7 @@
         return;
       }
 
-      const needsModSync = needsModSyncForLaunch();
-      setPlayButtonBusy(needsModSync && installedModIds.size > 0 ? 'Updating mods' : 'Launching');
-
-      if (needsModSync) {
-        const prepared = await prepareModsForLaunch();
-        if (!prepared.ok) return;
-
-        const conflictCheck = await ipcRenderer.invoke('mods:validateConflicts');
-        if (conflictCheck.success && conflictCheck.conflicts && conflictCheck.conflicts.length > 0) {
-          const conflictMsg = conflictCheck.conflicts.map(c => `• ${c.reason}`).join('<br>');
-          const confirmed = await showModal('Mod Conflicts Detected', `Some mods are incompatible with each other:<br><br>${conflictMsg}<br><br>Launch anyway? This may crash.`, true, true);
-          if (!confirmed) {
-            resetPlayButtonIdle();
-            return;
-          }
-        }
-
-        setPlayButtonBusy('Launching');
-      }
+      setPlayButtonBusy('Launching');
 
       const rect = btn.getBoundingClientRect();
       window.spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
@@ -5678,8 +6811,10 @@
       }
 
       try {
-        startNewLogInstance(selectedVersion, selectedLoader);
-        const result = await ipcRenderer.invoke('launchGame', selectedVersion, selectedLoader);
+        const pack = getSelectedModpack();
+        const logVersion = getEffectiveGameVersion();
+        startNewLogInstance(logVersion, pack?.loader || selectedLoader);
+        const result = await ipcRenderer.invoke('launchGame', selectedModpackId);
         if (result.success) {
           addLog('=== Launch successful! Game should be running ===');
           gameRunning = true;

@@ -7,6 +7,7 @@ const ConfigManager = require('./app/assets/js/configmanager');
 const AuthManager = require('./app/assets/js/authmanager');
 const LaunchManager = require('./app/assets/js/launchmanager');
 const ModManager = require('./app/assets/js/modmanager');
+const ModpackManager = require('./app/assets/js/modpackmanager');
 const { AZURE_CLIENT_ID, MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR, SHELL_OPCODE } = require('./app/assets/js/ipcconstants');
 
 const EJS_FILE = path.join(__dirname, 'index.ejs');
@@ -22,16 +23,34 @@ function compileTemplate() {
     const template = fs.readFileSync(EJS_FILE, 'utf-8');
     const accounts = ConfigManager.getAuthDatabase() || {};
     const selectedUuid = ConfigManager.getSelectedUuid();
-    const selectedVersion = ConfigManager.getSelectedVersion() || '1.20.4';
-    const loader = ConfigManager.getSelectedLoader() || 'vanilla';
+    const selectedModpack = ModpackManager.getSelected() || ModpackManager.getById('default');
+    const selectedVersion = selectedModpack?.version === 'latest'
+        ? 'latest'
+        : (selectedModpack?.version || ConfigManager.getSelectedVersion() || '1.20.4');
+    const loader = selectedModpack?.loader || ConfigManager.getSelectedLoader() || 'vanilla';
     const launcherAction = ConfigManager.getLauncherAction();
     const allowMultipleInstances = ConfigManager.getAllowMultipleInstances();
+    const syncOptionsAcrossModpacks = ModpackManager.getSyncOptionsEnabled();
+    const modpacks = ModpackManager.list();
     const theme = ConfigManager.getTheme();
     let installedMods = {};
     try { installedMods = ModManager.getInstalledMods() || {}; } catch(e) { console.error('Failed to load mods for template:', e); }
 
     const assetRoot = `${pathToFileURL(__dirname).href}/`;
-    const html = ejs.render(template, { accounts, selectedUuid, selectedVersion, loader, launcherAction, allowMultipleInstances, theme, installedMods, assetRoot }, { filename: EJS_FILE });
+    const html = ejs.render(template, {
+        accounts,
+        selectedUuid,
+        selectedVersion,
+        loader,
+        launcherAction,
+        allowMultipleInstances,
+        syncOptionsAcrossModpacks,
+        modpacks,
+        selectedModpack,
+        theme,
+        installedMods,
+        assetRoot,
+    }, { filename: EJS_FILE });
 
     const compiledPath = getCompiledHtmlPath();
     fs.mkdirSync(path.dirname(compiledPath), { recursive: true });
@@ -40,6 +59,7 @@ function compileTemplate() {
 }
 
 ConfigManager.load();
+ModpackManager.load();
 
 process.on('uncaughtException', (error) => {
     console.error('Uncaught exception in main process:', error);
@@ -357,7 +377,7 @@ ipcMain.handle('removeAccount', async (event, uuid) => {
     }
 })
 
-ipcMain.handle('launchGame', async (event, versionId, loader) => {
+ipcMain.handle('launchGame', async (event, modpackId) => {
     try {
         if (!ConfigManager.getAllowMultipleInstances() && LaunchManager.isGameRunning()) {
             return { success: false, error: 'Game is already running.' }
@@ -373,7 +393,14 @@ ipcMain.handle('launchGame', async (event, versionId, loader) => {
             return { success: false, error: 'No account selected' }
         }
 
-        const selectedLoader = loader || ConfigManager.getSelectedLoader()
+        const pack = ModpackManager.getById(modpackId) || ModpackManager.getSelected()
+        if (!pack) {
+            return { success: false, error: 'No modpack selected' }
+        }
+
+        ModpackManager.setSelected(pack.id)
+        const selectedLoader = pack.loader || 'vanilla'
+        const versionId = pack.version || 'latest'
 
         LaunchManager.on('progress', (data) => {
             if (mainWindowRef) {
@@ -394,14 +421,18 @@ ipcMain.handle('launchGame', async (event, versionId, loader) => {
         })
 
         if (selectedLoader === 'fabric') {
-            await LaunchManager.launchFabric(versionId, account)
+            await LaunchManager.launchFabric(versionId, account, pack.id)
         } else {
-            await LaunchManager.launchVanilla(versionId, account)
+            await LaunchManager.launchVanilla(versionId, account, pack.id)
         }
-        
-        ConfigManager.setSelectedVersion(versionId)
+
+        const resolved = await LaunchManager.resolveVersionId(versionId)
+        if (pack.version !== 'latest') {
+            ConfigManager.setSelectedVersion(resolved)
+        }
+        ConfigManager.setSelectedLoader(selectedLoader)
         ConfigManager.save()
-        
+
         if (mainWindowRef) {
             mainWindowRef.webContents.send('gameStarted')
             mainWindowRef.webContents.send('launchLog', '=== Game launched! ===')
@@ -412,11 +443,78 @@ ipcMain.handle('launchGame', async (event, versionId, loader) => {
                 app.quit()
             }
         }
-        
-        return { success: true }
+
+        return { success: true, versionId: resolved, modpackId: pack.id }
     } catch(error) {
         console.error('Launch error:', error)
         return { success: false, error: error.message || 'Failed to launch game' }
+    }
+})
+
+ipcMain.handle('modpacks:list', () => {
+    try {
+        return {
+            success: true,
+            modpacks: ModpackManager.list(),
+            selectedId: ModpackManager.getSelectedId(),
+            syncOptionsAcrossModpacks: ModpackManager.getSyncOptionsEnabled(),
+        }
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('modpacks:select', (event, id) => {
+    try {
+        const pack = ModpackManager.setSelected(id)
+        return { success: true, modpack: pack }
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('modpacks:create', (event, data) => {
+    try {
+        const pack = ModpackManager.create(data || {})
+        return { success: true, modpack: pack }
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('modpacks:update', (event, id, data) => {
+    try {
+        const pack = ModpackManager.update(id, data || {})
+        return { success: true, modpack: pack }
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('modpacks:remove', (event, id) => {
+    try {
+        ModpackManager.remove(id)
+        return { success: true, selectedId: ModpackManager.getSelectedId() }
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('modpacks:setSyncOptions', (event, enabled) => {
+    try {
+        const value = ModpackManager.setSyncOptionsEnabled(enabled)
+        return { success: true, syncOptionsAcrossModpacks: value }
+    } catch (error) {
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('modpacks:resolveVersion', async (event, versionSpec) => {
+    try {
+        const versionId = await LaunchManager.resolveVersionId(versionSpec || 'latest')
+        return { success: true, versionId }
+    } catch (error) {
+        return { success: false, error: error.message }
     }
 })
 
@@ -431,7 +529,7 @@ ipcMain.handle('getAvailableVersions', async () => {
 })
 
 ipcMain.handle('openModsFolder', async () => {
-    const modsDir = path.join(LaunchManager.getMinecraftDirectory(), 'mods')
+    const modsDir = ModManager.getMinecraftModsDirectory()
     try {
         const fs = require('fs-extra')
         fs.ensureDirSync(modsDir)
@@ -439,6 +537,18 @@ ipcMain.handle('openModsFolder', async () => {
         return { success: true }
     } catch(error) {
         console.error('Open mods folder error:', error)
+        return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('openInstanceFolder', async () => {
+    const instanceDir = LaunchManager.getGameDirectory()
+    try {
+        const fs = require('fs-extra')
+        fs.ensureDirSync(instanceDir)
+        await shell.openPath(instanceDir)
+        return { success: true }
+    } catch (error) {
         return { success: false, error: error.message }
     }
 })

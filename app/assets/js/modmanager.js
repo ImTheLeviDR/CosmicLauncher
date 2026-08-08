@@ -3,6 +3,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const yauzl = require('yauzl');
 const ConfigManager = require('./configmanager');
+const ModpackManager = require('./modpackmanager');
 
 const MODRINTH_API = 'https://api.modrinth.com/v2';
 
@@ -10,19 +11,21 @@ class ModManager {
   constructor() {
     this._modDatabase = {};
     this._dirty = false;
+    this._loadedDbPath = null;
   }
 
-  getMinecraftModsDirectory() {
-    const minecraftDir = path.join(
-      ConfigManager.getLauncherDirectory(),
-      'minecraft',
-      'mods'
-    );
-    return minecraftDir;
+  getActiveModpackId() {
+    return ModpackManager.getSelectedId();
   }
 
-  getModsDatabasePath() {
-    return path.join(ConfigManager.getLauncherDirectory(), 'mods-database.json');
+  getMinecraftModsDirectory(modpackId) {
+    const id = modpackId || this.getActiveModpackId();
+    return path.join(ModpackManager.getInstanceDirectory(id), 'mods');
+  }
+
+  getModsDatabasePath(modpackId) {
+    const id = modpackId || this.getActiveModpackId();
+    return path.join(ModpackManager.getInstanceDirectory(id), 'mods-database.json');
   }
 
   _ensureModsDir() {
@@ -31,6 +34,11 @@ class ModManager {
 
   _loadDatabase() {
     const dbPath = this.getModsDatabasePath();
+    if (this._loadedDbPath !== dbPath) {
+      this._modDatabase = {};
+      this._dirty = false;
+      this._loadedDbPath = dbPath;
+    }
     if (fs.existsSync(dbPath)) {
       try {
         this._modDatabase = JSON.parse(fs.readFileSync(dbPath, 'utf-8'));
@@ -38,14 +46,18 @@ class ModManager {
         console.error('Error loading mod database:', e);
         this._modDatabase = {};
       }
+    } else {
+      this._modDatabase = {};
     }
   }
 
   _saveDatabase() {
     if (!this._dirty) return;
-    fs.ensureDirSync(path.dirname(this.getModsDatabasePath()));
-    fs.writeFileSync(this.getModsDatabasePath(), JSON.stringify(this._modDatabase, null, 2), 'utf-8');
+    const dbPath = this.getModsDatabasePath();
+    fs.ensureDirSync(path.dirname(dbPath));
+    fs.writeFileSync(dbPath, JSON.stringify(this._modDatabase, null, 2), 'utf-8');
     this._dirty = false;
+    this._loadedDbPath = dbPath;
   }
 
   getInstalledMods() {
@@ -778,10 +790,31 @@ class ModManager {
     return { installed, conflicts: depResult.conflicts };
   }
 
+  _versionSupportsLoader(versionData, loader) {
+    if (!loader) return true;
+    const loaders = (versionData?.loaders || []).map((l) => String(l).toLowerCase());
+    return loaders.includes(String(loader).toLowerCase());
+  }
+
   async installMod(projectId, versionId, gameVersion, loader) {
     this._loadDatabase();
     this._ensureModsDir();
     this._clearVersionCache();
+
+    if (this._modDatabase[projectId] && versionId) {
+      const versionData = await this._getVersion(versionId);
+      if (!versionData) throw new Error('Selected version could not be loaded');
+      if (!this._versionSupportsLoader(versionData, loader)) {
+        throw new Error(`That version does not support ${loader}. Pick a ${loader} build instead.`);
+      }
+      const updated = await this.updateMod(projectId, gameVersion, loader, versionData);
+      return {
+        mod: updated.mod,
+        installedDeps: updated.deps || [],
+        conflicts: updated.depConflicts || [],
+        resolved: updated.resolved || [],
+      };
+    }
 
     const project = await this.getProject(projectId);
 
@@ -789,6 +822,9 @@ class ModManager {
     if (versionId) {
       targetVersion = await this._getVersion(versionId);
       if (targetVersion) {
+        if (!this._versionSupportsLoader(targetVersion, loader)) {
+          throw new Error(`That version does not support ${loader}. Pick a ${loader} build instead.`);
+        }
         const conflicts = await this._versionConflictsWithInstalled(targetVersion);
         if (conflicts.length > 0) {
           throw new Error(`Cannot install ${project.title}: incompatible with ${conflicts.map(c => c.title).join(', ')}`);
@@ -804,6 +840,9 @@ class ModManager {
 
     if (!targetVersion) {
       throw new Error(`No compatible version found for ${project.title} on ${gameVersion} ${loader} that works with your installed mods`);
+    }
+    if (!this._versionSupportsLoader(targetVersion, loader)) {
+      throw new Error(`That version does not support ${loader}. Pick a ${loader} build instead.`);
     }
 
     const depResult = await this._resolveDependencies(targetVersion, gameVersion, loader);
