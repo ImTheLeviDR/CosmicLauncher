@@ -4652,15 +4652,37 @@
 
     const markedLib = (() => {
       try {
-        return require('marked');
-      } catch (e) {
-        console.warn('marked not available:', e);
+        // marked v18+ is ESM-only ("type":"module"), so require() returns an empty module.
+        // Load the UMD build by evaluating it with a CommonJS-style module shim.
+        const fs = require('fs');
+        const pathMod = require('path');
+        const umdPath = pathMod.join(pathMod.dirname(require.resolve('marked/package.json')), 'lib', 'marked.umd.js');
+        const code = fs.readFileSync(umdPath, 'utf8');
+        const moduleShim = { exports: {} };
+        const load = new Function('exports', 'module', 'require', `${code}\nreturn module.exports;`);
+        return load(moduleShim.exports, moduleShim, require);
+      } catch (err) {
+        console.warn('marked not available:', err);
         return null;
       }
     })();
 
+    const markedParse = (() => {
+      if (!markedLib) return null;
+      if (typeof markedLib.parse === 'function') return markedLib.parse.bind(markedLib);
+      if (typeof markedLib.marked === 'function') return markedLib.marked.bind(markedLib);
+      if (typeof markedLib === 'function') return markedLib;
+      return null;
+    })();
+
     if (markedLib?.setOptions) {
       markedLib.setOptions({
+        gfm: true,
+        breaks: false,
+        pedantic: false,
+      });
+    } else if (markedLib?.marked?.setOptions) {
+      markedLib.marked.setOptions({
         gfm: true,
         breaks: false,
         pedantic: false,
@@ -4762,19 +4784,40 @@
       return template.innerHTML;
     }
 
+    function renderMarkdownFallback(src) {
+      // Lightweight HTML-aware fallback if marked fails to load
+      let text = String(src || '').replace(/\r\n/g, '\n');
+      const blocks = [];
+      text = text.replace(/```([\s\S]*?)```/g, (_, code) => {
+        const i = blocks.length;
+        blocks.push(`<pre><code>${escapeHtml(code.replace(/^\n/, '').replace(/\n$/, ''))}</code></pre>`);
+        return `\n%%MD_BLOCK_${i}%%\n`;
+      });
+      text = text.replace(/^(#{1,4})\s+(.+)$/gm, (_, h, title) => `<h${h.length}>${title}</h${h.length}>`);
+      text = text.replace(/^\s*[-*+]\s+(.+)$/gm, '<li>$1</li>');
+      text = text.replace(/(?:<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`);
+      text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      text = text.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+      text = text.replace(/!\[([^\]]*)\]\((https?:[^)\s]+)\)/g, '<img src="$2" alt="$1" loading="lazy">');
+      text = text.replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" data-external="true">$1</a>');
+      text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+      text = text.replace(/^(?!<[a-zA-Z/]|%%MD_BLOCK_)(.+)$/gm, '<p>$1</p>');
+      text = text.replace(/%%MD_BLOCK_(\d+)%%/g, (_, i) => blocks[Number(i)] || '');
+      return sanitizeMarkdownHtml(text);
+    }
+
     function renderMarkdown(src) {
       const text = String(src || '').replace(/\r\n/g, '\n').trim();
       if (!text) return '<p>No description provided.</p>';
       try {
-        const parse = markedLib?.parse || markedLib?.marked?.parse;
-        if (typeof parse === 'function') {
-          const dirty = parse(text, { async: false });
+        if (markedParse) {
+          const dirty = markedParse(text, { async: false });
           return sanitizeMarkdownHtml(String(dirty));
         }
       } catch (err) {
         console.error('Markdown render failed:', err);
       }
-      return '<p>' + escapeHtml(text).replace(/\n/g, '<br>') + '</p>';
+      return renderMarkdownFallback(text);
     }
 
     function bindMarkdownLinks(root) {
