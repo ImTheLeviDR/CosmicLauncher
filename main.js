@@ -9,6 +9,7 @@ const LaunchManager = require('./app/assets/js/launchmanager');
 const ModManager = require('./app/assets/js/modmanager');
 const ModpackManager = require('./app/assets/js/modpackmanager');
 const ModrinthImporter = require('./app/assets/js/modrinthimporter');
+const UpdateManager = require('./app/assets/js/updatemanager');
 const { AZURE_CLIENT_ID, MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR, SHELL_OPCODE } = require('./app/assets/js/ipcconstants');
 
 const EJS_FILE = path.join(__dirname, 'index.ejs');
@@ -51,6 +52,7 @@ function compileTemplate() {
         theme,
         installedMods,
         assetRoot,
+        launcherVersion: app.getVersion(),
     }, { filename: EJS_FILE });
 
     const compiledPath = getCompiledHtmlPath();
@@ -359,6 +361,26 @@ ipcMain.handle('getTheme', () => {
 ipcMain.handle('saveTheme', (event, theme) => {
     const saved = ConfigManager.setTheme(theme)
     return { success: saved, theme: ConfigManager.getTheme() }
+})
+
+ipcMain.handle('launcher:getVersion', () => {
+    return { success: true, version: app.getVersion() }
+})
+
+ipcMain.handle('launcher:checkForUpdate', async () => {
+    try {
+        const result = await UpdateManager.checkForUpdate()
+        result.dismissed = ConfigManager.getDismissedLauncherUpdate()
+        return result
+    } catch (error) {
+        console.error('Update check failed:', error)
+        return { success: false, current: app.getVersion(), error: error.message || 'Update check failed' }
+    }
+})
+
+ipcMain.handle('launcher:dismissUpdate', (event, version) => {
+    ConfigManager.setDismissedLauncherUpdate(version)
+    return { success: true, dismissed: ConfigManager.getDismissedLauncherUpdate() }
 })
 
 ipcMain.handle('isGameRunning', () => {

@@ -857,6 +857,22 @@
       color: var(--text);
     }
 
+    .custom-modal-btn.primary {
+      background: var(--accent);
+      border-color: color-mix(in srgb, var(--accent) 70%, white 18%);
+      color: #fff;
+    }
+
+    .custom-modal-btn.primary:hover {
+      background: color-mix(in srgb, var(--accent) 88%, white 12%);
+      border-color: color-mix(in srgb, var(--accent) 55%, white 28%);
+      color: #fff;
+    }
+
+    .custom-modal-btn.primary:active {
+      background: color-mix(in srgb, var(--accent) 78%, black 10%);
+    }
+
     .add-account-btn {
       display: flex;
       align-items: center;
@@ -4390,6 +4406,22 @@
                 <span class="open-mods-arrow" data-icon="chevronRight" aria-hidden="true"></span>
               </button>
             </div>
+
+            <div class="settings-section">
+              <div class="settings-section-title">About</div>
+              <div class="settings-section-description">Launcher version and GitHub updates.</div>
+              <div class="launch-option-row" style="border-top:none;padding-top:0;margin-top:0;">
+                <div class="launch-option-copy">
+                  <div class="launch-option-label">Current version</div>
+                  <div class="launch-option-desc" id="launcherVersionStatus">v<%= typeof launcherVersion !== 'undefined' ? launcherVersion : '' %></div>
+                </div>
+              </div>
+              <button type="button" class="open-mods-btn" id="checkUpdatesBtn" onclick="checkLauncherUpdates(true)">
+                <div class="open-mods-icon" data-icon="download" aria-hidden="true"></div>
+                <span>Check for Updates</span>
+                <span class="open-mods-arrow" data-icon="chevronRight" aria-hidden="true"></span>
+              </button>
+            </div>
           </div>
 
           <!-- Modpacks Tab -->
@@ -5074,6 +5106,7 @@
         } else if (window.triggerOpenAnimation) {
           window.triggerOpenAnimation();
         }
+        setTimeout(() => checkLauncherUpdates(false), 900);
       }
     }
 
@@ -7980,8 +8013,11 @@
     function closeLauncher() { try { window.require('electron').ipcRenderer.send('close'); } catch (_) { } }
 
     /* ── CUSTOM MODAL ── */
-    function showModal(title, message, isError = false, isConfirm = false) {
+    function showModal(title, message, isError = false, isConfirm = false, options = {}) {
       return new Promise((resolve) => {
+        const confirmLabel = options.confirmLabel || 'Remove';
+        const confirmClass = options.confirmClass || 'confirm';
+        const cancelLabel = options.cancelLabel || 'Cancel';
         const modal = document.createElement('div');
         modal.className = 'custom-modal-overlay';
         modal.innerHTML = `
@@ -7990,8 +8026,8 @@
             <div class="custom-modal-message">${message}</div>
             <div class="custom-modal-buttons">
               ${isConfirm 
-                ? `<button class="custom-modal-btn cancel" id="modalCancel">Cancel</button>
-                   <button class="custom-modal-btn confirm" id="modalConfirm">Remove</button>`
+                ? `<button class="custom-modal-btn cancel" id="modalCancel">${cancelLabel}</button>
+                   <button class="custom-modal-btn ${confirmClass}" id="modalConfirm">${confirmLabel}</button>`
                 : `<button class="custom-modal-btn" id="modalOk">OK</button>`
               }
             </div>
@@ -8006,6 +8042,66 @@
           document.getElementById('modalOk').onclick = () => { modal.remove(); resolve(); };
         }
       });
+    }
+
+    async function checkLauncherUpdates(manual = false) {
+      const ipc = window.ipcRenderer;
+      if (!ipc) {
+        if (manual) showModal('Update Check Failed', 'Cannot access Electron.', true);
+        return;
+      }
+
+      const btn = document.getElementById('checkUpdatesBtn');
+      const status = document.getElementById('launcherVersionStatus');
+      if (btn && manual) {
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+      }
+
+      try {
+        const result = await ipc.invoke('launcher:checkForUpdate');
+        const current = result.current || '';
+        if (status && current) status.textContent = `v${current}`;
+
+        if (!result.success) {
+          if (manual) showModal('Update Check Failed', escapeHtml(result.error || 'Could not reach GitHub.'), true);
+          return;
+        }
+
+        if (!result.updateAvailable) {
+          if (status) status.textContent = `v${current} · up to date`;
+          if (manual) showToast('Up to date', `Cosmic Launcher ${current} is the latest version.`);
+          return;
+        }
+
+        if (status) status.textContent = `v${current} · ${result.latest} available`;
+        if (!manual && result.dismissed === result.latest) return;
+
+        const download = await showModal(
+          'Update Available',
+          `Cosmic Launcher ${escapeHtml(result.latest)} is available. You have ${escapeHtml(current)}.`,
+          false,
+          true,
+          { confirmLabel: 'Download', confirmClass: 'primary', cancelLabel: 'Later' }
+        );
+
+        if (download) {
+          const url = result.downloadUrl || result.htmlUrl;
+          if (url) {
+            try { require('electron').shell.openExternal(url); }
+            catch (_) { window.open(url, '_blank', 'noopener,noreferrer'); }
+          }
+        } else if (!manual && result.latest) {
+          ipc.invoke('launcher:dismissUpdate', result.latest);
+        }
+      } catch (err) {
+        if (manual) showModal('Update Check Failed', escapeHtml(err.message || 'Could not check for updates.'), true);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.style.opacity = '';
+        }
+      }
     }
 
     runStartup();

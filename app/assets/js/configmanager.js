@@ -37,7 +37,8 @@ const DEFAULT_CONFIG = {
     modsSyncedLoader: null,
     launcherAction: 'hide',
     allowMultipleInstances: false,
-    theme: 'cosmic'
+    theme: 'cosmic',
+    dismissedLauncherUpdate: null
 }
 
 let config = null
@@ -233,6 +234,15 @@ exports.setTheme = function(theme){
     config.theme = theme
     exports.save()
     return true
+}
+
+exports.getDismissedLauncherUpdate = function(){
+    return config.dismissedLauncherUpdate || null
+}
+
+exports.setDismissedLauncherUpdate = function(version){
+    config.dismissedLauncherUpdate = version ? String(version) : null
+    exports.save()
 }
 
 exports.cacheVersionManifest = function(manifest) {
