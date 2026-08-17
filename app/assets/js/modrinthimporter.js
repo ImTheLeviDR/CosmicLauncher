@@ -34,6 +34,26 @@ function mapCosmicLoader(loader) {
   return 'vanilla'
 }
 
+function secondsToMs(value) {
+  const n = Number(value)
+  if (!Number.isFinite(n) || n <= 0) return 0
+  return Math.floor(n * 1000)
+}
+
+function timestampToMs(value) {
+  const n = Number(value)
+  if (!Number.isFinite(n) || n <= 0) return null
+  return n < 1e12 ? Math.floor(n * 1000) : Math.floor(n)
+}
+
+function playTimeMsFromRow(row) {
+  const submitted = secondsToMs(row.submitted_time_played)
+  const recent = secondsToMs(row.recent_time_played)
+  const combined = submitted + recent
+  if (combined > 0) return combined
+  return secondsToMs(row.time_played)
+}
+
 class ModrinthImporter {
   getCandidateRoots() {
     const roots = []
@@ -78,31 +98,47 @@ class ModrinthImporter {
   async listFromDatabase(root) {
     const dbPath = this.getDbPath(root)
     if (!dbPath) return []
+    const settings = 'SELECT custom_dir FROM settings LIMIT 1'
 
-    try {
-      const data = await querySqliteMany(dbPath, {
-        settings: 'SELECT custom_dir FROM settings LIMIT 1',
-        instances: `SELECT i.id, i.path, i.name, i.install_stage, i.icon_path, i.last_played, i.created,
+    const instanceQueries = [
+      `SELECT i.id, i.path, i.name, i.install_stage, i.icon_path, i.last_played, i.created,
+               i.submitted_time_played, i.recent_time_played,
                cs.game_version, cs.loader, cs.loader_version
         FROM instances i
         LEFT JOIN instance_content_sets cs ON cs.id = i.applied_content_set_id
         ORDER BY COALESCE(i.last_played, 0) DESC, i.name COLLATE NOCASE`,
-      })
-      const profilesDir = this.profilesDirFromSettings(root, data.settings)
-      return (data.instances || []).map((row) => this.normalizeInstance(row, profilesDir)).filter(Boolean)
-    } catch (_) {}
+      `SELECT i.id, i.path, i.name, i.install_stage, i.icon_path, i.last_played, i.created,
+               cs.game_version, cs.loader, cs.loader_version
+        FROM instances i
+        LEFT JOIN instance_content_sets cs ON cs.id = i.applied_content_set_id
+        ORDER BY COALESCE(i.last_played, 0) DESC, i.name COLLATE NOCASE`,
+    ]
+    for (const instances of instanceQueries) {
+      try {
+        const data = await querySqliteMany(dbPath, { settings, instances })
+        const profilesDir = this.profilesDirFromSettings(root, data.settings)
+        return (data.instances || []).map((row) => this.normalizeInstance(row, profilesDir)).filter(Boolean)
+      } catch (_) {}
+    }
 
-    try {
-      const data = await querySqliteMany(dbPath, {
-        settings: 'SELECT custom_dir FROM settings LIMIT 1',
-        profiles: `SELECT path AS id, path, name, install_stage, icon_path, last_played, created,
+    const profileQueries = [
+      `SELECT path AS id, path, name, install_stage, icon_path, last_played, created,
+               submitted_time_played, recent_time_played,
                game_version, mod_loader AS loader, mod_loader_version AS loader_version
         FROM profiles
         ORDER BY COALESCE(last_played, 0) DESC, name COLLATE NOCASE`,
-      })
-      const profilesDir = this.profilesDirFromSettings(root, data.settings)
-      return (data.profiles || []).map((row) => this.normalizeInstance(row, profilesDir)).filter(Boolean)
-    } catch (_) {}
+      `SELECT path AS id, path, name, install_stage, icon_path, last_played, created,
+               game_version, mod_loader AS loader, mod_loader_version AS loader_version
+        FROM profiles
+        ORDER BY COALESCE(last_played, 0) DESC, name COLLATE NOCASE`,
+    ]
+    for (const profiles of profileQueries) {
+      try {
+        const data = await querySqliteMany(dbPath, { settings, profiles })
+        const profilesDir = this.profilesDirFromSettings(root, data.settings)
+        return (data.profiles || []).map((row) => this.normalizeInstance(row, profilesDir)).filter(Boolean)
+      } catch (_) {}
+    }
 
     return []
   }
@@ -124,6 +160,8 @@ class ModrinthImporter {
           loader: hasMods ? 'fabric' : 'vanilla',
           last_played: null,
           created: null,
+          submitted_time_played: 0,
+          recent_time_played: 0,
         }, profilesDir)
       })
       .filter(Boolean)
@@ -149,8 +187,9 @@ class ModrinthImporter {
       loaderLabel: capitalizeLoader(sourceLoader),
       cosmicLoader: mapCosmicLoader(sourceLoader),
       supported: COSMIC_LOADERS.has(sourceLoader),
-      lastPlayed: row.last_played || null,
-      created: row.created || null,
+      lastPlayed: timestampToMs(row.last_played),
+      created: timestampToMs(row.created),
+      playTimeMs: playTimeMsFromRow(row),
       iconPath: row.icon_path && fs.existsSync(row.icon_path) ? row.icon_path : null,
     }
   }
@@ -387,6 +426,8 @@ class ModrinthImporter {
       loader,
       sourceDir: instance.instanceDir,
       sourceLoader: instance.sourceLoader,
+      playTimeMs: instance.playTimeMs,
+      lastPlayedAt: instance.lastPlayed,
     })
 
     const destDir = ModpackManager.getInstanceDirectory(pack.id)

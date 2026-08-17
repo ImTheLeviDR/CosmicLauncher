@@ -294,7 +294,7 @@ class ModpackManager {
     return `${base} (${n})`
   }
 
-  importFromDirectory({ name, version, loader, sourceDir, sourceLoader }) {
+  importFromDirectory({ name, version, loader, sourceDir, sourceLoader, playTimeMs, lastPlayedAt }) {
     this._ensureLoaded()
     const trimmed = (name || '').trim()
     if (!trimmed) throw new Error('Modpack name is required')
@@ -314,6 +314,8 @@ class ModpackManager {
     })
     fs.ensureDirSync(path.join(destDir, 'mods'))
 
+    const importedPlayTime = Math.max(0, Math.floor(Number(playTimeMs) || 0))
+    const importedLastPlayed = Number(lastPlayedAt)
     const pack = {
       id,
       name: trimmed,
@@ -321,7 +323,8 @@ class ModpackManager {
       loader: loader === 'fabric' ? 'fabric' : 'vanilla',
       isDefault: false,
       createdAt: Date.now(),
-      playTimeMs: 0,
+      playTimeMs: importedPlayTime,
+      lastPlayedAt: Number.isFinite(importedLastPlayed) && importedLastPlayed > 0 ? importedLastPlayed : null,
       importedFrom: 'modrinth',
       sourceLoader: sourceLoader || loader || 'vanilla',
     }
