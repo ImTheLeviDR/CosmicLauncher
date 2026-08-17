@@ -15,4 +15,4 @@ Game data lives under the launcher directory: shared Minecraft files in `minecra
 
 ## License
 
-Private / unpublished unless a license file is added.
+Licensed under the [Apache License 2.0](LICENSE).

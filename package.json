@@ -2,6 +2,7 @@
   "name": "cosmic-launcher",
   "version": "0.1.4",
   "description": "Cosmic Launcher - A beautiful Minecraft launcher",
+  "license": "Apache-2.0",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
