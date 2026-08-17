@@ -1,6 +1,6 @@
 {
   "name": "cosmic-launcher",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Cosmic Launcher - A beautiful Minecraft launcher",
   "main": "main.js",
   "scripts": {
