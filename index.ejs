@@ -3109,6 +3109,8 @@
       margin-bottom: 16px;
       flex-wrap: wrap;
       flex-shrink: 0;
+      position: relative;
+      z-index: 40;
     }
 
     .modpacks-search {
@@ -3153,23 +3155,44 @@
       color: var(--muted);
     }
 
-    .modpacks-sort {
-      height: 38px;
-      padding: 0 12px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-family: 'Syne', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 600;
-      outline: none;
-      cursor: pointer;
+    .modpacks-sort-wrap {
+      position: relative;
+      flex-shrink: 0;
+      min-width: 198px;
+      z-index: 30;
     }
 
-    .modpacks-sort option {
-      background: #12121a;
-      color: var(--text);
+    .modpacks-sort-wrap .loader-trigger {
+      height: 38px;
+      padding: 0 12px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.04);
+      gap: 8px;
+    }
+
+    .modpacks-sort-wrap.open .loader-trigger {
+      border-radius: 10px;
+      background: #12121c;
+    }
+
+    .modpacks-sort-wrap .loader-trigger-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .modpacks-sort-wrap .loader-menu {
+      top: calc(100% + 6px);
+      right: 0;
+      left: auto;
+      min-width: 220px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .modpacks-sort-wrap .loader-item {
+      padding: 10px 12px;
     }
 
     .modpacks-new-btn {
@@ -4212,11 +4235,47 @@
                 <span class="modpacks-search-icon" data-icon="search" aria-hidden="true"></span>
                 <input type="search" id="modpackSettingsSearch" placeholder="Search" autocomplete="off" spellcheck="false" aria-label="Search modpacks">
               </div>
-              <select id="modpackSortSelect" class="modpacks-sort" aria-label="Sort modpacks">
-                <option value="name">Sort by: Name</option>
-                <option value="played">Sort by: Last played</option>
-                <option value="time">Sort by: Play time</option>
-              </select>
+              <div class="loader-wrap modpacks-sort-wrap" id="modpackSortWrap">
+                <button type="button" class="loader-trigger" id="modpackSortTrigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Sort modpacks">
+                  <div class="loader-trigger-info">
+                    <span class="loader-trigger-name" id="modpackSortTriggerName">Sort by: Name</span>
+                  </div>
+                  <span class="loader-trigger-chevron" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </span>
+                </button>
+                <div class="loader-menu" id="modpackSortMenu" role="listbox" aria-label="Sort modpacks">
+                  <div class="loader-list">
+                    <button type="button" class="loader-item active" data-sort="name" role="option" aria-selected="true">
+                      <div class="loader-item-info">
+                        <span class="loader-item-name">Name</span>
+                        <span class="loader-item-type">Alphabetical</span>
+                      </div>
+                      <div class="loader-item-actions">
+                        <span class="loader-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                      </div>
+                    </button>
+                    <button type="button" class="loader-item" data-sort="played" role="option" aria-selected="false">
+                      <div class="loader-item-info">
+                        <span class="loader-item-name">Last played</span>
+                        <span class="loader-item-type">Most recent</span>
+                      </div>
+                      <div class="loader-item-actions">
+                        <span class="loader-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                      </div>
+                    </button>
+                    <button type="button" class="loader-item" data-sort="time" role="option" aria-selected="false">
+                      <div class="loader-item-info">
+                        <span class="loader-item-name">Play time</span>
+                        <span class="loader-item-type">Longest first</span>
+                      </div>
+                      <div class="loader-item-actions">
+                        <span class="loader-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
               <button type="button" class="modpacks-new-btn" onclick="openCreateModpackModal()">
                 <span data-icon="plus" aria-hidden="true"></span>
                 New modpack
@@ -5856,23 +5915,66 @@
 
     let modpackSettingsQuery = '';
     let modpackSortBy = 'name';
+    const modpackSortOptions = {
+      name: 'Sort by: Name',
+      played: 'Sort by: Last played',
+      time: 'Sort by: Play time',
+    };
+
+    function closeModpackSortMenu() {
+      const wrap = document.getElementById('modpackSortWrap');
+      const trigger = document.getElementById('modpackSortTrigger');
+      if (!wrap || !trigger) return;
+      wrap.classList.remove('open');
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+
+    function setModpackSort(value) {
+      if (!modpackSortOptions[value]) return;
+      modpackSortBy = value;
+      const triggerName = document.getElementById('modpackSortTriggerName');
+      if (triggerName) triggerName.textContent = modpackSortOptions[value];
+      document.querySelectorAll('#modpackSortMenu .loader-item[data-sort]').forEach((el) => {
+        const active = el.dataset.sort === value;
+        el.classList.toggle('active', active);
+        el.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      closeModpackSortMenu();
+      renderModpackSettingsList();
+    }
 
     function initModpackGridControls() {
       const search = document.getElementById('modpackSettingsSearch');
-      const sort = document.getElementById('modpackSortSelect');
+      const wrap = document.getElementById('modpackSortWrap');
+      const trigger = document.getElementById('modpackSortTrigger');
+      const menu = document.getElementById('modpackSortMenu');
       if (search) {
         search.addEventListener('input', () => {
           modpackSettingsQuery = search.value;
           renderModpackSettingsList();
         });
       }
-      if (sort) {
-        sort.value = modpackSortBy;
-        sort.addEventListener('change', () => {
-          modpackSortBy = sort.value;
-          renderModpackSettingsList();
+      if (!wrap || !trigger || !menu) return;
+
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeLoaderMenu();
+        closeLauncherActionMenu();
+        closeLogInstanceMenu();
+        const isOpen = wrap.classList.toggle('open');
+        trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+
+      menu.querySelectorAll('.loader-item[data-sort]').forEach((item) => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setModpackSort(item.dataset.sort);
         });
-      }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!wrap.contains(e.target)) closeModpackSortMenu();
+      });
     }
 
     async function selectModpack(id) {
@@ -6316,6 +6418,7 @@
       trigger.addEventListener('click', (e) => {
         e.stopPropagation();
         closeLoaderMenu();
+        closeModpackSortMenu();
         const isOpen = wrap.classList.toggle('open');
         trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       });
@@ -6534,11 +6637,13 @@
     function closeSettings() {
       closeLoaderMenu();
       closeLauncherActionMenu();
+      closeModpackSortMenu();
       closeLogInstanceMenu();
       document.getElementById('settingsOverlay').classList.remove('show');
     }
 
     function switchSettingsTab(tab) {
+      closeModpackSortMenu();
       document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.settings-tab-content').forEach(c => c.classList.remove('active'));
       document.querySelector(`.settings-tab[data-tab="${tab}"]`).classList.add('active');
@@ -6569,6 +6674,7 @@
       if (e.key === 'Escape') {
         closeLoaderMenu();
         closeLauncherActionMenu();
+        closeModpackSortMenu();
         closeLogInstanceMenu();
         const overlay = document.getElementById('settingsOverlay');
         if (overlay && overlay.classList.contains('show')) {
@@ -7557,6 +7663,9 @@
       trigger.addEventListener('click', (e) => {
         e.stopPropagation();
         if (trigger.disabled) return;
+        closeLoaderMenu();
+        closeLauncherActionMenu();
+        closeModpackSortMenu();
         const isOpen = wrap.classList.toggle('open');
         trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
       });
