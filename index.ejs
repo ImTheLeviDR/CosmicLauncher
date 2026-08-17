@@ -3014,6 +3014,7 @@
       margin-top: 8px;
       display: flex;
       justify-content: flex-end;
+      gap: 10px;
     }
 
     .modpack-settings-list {
@@ -3525,6 +3526,44 @@
       position: relative;
       z-index: 0;
     }
+    .modpack-form.import-form {
+      width: min(560px, 100%);
+      max-height: min(82vh, 740px);
+      display: flex;
+      flex-direction: column;
+    }
+    .import-instance-search {
+      margin-top: 4px;
+    }
+    .import-instance-list {
+      overflow-y: auto;
+      max-height: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+      padding-right: 2px;
+    }
+    .import-instance-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .import-instance-list::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.15);
+      border-radius: 4px;
+    }
+    .import-instance-empty {
+      text-align: center;
+      padding: 28px 12px;
+      color: var(--muted);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+    }
+    .import-instance-warning {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.72rem;
+      color: #fbbf24;
+      margin-top: 4px;
+    }
 
     /* Empty states */
     .mods-empty {
@@ -3760,6 +3799,7 @@
       </div>
       <div class="version-popup-list loader-list" id="versionList" role="listbox" aria-label="Modpacks"></div>
       <div class="modpack-popup-footer">
+        <button type="button" class="mod-btn install" id="importModpackPopupBtn" onclick="openImportModpackModal()">Import</button>
         <button type="button" class="mod-btn install" id="createModpackPopupBtn" onclick="openCreateModpackModal()">Create modpack</button>
       </div>
     </div>
@@ -3807,6 +3847,11 @@
               <button type="button" class="open-mods-btn" style="margin-top:14px" onclick="openCreateModpackModal()">
                 <div class="open-mods-icon" data-icon="folder" aria-hidden="true"></div>
                 <span>Create modpack</span>
+                <span class="open-mods-arrow" data-icon="chevronRight" aria-hidden="true"></span>
+              </button>
+              <button type="button" class="open-mods-btn" style="margin-top:10px" onclick="openImportModpackModal()">
+                <div class="open-mods-icon" data-icon="download" aria-hidden="true"></div>
+                <span>Import from Modrinth</span>
                 <span class="open-mods-arrow" data-icon="chevronRight" aria-hidden="true"></span>
               </button>
               <div class="launch-option-row" style="margin-top:18px">
@@ -4208,6 +4253,7 @@
       copy: uiIcon('<rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>'),
       terminal: uiIcon('<polyline points="4 17 10 11 4 5"></polyline><line x1="12" x2="20" y1="19" y2="19"></line>'),
       search: uiIcon('<circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>'),
+      download: uiIcon('<path d="M12 3v12"></path><path d="m8 11 4 4 4-4"></path><path d="M5 21h14"></path>'),
       loader: uiIcon('<path d="M21 12a9 9 0 1 1-6.219-8.56"></path>'),
     };
 
@@ -5372,7 +5418,9 @@
       const versionLabel = pack.version === 'latest'
         ? (resolvedLatestVersion ? `Latest (${resolvedLatestVersion})` : 'Latest')
         : pack.version;
-      const loaderLabel = pack.loader === 'fabric' ? 'Fabric' : 'Vanilla';
+      const loaderId = (pack.sourceLoader || pack.loader || 'vanilla').toLowerCase();
+      const loaderLabels = { vanilla: 'Vanilla', fabric: 'Fabric', forge: 'Forge', neoforge: 'NeoForge', quilt: 'Quilt' };
+      const loaderLabel = loaderLabels[loaderId] || (loaderId.charAt(0).toUpperCase() + loaderId.slice(1));
       return `${versionLabel} · ${loaderLabel}`;
     }
 
@@ -5461,6 +5509,114 @@
 
     function openCreateModpackModal() {
       openModpackFormModal();
+    }
+
+    function openImportModpackModal() {
+      closeVersionPopup();
+      const existing = document.getElementById('importModpackOverlay');
+      if (existing) existing.remove();
+
+      const overlay = document.createElement('div');
+      overlay.className = 'modpack-form-overlay';
+      overlay.id = 'importModpackOverlay';
+      overlay.innerHTML = `
+        <div class="modpack-form import-form">
+          <div class="modpack-form-title">Import from Modrinth</div>
+          <div class="modpack-form-desc">Copies the full instance into Cosmic — mods, worlds, options, resource packs, and configs.</div>
+          <label for="importInstanceSearch">Search instances</label>
+          <input id="importInstanceSearch" class="import-instance-search" type="search" placeholder="Search Modrinth instances..." autocomplete="off" spellcheck="false">
+          <div class="import-instance-list" id="importInstanceList">
+            <div class="import-instance-empty">Loading Modrinth instances...</div>
+          </div>
+          <div class="modpack-form-actions">
+            <button type="button" class="mod-btn remove" id="importModpackClose">Close</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      const listEl = document.getElementById('importInstanceList');
+      const searchEl = document.getElementById('importInstanceSearch');
+      let instances = [];
+
+      const close = () => overlay.remove();
+      document.getElementById('importModpackClose').onclick = close;
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) close();
+      });
+
+      function renderImportList(filter = '') {
+        const query = filter.trim().toLowerCase();
+        const filtered = instances.filter((item) => {
+          const haystack = `${item.name} ${item.version || ''} ${item.loaderLabel || ''}`.toLowerCase();
+          return !query || haystack.includes(query);
+        });
+        if (!filtered.length) {
+          listEl.innerHTML = `<div class="import-instance-empty">${instances.length ? 'No instances match that search.' : 'No Modrinth instances found.'}</div>`;
+          return;
+        }
+        listEl.innerHTML = filtered.map((item) => {
+          const meta = [item.version || 'Unknown version', item.loaderLabel || 'Unknown loader'].join(' · ');
+          const warning = item.supported ? '' : `<div class="import-instance-warning">Cosmic launches Vanilla and Fabric. Files will still be copied.</div>`;
+          return `<div class="modpack-settings-item">
+            <div class="modpack-settings-info">
+              <div class="modpack-settings-name">${escapeHtml(item.name)}</div>
+              <div class="modpack-settings-meta">${escapeHtml(meta)}</div>
+              ${warning}
+            </div>
+            <div class="modpack-settings-actions">
+              <button type="button" class="mod-btn install" data-import="${escapeHtml(item.id)}">Import</button>
+            </div>
+          </div>`;
+        }).join('');
+
+        listEl.querySelectorAll('[data-import]').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const id = btn.getAttribute('data-import');
+            btn.disabled = true;
+            btn.textContent = 'Importing...';
+            listEl.querySelectorAll('[data-import]').forEach((other) => { other.disabled = true; });
+            try {
+              const result = await ipcRenderer.invoke('modpacks:importModrinth', id);
+              if (!result.success) {
+                showModal('Import failed', result.error || 'Could not import that instance', true);
+                btn.disabled = false;
+                btn.textContent = 'Import';
+                listEl.querySelectorAll('[data-import]').forEach((other) => { other.disabled = false; });
+                return;
+              }
+              overlay.remove();
+              await selectModpack(result.pack.id);
+              const extra = result.indexedMods ? ` · ${result.indexedMods} mods indexed` : '';
+              showToast('Instance imported', `${result.pack.name}${extra}`);
+            } catch (err) {
+              showModal('Import failed', err.message, true);
+              btn.disabled = false;
+              btn.textContent = 'Import';
+              listEl.querySelectorAll('[data-import]').forEach((other) => { other.disabled = false; });
+            }
+          });
+        });
+      }
+
+      searchEl.addEventListener('input', () => renderImportList(searchEl.value));
+
+      ipcRenderer.invoke('modpacks:listModrinth').then((result) => {
+        if (!result.success) {
+          listEl.innerHTML = `<div class="import-instance-empty">${escapeHtml(result.error || 'Could not read Modrinth instances.')}</div>`;
+          return;
+        }
+        if (!result.foundApp) {
+          listEl.innerHTML = '<div class="import-instance-empty">Modrinth App was not found on this computer.</div>';
+          return;
+        }
+        instances = result.instances || [];
+        renderImportList(searchEl.value);
+      }).catch((err) => {
+        listEl.innerHTML = `<div class="import-instance-empty">${escapeHtml(err.message)}</div>`;
+      });
+
+      searchEl.focus();
     }
 
     function openEditModpackModal(id) {

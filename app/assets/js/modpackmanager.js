@@ -256,6 +256,52 @@ class ModpackManager {
     return { ...pack }
   }
 
+  uniqueName(name) {
+    this._ensureLoaded()
+    const base = (name || 'Imported pack').trim() || 'Imported pack'
+    const names = new Set(this._data.modpacks.map((p) => p.name.toLowerCase()))
+    if (!names.has(base.toLowerCase())) return base
+    let n = 2
+    while (names.has(`${base} (${n})`.toLowerCase())) n++
+    return `${base} (${n})`
+  }
+
+  importFromDirectory({ name, version, loader, sourceDir, sourceLoader }) {
+    this._ensureLoaded()
+    const trimmed = (name || '').trim()
+    if (!trimmed) throw new Error('Modpack name is required')
+    if (!version) throw new Error('Minecraft version is required')
+    if (!sourceDir || !fs.existsSync(sourceDir)) throw new Error('Instance folder is missing')
+
+    const id = createId()
+    const destDir = this.getInstanceDirectory(id)
+    fs.ensureDirSync(this.getInstancesRoot())
+    fs.copySync(sourceDir, destDir, {
+      filter: (src) => {
+        const rel = path.relative(sourceDir, src)
+        if (!rel || rel === '.') return true
+        const top = rel.split(path.sep)[0].toLowerCase()
+        return top !== 'logs' && top !== 'crash-reports'
+      },
+    })
+    fs.ensureDirSync(path.join(destDir, 'mods'))
+
+    const pack = {
+      id,
+      name: trimmed,
+      version,
+      loader: loader === 'fabric' ? 'fabric' : 'vanilla',
+      isDefault: false,
+      createdAt: Date.now(),
+      importedFrom: 'modrinth',
+      sourceLoader: sourceLoader || loader || 'vanilla',
+    }
+
+    this._data.modpacks.push(pack)
+    this.save()
+    return { ...pack }
+  }
+
   update(id, { name, version, loader }) {
     this._ensureLoaded()
     const pack = this.getById(id)

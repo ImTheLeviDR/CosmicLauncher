@@ -8,6 +8,7 @@ const AuthManager = require('./app/assets/js/authmanager');
 const LaunchManager = require('./app/assets/js/launchmanager');
 const ModManager = require('./app/assets/js/modmanager');
 const ModpackManager = require('./app/assets/js/modpackmanager');
+const ModrinthImporter = require('./app/assets/js/modrinthimporter');
 const { AZURE_CLIENT_ID, MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR, SHELL_OPCODE } = require('./app/assets/js/ipcconstants');
 
 const EJS_FILE = path.join(__dirname, 'index.ejs');
@@ -506,6 +507,25 @@ ipcMain.handle('modpacks:setSyncOptions', (event, enabled) => {
         return { success: true, syncOptionsAcrossModpacks: value }
     } catch (error) {
         return { success: false, error: error.message }
+    }
+})
+
+ipcMain.handle('modpacks:listModrinth', async () => {
+    try {
+        return await ModrinthImporter.listInstances()
+    } catch (error) {
+        console.error('Modrinth instance list failed:', error)
+        return { success: false, error: error.message || 'Could not read Modrinth instances' }
+    }
+})
+
+ipcMain.handle('modpacks:importModrinth', async (event, instanceId) => {
+    try {
+        const result = await ModrinthImporter.importInstance(instanceId)
+        return { success: true, ...result }
+    } catch (error) {
+        console.error('Modrinth import failed:', error)
+        return { success: false, error: error.message || 'Could not import Modrinth instance' }
     }
 })
 
