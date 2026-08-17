@@ -1883,9 +1883,28 @@
       padding: 40px 48px 48px;
     }
 
-    .settings-body:has(#settingsTabLogs.active) {
+    .settings-body:has(#settingsTabLogs.active),
+    .settings-body:has(#settingsTabModpacks.active) {
       overflow: hidden;
     }
+
+    .settings-tab-content#settingsTabModpacks.active {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .settings-tab-content#settingsTabModpacks.active .modpacks-grid {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .settings-tab-content#settingsTabModpacks.active .modpacks-grid::-webkit-scrollbar { width: 6px; }
+    .settings-tab-content#settingsTabModpacks.active .modpacks-grid::-webkit-scrollbar-track { background: transparent; }
+    .settings-tab-content#settingsTabModpacks.active .modpacks-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
 
     .settings-body::-webkit-scrollbar { width: 6px; }
     .settings-body::-webkit-scrollbar-track { background: transparent; }
@@ -3083,6 +3102,221 @@
       flex-shrink: 0;
     }
 
+    .modpacks-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    .modpacks-search {
+      flex: 1;
+      min-width: 180px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px;
+      height: 38px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .modpacks-search-icon {
+      width: 16px;
+      height: 16px;
+      color: var(--muted);
+      display: flex;
+      flex-shrink: 0;
+    }
+
+    .modpacks-search-icon svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+    }
+
+    .modpacks-search input {
+      flex: 1;
+      min-width: 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+    }
+
+    .modpacks-search input::placeholder {
+      color: var(--muted);
+    }
+
+    .modpacks-sort {
+      height: 38px;
+      padding: 0 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .modpacks-sort option {
+      background: #12121a;
+      color: var(--text);
+    }
+
+    .modpacks-new-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 38px;
+      padding: 0 14px;
+      border: none;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .modpacks-new-btn [data-icon],
+    .modpacks-new-btn svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+    }
+
+    .modpacks-new-btn:hover {
+      filter: brightness(1.08);
+    }
+
+    .modpacks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 10px;
+    }
+
+    .modpack-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 72px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      position: relative;
+      text-align: left;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .modpack-card:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.14);
+    }
+
+    .modpack-card.active {
+      border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent);
+      background: color-mix(in srgb, var(--accent) 8%, rgba(255,255,255,0.04));
+    }
+
+    .modpack-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .modpack-card-icon svg {
+      width: 22px;
+      height: 22px;
+      display: block;
+    }
+
+    .modpack-card-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .modpack-card-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .modpack-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 3px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .modpack-card-meta [data-icon],
+    .modpack-card-meta svg {
+      width: 13px;
+      height: 13px;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    .modpack-card-playtime {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .modpack-card-actions {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .modpack-card:hover .modpack-card-actions,
+    .modpack-card.active .modpack-card-actions {
+      display: flex;
+    }
+
+    .modpack-card-actions .mod-btn {
+      padding: 5px 8px;
+      font-size: 0.72rem;
+    }
+
+    .modpacks-sync-row {
+      margin-top: 16px;
+      padding-top: 16px;
+      flex-shrink: 0;
+    }
+
     .mod-detail-back {
       display: inline-flex;
       align-items: center;
@@ -3843,6 +4077,9 @@
             <div class="settings-tab active" data-tab="launch" onclick="switchSettingsTab('launch')">
               <span class="settings-tab-icon" data-icon="launch" aria-hidden="true"></span> Launch
             </div>
+            <div class="settings-tab" data-tab="modpacks" onclick="switchSettingsTab('modpacks')">
+              <span class="settings-tab-icon" data-icon="grid" aria-hidden="true"></span> Modpacks
+            </div>
             <div class="settings-tab" data-tab="appearance" onclick="switchSettingsTab('appearance')">
               <span class="settings-tab-icon" data-icon="appearance" aria-hidden="true"></span> Appearance
             </div>
@@ -3867,32 +4104,6 @@
         <div class="settings-body">
           <!-- Launch Settings Tab -->
           <div class="settings-tab-content active" id="settingsTabLaunch">
-            <div class="settings-section">
-              <div class="settings-section-title">Modpacks</div>
-              <div class="settings-section-description">Each modpack has its own Minecraft folder, mods, and saves. The default Latest pack is always the newest release with no mods.</div>
-              <div id="modpackSettingsList" class="modpack-settings-list"></div>
-              <button type="button" class="open-mods-btn" style="margin-top:14px" onclick="openCreateModpackModal()">
-                <div class="open-mods-icon" data-icon="folder" aria-hidden="true"></div>
-                <span>Create modpack</span>
-                <span class="open-mods-arrow" data-icon="chevronRight" aria-hidden="true"></span>
-              </button>
-              <button type="button" class="open-mods-btn" style="margin-top:10px" onclick="openImportModpackModal()">
-                <div class="open-mods-icon" data-icon="download" aria-hidden="true"></div>
-                <span>Import from Modrinth</span>
-                <span class="open-mods-arrow" data-icon="chevronRight" aria-hidden="true"></span>
-              </button>
-              <div class="launch-option-row" style="margin-top:18px">
-                <div class="launch-option-copy">
-                  <div class="launch-option-label">Sync options.txt between modpacks</div>
-                  <div class="launch-option-desc">Copy the newest options.txt into the pack you launch so keybinds and settings follow you.</div>
-                </div>
-                <div class="mod-toggle-wrap <%= syncOptionsAcrossModpacks ? 'on' : '' %>" id="syncOptionsToggle" data-enabled="<%= syncOptionsAcrossModpacks ? 'true' : 'false' %>">
-                  <div class="mod-switch"></div>
-                  <span><%= syncOptionsAcrossModpacks ? 'On' : 'Off' %></span>
-                </div>
-              </div>
-            </div>
-
             <div class="settings-section">
               <div class="settings-section-title">Launch Behavior</div>
               <div class="settings-section-description">Control what happens after Minecraft starts.</div>
@@ -3968,6 +4179,37 @@
                 <span>Open Instance Folder</span>
                 <span class="open-mods-arrow" data-icon="chevronRight" aria-hidden="true"></span>
               </button>
+            </div>
+          </div>
+
+          <!-- Modpacks Tab -->
+          <div class="settings-tab-content" id="settingsTabModpacks">
+            <div class="modpacks-toolbar">
+              <div class="modpacks-search">
+                <span class="modpacks-search-icon" data-icon="search" aria-hidden="true"></span>
+                <input type="search" id="modpackSettingsSearch" placeholder="Search" autocomplete="off" spellcheck="false" aria-label="Search modpacks">
+              </div>
+              <select id="modpackSortSelect" class="modpacks-sort" aria-label="Sort modpacks">
+                <option value="name">Sort by: Name</option>
+                <option value="played">Sort by: Last played</option>
+                <option value="time">Sort by: Play time</option>
+              </select>
+              <button type="button" class="modpacks-new-btn" onclick="openCreateModpackModal()">
+                <span data-icon="plus" aria-hidden="true"></span>
+                New modpack
+              </button>
+              <button type="button" class="mod-btn install" onclick="openImportModpackModal()">Import</button>
+            </div>
+            <div id="modpackSettingsList" class="modpacks-grid"></div>
+            <div class="launch-option-row modpacks-sync-row">
+              <div class="launch-option-copy">
+                <div class="launch-option-label">Sync options.txt between modpacks</div>
+                <div class="launch-option-desc">Copy the newest options.txt into the pack you launch so keybinds and settings follow you.</div>
+              </div>
+              <div class="mod-toggle-wrap <%= syncOptionsAcrossModpacks ? 'on' : '' %>" id="syncOptionsToggle" data-enabled="<%= syncOptionsAcrossModpacks ? 'true' : 'false' %>">
+                <div class="mod-switch"></div>
+                <span><%= syncOptionsAcrossModpacks ? 'On' : 'Off' %></span>
+              </div>
             </div>
           </div>
 
@@ -4272,6 +4514,9 @@
       launch: uiIcon('<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path>'),
       appearance: uiIcon('<circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path>'),
       mods: uiIcon('<path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path>'),
+      grid: uiIcon('<rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect>'),
+      plus: uiIcon('<line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>'),
+      edit: uiIcon('<path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>'),
       logs: uiIcon('<polyline points="4 17 10 11 4 5"></polyline><line x1="12" x2="20" y1="19" y2="19"></line>'),
       folder: uiIcon('<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path>'),
       chevronRight: uiIcon('<path d="m9 18 6-6-6-6"></path>'),
@@ -5526,36 +5771,79 @@
     function renderModpackSettingsList() {
       const list = document.getElementById('modpackSettingsList');
       if (!list) return;
-      if (!modpacks.length) {
-        list.innerHTML = '<div class="mods-empty" style="padding:24px">No modpacks yet.</div>';
+      const query = (modpackSettingsQuery || '').trim().toLowerCase();
+      const filtered = modpacks.filter((pack) => {
+        if (!query) return true;
+        return pack.name.toLowerCase().includes(query)
+          || String(pack.version).toLowerCase().includes(query)
+          || String(pack.loader).toLowerCase().includes(query)
+          || formatModpackMeta(pack).toLowerCase().includes(query);
+      }).slice().sort((a, b) => {
+        if (modpackSortBy === 'played') return (b.lastPlayedAt || 0) - (a.lastPlayedAt || 0);
+        if (modpackSortBy === 'time') return (b.playTimeMs || 0) - (a.playTimeMs || 0);
+        return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+      });
+      if (!filtered.length) {
+        list.innerHTML = `<div class="mods-empty" style="padding:24px;grid-column:1/-1">${modpacks.length ? 'No modpacks match your search.' : 'No modpacks yet.'}</div>`;
         return;
       }
-      list.innerHTML = modpacks.map(pack => {
+      list.innerHTML = filtered.map(pack => {
         const active = pack.id === selectedModpackId;
         const canEdit = !pack.isDefault;
-        return `<div class="modpack-settings-item${active ? ' active' : ''}">
-          <div class="modpack-settings-info">
-            <div class="modpack-settings-name">${escapeHtml(pack.name)}</div>
-            <div class="modpack-settings-meta">${escapeHtml(formatModpackMeta(pack))}${active ? ' · Selected' : ''}</div>
-            <div class="modpack-settings-playtime" data-playtime-id="${pack.id}">${escapeHtml(formatPlayTime(pack.playTimeMs))}</div>
+        return `<div class="modpack-card${active ? ' active' : ''}" data-select="${pack.id}">
+          <div class="modpack-card-icon" data-icon="mods" aria-hidden="true"></div>
+          <div class="modpack-card-info">
+            <div class="modpack-card-name">${escapeHtml(pack.name)}</div>
+            <div class="modpack-card-meta"><span data-icon="loader" aria-hidden="true"></span>${escapeHtml(formatModpackMeta(pack))}${active ? ' · Selected' : ''}</div>
+            <div class="modpack-card-playtime" data-playtime-id="${pack.id}">${escapeHtml(formatPlayTime(pack.playTimeMs))}</div>
           </div>
-          <div class="modpack-settings-actions">
-            ${!active ? `<button type="button" class="mod-btn install" data-select="${pack.id}">Select</button>` : ''}
-            ${canEdit ? `<button type="button" class="mod-btn install" data-edit="${pack.id}">Edit</button>` : ''}
-            ${canEdit ? `<button type="button" class="mod-btn remove" data-delete="${pack.id}">Delete</button>` : ''}
-          </div>
+          ${canEdit ? `<div class="modpack-card-actions">
+            <button type="button" class="mod-btn install" data-edit="${pack.id}">Edit</button>
+            <button type="button" class="mod-btn remove" data-delete="${pack.id}">Delete</button>
+          </div>` : ''}
         </div>`;
       }).join('');
 
-      list.querySelectorAll('[data-select]').forEach(btn => {
-        btn.onclick = () => selectModpack(btn.dataset.select);
+      initSettingsIcons(list);
+      list.querySelectorAll('.modpack-card[data-select]').forEach(card => {
+        card.onclick = (e) => {
+          if (e.target.closest('[data-edit], [data-delete]')) return;
+          if (card.dataset.select !== selectedModpackId) selectModpack(card.dataset.select);
+        };
       });
       list.querySelectorAll('[data-edit]').forEach(btn => {
-        btn.onclick = () => openEditModpackModal(btn.dataset.edit);
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          openEditModpackModal(btn.dataset.edit);
+        };
       });
       list.querySelectorAll('[data-delete]').forEach(btn => {
-        btn.onclick = () => deleteModpack(btn.dataset.delete);
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          deleteModpack(btn.dataset.delete);
+        };
       });
+    }
+
+    let modpackSettingsQuery = '';
+    let modpackSortBy = 'name';
+
+    function initModpackGridControls() {
+      const search = document.getElementById('modpackSettingsSearch');
+      const sort = document.getElementById('modpackSortSelect');
+      if (search) {
+        search.addEventListener('input', () => {
+          modpackSettingsQuery = search.value;
+          renderModpackSettingsList();
+        });
+      }
+      if (sort) {
+        sort.value = modpackSortBy;
+        sort.addEventListener('change', () => {
+          modpackSortBy = sort.value;
+          renderModpackSettingsList();
+        });
+      }
     }
 
     async function selectModpack(id) {
@@ -5937,6 +6225,7 @@
       await loadLoaderPreference();
       await loadModsSyncState();
       initSyncOptionsToggle();
+      initModpackGridControls();
       renderModpackSettingsList();
     }
 
@@ -6227,6 +6516,8 @@
       let tabEl;
       if (tab === 'launch') {
         tabEl = document.getElementById('settingsTabLaunch');
+      } else if (tab === 'modpacks') {
+        tabEl = document.getElementById('settingsTabModpacks');
       } else if (tab === 'appearance') {
         tabEl = document.getElementById('settingsTabAppearance');
       } else if (tab === 'mods') {
@@ -6239,6 +6530,7 @@
         if (tab === 'mods') {
           refreshInstalledMods().then(() => animateActiveModsSubview());
         } else {
+          if (tab === 'modpacks') renderModpackSettingsList();
           retriggerSettingsAnimations(tabEl);
         }
       }
