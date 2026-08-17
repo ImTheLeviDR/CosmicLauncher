@@ -2,7 +2,7 @@
 
 A Minecraft launcher for Windows, macOS, and Linux. Sign in with Microsoft, keep separate instances, install Fabric mods from Modrinth, and launch the game from one window.
 
-Current version: **0.1.2**
+Current version: **0.1.3**
 
 ## Features
 
