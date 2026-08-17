@@ -3202,22 +3202,25 @@
 
     .modpacks-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(196px, 210px));
+      justify-content: start;
+      gap: 8px;
+      align-content: start;
     }
 
     .modpack-card {
       display: flex;
       align-items: center;
-      gap: 12px;
-      min-height: 72px;
-      padding: 10px 12px;
-      background: rgba(255,255,255,0.04);
+      gap: 10px;
+      height: 58px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.045);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 10px;
       cursor: pointer;
       position: relative;
       text-align: left;
+      overflow: hidden;
       transition: border-color 0.15s ease, background 0.15s ease;
     }
 
@@ -3227,16 +3230,15 @@
     }
 
     .modpack-card.active {
-      border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent);
-      background: color-mix(in srgb, var(--accent) 8%, rgba(255,255,255,0.04));
+      border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+      background: color-mix(in srgb, var(--accent) 10%, rgba(255,255,255,0.04));
     }
 
     .modpack-card-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      background: rgba(0,0,0,0.28);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.32);
       border: 1px solid rgba(255,255,255,0.06);
       display: flex;
       align-items: center;
@@ -3246,69 +3248,90 @@
     }
 
     .modpack-card-icon svg {
-      width: 22px;
-      height: 22px;
+      width: 18px;
+      height: 18px;
       display: block;
     }
 
     .modpack-card-info {
       min-width: 0;
       flex: 1;
+      padding-right: 4px;
     }
 
     .modpack-card-name {
       font-family: 'Syne', sans-serif;
-      font-size: 0.9rem;
+      font-size: 0.84rem;
       font-weight: 700;
       color: var(--text);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 1.2;
     }
 
     .modpack-card-meta {
       display: flex;
       align-items: center;
-      gap: 6px;
-      margin-top: 3px;
+      gap: 5px;
+      margin-top: 2px;
       font-family: 'Syne', sans-serif;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--muted);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 1.25;
     }
 
     .modpack-card-meta [data-icon],
     .modpack-card-meta svg {
-      width: 13px;
-      height: 13px;
+      width: 12px;
+      height: 12px;
       flex-shrink: 0;
       display: block;
     }
 
-    .modpack-card-playtime {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.72rem;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
     .modpack-card-actions {
+      position: absolute;
+      top: 6px;
+      right: 6px;
       display: none;
-      flex-direction: column;
       gap: 4px;
-      flex-shrink: 0;
     }
 
-    .modpack-card:hover .modpack-card-actions,
-    .modpack-card.active .modpack-card-actions {
+    .modpack-card:hover .modpack-card-actions {
       display: flex;
     }
 
-    .modpack-card-actions .mod-btn {
-      padding: 5px 8px;
-      font-size: 0.72rem;
+    .modpack-card-icon-btn {
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: rgba(8, 8, 16, 0.88);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modpack-card-icon-btn svg {
+      width: 13px;
+      height: 13px;
+      display: block;
+    }
+
+    .modpack-card-icon-btn:hover {
+      color: var(--text);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    .modpack-card-icon-btn.danger:hover {
+      color: #ff8888;
+      border-color: rgba(255,80,80,0.35);
     }
 
     .modpacks-sync-row {
@@ -5696,21 +5719,21 @@
       return `${versionLabel} · ${loaderLabel}`;
     }
 
-    function formatPlayTime(ms) {
+    function formatPlayTimeCompact(ms) {
       const totalSeconds = Math.max(0, Math.floor((Number(ms) || 0) / 1000));
-      if (totalSeconds < 60) {
-        return totalSeconds > 0 ? `Played ${totalSeconds}s` : 'Not played yet';
-      }
+      if (totalSeconds < 60) return totalSeconds > 0 ? `${totalSeconds}s` : '';
       const totalMinutes = Math.floor(totalSeconds / 60);
       const days = Math.floor(totalMinutes / (60 * 24));
       const hours = Math.floor((totalMinutes / 60) % 24);
       const minutes = totalMinutes % 60;
-      const parts = [];
-      if (days > 0) parts.push(`${days}d`);
-      if (hours > 0) parts.push(`${hours}h`);
-      if (minutes > 0 && days === 0) parts.push(`${minutes}m`);
-      if (!parts.length) parts.push('0m');
-      return `Played ${parts.join(' ')}`;
+      if (days > 0) return hours > 0 ? `${days}d ${hours}h` : `${days}d`;
+      if (hours > 0) return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+      return `${minutes}m`;
+    }
+
+    function formatPlayTime(ms) {
+      const compact = formatPlayTimeCompact(ms);
+      return compact ? `Played ${compact}` : 'Not played yet';
     }
 
     function applyPlayTimeUpdates(updates) {
@@ -5723,7 +5746,12 @@
         if (update.lastPlayedAt) pack.lastPlayedAt = update.lastPlayedAt;
         changed = true;
         document.querySelectorAll(`[data-playtime-id="${pack.id}"]`).forEach((el) => {
-          el.textContent = formatPlayTime(pack.playTimeMs);
+          if (el.closest('.modpack-card')) {
+            const play = formatPlayTimeCompact(pack.playTimeMs);
+            el.textContent = play ? `${formatModpackMeta(pack)} · ${play}` : formatModpackMeta(pack);
+          } else {
+            el.textContent = formatPlayTime(pack.playTimeMs);
+          }
         });
       }
       if (!changed) return;
@@ -5790,16 +5818,17 @@
       list.innerHTML = filtered.map(pack => {
         const active = pack.id === selectedModpackId;
         const canEdit = !pack.isDefault;
+        const play = formatPlayTimeCompact(pack.playTimeMs);
+        const meta = play ? `${formatModpackMeta(pack)} · ${play}` : formatModpackMeta(pack);
         return `<div class="modpack-card${active ? ' active' : ''}" data-select="${pack.id}">
           <div class="modpack-card-icon" data-icon="mods" aria-hidden="true"></div>
           <div class="modpack-card-info">
             <div class="modpack-card-name">${escapeHtml(pack.name)}</div>
-            <div class="modpack-card-meta"><span data-icon="loader" aria-hidden="true"></span>${escapeHtml(formatModpackMeta(pack))}${active ? ' · Selected' : ''}</div>
-            <div class="modpack-card-playtime" data-playtime-id="${pack.id}">${escapeHtml(formatPlayTime(pack.playTimeMs))}</div>
+            <div class="modpack-card-meta"><span data-icon="loader" aria-hidden="true"></span><span data-playtime-id="${pack.id}">${escapeHtml(meta)}</span></div>
           </div>
           ${canEdit ? `<div class="modpack-card-actions">
-            <button type="button" class="mod-btn install" data-edit="${pack.id}">Edit</button>
-            <button type="button" class="mod-btn remove" data-delete="${pack.id}">Delete</button>
+            <button type="button" class="modpack-card-icon-btn" data-edit="${pack.id}" title="Edit"><span data-icon="edit" aria-hidden="true"></span></button>
+            <button type="button" class="modpack-card-icon-btn danger" data-delete="${pack.id}" title="Delete"><span data-icon="trash" aria-hidden="true"></span></button>
           </div>` : ''}
         </div>`;
       }).join('');
