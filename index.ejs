@@ -401,26 +401,28 @@
       gap: 8px;
       min-height: 36px;
       padding: 0 14px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 0;
       color: var(--text);
       font-family: 'Syne', sans-serif;
       font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
-      transition: background 0.15s, border-color 0.15s, transform 0.12s, box-shadow 0.15s;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
       white-space: nowrap;
     }
 
     .header-btn:hover {
-      background: rgba(255, 255, 255, 0.11);
-      border-color: rgba(255, 255, 255, 0.22);
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.16);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
 
     .header-btn:active {
-      transform: translateY(1px);
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
     }
 
     .header-btn:focus-visible {
@@ -808,31 +810,60 @@
     }
 
     .custom-modal-btn {
-      padding: 8px 24px;
-      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 0 18px;
+      border-radius: 0;
       border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.03);
       color: var(--text);
       cursor: pointer;
-      font-size: 0.85rem;
-      transition: all 0.2s;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
     }
 
     .custom-modal-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.16);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .custom-modal-btn:active {
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
     }
 
     .custom-modal-btn.confirm {
-      background: #ff4444;
-      border-color: #ff4444;
+      background: rgba(226, 75, 75, 0.12);
+      border-color: rgba(226, 75, 75, 0.42);
+      color: #ffb0b0;
+      box-shadow: inset 2px 0 0 #e24b4b, inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
 
     .custom-modal-btn.confirm:hover {
-      background: #ff6666;
+      background: rgba(226, 75, 75, 0.2);
+      border-color: rgba(226, 75, 75, 0.62);
+      color: #fff;
+      box-shadow: inset 2px 0 0 #ff8080, inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .custom-modal-btn.confirm:active {
+      background: rgba(226, 75, 75, 0.26);
+      box-shadow: inset 2px 0 0 #e24b4b, inset 0 1px 3px rgba(0, 0, 0, 0.35);
     }
 
     .custom-modal-btn.cancel {
-      opacity: 0.7;
+      color: var(--muted);
+    }
+
+    .custom-modal-btn.cancel:hover {
+      color: var(--text);
     }
 
     .add-account-btn {
@@ -2179,7 +2210,7 @@
       padding: 6px 10px;
       background: transparent;
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 0;
       color: var(--text);
       font-family: 'Syne', sans-serif;
       font-size: 0.72rem;
@@ -2345,21 +2376,27 @@
 
     .log-filter-tabs {
       display: flex;
-      gap: 4px;
+      gap: 0;
+      border: 1px solid var(--border);
     }
 
     .log-filter {
       padding: 6px 12px;
       background: transparent;
       border: none;
-      border-radius: 6px;
+      border-right: 1px solid var(--border);
+      border-radius: 0;
       color: var(--muted);
       font-family: 'Syne', sans-serif;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       font-weight: 600;
-      letter-spacing: 0;
+      letter-spacing: 0.01em;
       cursor: pointer;
-      transition: background 0.12s ease, color 0.12s ease;
+      transition: background 0.1s ease, color 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .log-filter:last-child {
+      border-right: none;
     }
 
     .log-filter:hover {
@@ -2369,7 +2406,8 @@
 
     .log-filter.active {
       color: var(--text);
-      background: rgba(232, 98, 42, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: inset 0 -2px 0 var(--accent);
     }
 
     .log-toolbar-actions {
@@ -2390,7 +2428,7 @@
       cursor: pointer;
       user-select: none;
       padding: 4px 6px;
-      border-radius: 6px;
+      border-radius: 0;
       transition: color 0.12s ease;
     }
 
@@ -2407,17 +2445,19 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 6px 10px;
-      background: transparent;
+      min-height: 30px;
+      padding: 0 10px;
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 0;
       color: var(--muted);
       font-family: 'Syne', sans-serif;
       font-size: 0.72rem;
-      font-weight: 600;
+      font-weight: 700;
       letter-spacing: 0.02em;
       cursor: pointer;
-      transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
     }
 
     .log-action-btn svg {
@@ -2442,8 +2482,14 @@
 
     .log-action-btn:hover {
       color: var(--text);
-      border-color: rgba(255, 255, 255, 0.15);
-      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.07);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .log-action-btn:active {
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
     }
 
     .log-viewport {
@@ -2760,7 +2806,7 @@
       padding: 0;
       background: transparent;
       border: none;
-      border-radius: 6px;
+      border-radius: 0;
       color: var(--muted);
       cursor: pointer;
       flex-shrink: 0;
@@ -2797,29 +2843,33 @@
       align-items: center;
       justify-content: center;
       gap: 7px;
-      padding: 10px 16px;
-      background: var(--accent);
+      padding: 0 16px;
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
       border: none;
       border-radius: 0;
-      color: #fff;
+      color: var(--text);
       font-family: 'Syne', sans-serif;
       font-weight: 700;
-      font-size: 0.75rem;
-      letter-spacing: 0.04em;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
       cursor: pointer;
       flex-shrink: 0;
-      transition: background 0.15s ease, opacity 0.15s ease, transform 0.12s ease;
+      box-shadow: inset 2px 0 0 var(--accent);
+      transition: background 0.12s ease, color 0.12s ease, box-shadow 0.12s ease, opacity 0.15s ease;
       line-height: 1;
       min-height: 36px;
     }
 
     .mod-search-submit:hover:not(:disabled) {
-      background: #f07030;
+      background: color-mix(in srgb, var(--accent) 22%, rgba(255, 255, 255, 0.04));
+      color: #fff;
+      box-shadow: inset 2px 0 0 var(--accent2);
     }
 
     .mod-search-submit:active:not(:disabled) {
-      transform: scale(0.98);
+      background: color-mix(in srgb, var(--accent) 28%, transparent);
+      box-shadow: inset 2px 0 0 var(--accent), inset 0 1px 3px rgba(0, 0, 0, 0.3);
     }
 
     .mod-search-submit:disabled {
@@ -2980,28 +3030,89 @@
     .mod-meta { font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 400; color: var(--muted); }
 
     .mod-btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 34px;
+      padding: 0 14px;
+      border-radius: 0;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
       font-family: 'Syne', sans-serif;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       font-weight: 700;
-      letter-spacing: 0;
+      letter-spacing: 0.02em;
+      line-height: 1;
       cursor: pointer;
-      transition: all 0.2s;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
     }
 
-    .mod-btn.install { background: rgba(255,255,255,0.1); color: var(--text); }
-    .mod-btn.install:hover:not(:disabled) { background: var(--accent); color: #fff; }
+    .mod-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.16);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .mod-btn:active:not(:disabled) {
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
+    }
+
+    .mod-btn:focus-visible {
+      outline: 2px solid var(--accent2);
+      outline-offset: -2px;
+    }
+
+    .mod-btn.install {
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 42%, var(--border));
+      box-shadow: inset 2px 0 0 var(--accent), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .mod-btn.install:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--accent) 20%, rgba(255, 255, 255, 0.04));
+      border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+      color: #fff;
+      box-shadow: inset 2px 0 0 var(--accent2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .mod-btn.install:active:not(:disabled) {
+      background: color-mix(in srgb, var(--accent) 26%, transparent);
+      box-shadow: inset 2px 0 0 var(--accent), inset 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
     .mod-btn.install.installed,
     .mod-btn.install:disabled {
-      background: rgba(100, 200, 100, 0.15);
+      background: rgba(100, 200, 100, 0.1);
+      border-color: rgba(100, 200, 100, 0.22);
       color: #66dd66;
       cursor: default;
+      box-shadow: inset 2px 0 0 #66dd66, inset 0 1px 0 rgba(255, 255, 255, 0.04);
     }
-    
-    .mod-btn.remove { background: transparent; color: var(--muted); padding: 6px; border: 1px solid transparent; }
-    .mod-btn.remove:hover { color: #ff6666; border-color: rgba(255,60,60,0.3); background: rgba(255,60,60,0.1); }
+
+    .mod-btn.remove {
+      background: transparent;
+      border-color: transparent;
+      color: var(--muted);
+      min-height: 28px;
+      padding: 0 8px;
+      box-shadow: none;
+    }
+
+    .mod-btn.remove:hover {
+      color: #ff8080;
+      background: rgba(255, 60, 60, 0.08);
+      border-color: rgba(255, 80, 80, 0.28);
+      box-shadow: inset 2px 0 0 #e24b4b;
+    }
+
+    .mod-btn.remove:active {
+      background: rgba(255, 60, 60, 0.14);
+      box-shadow: inset 2px 0 0 #e24b4b, inset 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
 
     /* Custom Toggle for Mods */
     .mod-toggle-wrap {
@@ -3123,7 +3234,7 @@
       height: 38px;
       background: rgba(255,255,255,0.04);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 0;
     }
 
     .modpacks-search-icon {
@@ -3165,13 +3276,13 @@
     .modpacks-sort-wrap .loader-trigger {
       height: 38px;
       padding: 0 12px;
-      border-radius: 10px;
+      border-radius: 0;
       background: rgba(255,255,255,0.04);
       gap: 8px;
     }
 
     .modpacks-sort-wrap.open .loader-trigger {
-      border-radius: 10px;
+      border-radius: 0;
       background: #12121c;
     }
 
@@ -3187,7 +3298,7 @@
       left: auto;
       min-width: 220px;
       border-top: 1px solid rgba(255,255,255,0.12);
-      border-radius: 10px;
+      border-radius: 0;
       overflow: hidden;
     }
 
@@ -3198,18 +3309,22 @@
     .modpacks-new-btn {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
       height: 38px;
       padding: 0 14px;
-      border: none;
-      border-radius: 10px;
-      background: var(--accent);
-      color: #fff;
+      border: 1px solid color-mix(in srgb, var(--accent) 42%, var(--border));
+      border-radius: 0;
+      background: color-mix(in srgb, var(--accent) 12%, transparent);
+      color: var(--text);
       font-family: 'Syne', sans-serif;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       font-weight: 700;
+      letter-spacing: 0.02em;
       cursor: pointer;
       white-space: nowrap;
+      box-shadow: inset 2px 0 0 var(--accent), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
     }
 
     .modpacks-new-btn [data-icon],
@@ -3220,7 +3335,20 @@
     }
 
     .modpacks-new-btn:hover {
-      filter: brightness(1.08);
+      background: color-mix(in srgb, var(--accent) 20%, rgba(255, 255, 255, 0.04));
+      border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+      color: #fff;
+      box-shadow: inset 2px 0 0 var(--accent2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .modpacks-new-btn:active {
+      background: color-mix(in srgb, var(--accent) 26%, transparent);
+      box-shadow: inset 2px 0 0 var(--accent), inset 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .modpacks-toolbar .mod-btn {
+      height: 38px;
+      min-height: 38px;
     }
 
     .modpacks-grid {
@@ -3332,13 +3460,14 @@
       height: 24px;
       padding: 0;
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 0;
       background: rgba(8, 8, 16, 0.88);
       color: var(--muted);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
     }
 
     .modpack-card-icon-btn svg {
@@ -3350,11 +3479,13 @@
     .modpack-card-icon-btn:hover {
       color: var(--text);
       border-color: rgba(255,255,255,0.18);
+      background: rgba(255, 255, 255, 0.08);
     }
 
     .modpack-card-icon-btn.danger:hover {
       color: #ff8888;
       border-color: rgba(255,80,80,0.35);
+      background: rgba(255, 60, 60, 0.12);
     }
 
     .modpacks-sync-row {
@@ -3586,29 +3717,32 @@
       border: 1px solid var(--border);
       background: rgba(255,255,255,0.03);
       color: var(--muted);
-      border-radius: 999px;
+      border-radius: 0;
       padding: 6px 12px;
       font-family: 'Syne', sans-serif;
       font-size: 0.75rem;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.15s ease;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
     }
     .mod-version-chip:hover {
       color: var(--text);
       border-color: rgba(255,255,255,0.18);
+      background: rgba(255, 255, 255, 0.06);
     }
     .mod-version-chip.active {
       color: var(--text);
       border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-      background: color-mix(in srgb, var(--accent) 16%, transparent);
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+      box-shadow: inset 0 -2px 0 var(--accent);
     }
     .mod-version-select {
       appearance: none;
       border: 1px solid var(--border);
       background: rgba(0,0,0,0.35);
       color: var(--text);
-      border-radius: 999px;
+      border-radius: 0;
       padding: 6px 32px 6px 12px;
       font-family: 'Syne', sans-serif;
       font-size: 0.75rem;
@@ -6012,7 +6146,7 @@
             <div class="import-instance-empty">Loading Modrinth instances...</div>
           </div>
           <div class="modpack-form-actions">
-            <button type="button" class="mod-btn remove" id="importModpackClose">Close</button>
+            <button type="button" class="mod-btn" id="importModpackClose">Close</button>
           </div>
         </div>
       `;
@@ -6198,7 +6332,7 @@
           </div>
 
           <div class="modpack-form-actions">
-            <button type="button" class="mod-btn remove" id="modpackFormCancel">Cancel</button>
+            <button type="button" class="mod-btn" id="modpackFormCancel">Cancel</button>
             <button type="button" class="mod-btn install" id="modpackFormSave">${existing ? 'Save' : 'Create'}</button>
           </div>
         </div>
