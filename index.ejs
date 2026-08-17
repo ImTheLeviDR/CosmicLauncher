@@ -4497,7 +4497,7 @@
                       <div class="mod-actions" onclick="event.stopPropagation()">
                         <div class="mod-toggle-wrap <%= mod.enabled ? 'on' : '' %>" data-id="<%= id %>" data-enabled="<%= mod.enabled %>">
                           <div class="mod-switch"></div>
-                          <span><%= mod.enabled ? 'Enabled' : 'Disabled' %></span>
+                          <span><%= mod.enabled ? 'On' : 'Off' %></span>
                         </div>
                         <button class="mod-btn remove" data-id="<%= id %>" title="Remove"><span class="mod-remove-icon" aria-hidden="true"></span></button>
                       </div>
@@ -5186,7 +5186,7 @@
         <div class="mod-actions" onclick="event.stopPropagation()">
           <div class="mod-toggle-wrap ${mod.enabled ? 'on' : ''}" data-id="${id}" data-enabled="${mod.enabled}">
             <div class="mod-switch"></div>
-            <span>${mod.enabled ? 'Enabled' : 'Disabled'}</span>
+            <span>${mod.enabled ? 'On' : 'Off'}</span>
           </div>
           <button class="mod-btn remove" data-id="${id}" title="Remove"><span class="mod-remove-icon" aria-hidden="true"></span></button>
         </div>
@@ -5403,7 +5403,7 @@
       wrap.dataset.enabled = enabled ? 'true' : 'false';
       wrap.classList.toggle('on', enabled);
       const label = wrap.querySelector('span');
-      if (label) label.textContent = enabled ? 'Enabled' : 'Disabled';
+      if (label) label.textContent = enabled ? 'On' : 'Off';
     }
 
     function removeModCardFromGrid(projectId) {
@@ -5420,7 +5420,7 @@
     }
 
     function initModHandlers() {
-      document.querySelectorAll('.mod-toggle-wrap').forEach(wrap => {
+      document.querySelectorAll('.mod-toggle-wrap[data-id]').forEach(wrap => {
         wrap.onclick = async () => {
           const pid = wrap.dataset.id;
           const newState = wrap.dataset.enabled !== 'true';
