@@ -38,6 +38,7 @@ class ModpackManager {
           loader: 'vanilla',
           isDefault: true,
           createdAt: Date.now(),
+          playTimeMs: 0,
         },
       ],
     }
@@ -66,6 +67,7 @@ class ModpackManager {
       if (typeof this._data.syncOptionsAcrossModpacks !== 'boolean') {
         this._data.syncOptionsAcrossModpacks = true
       }
+      this._normalizePlayTime()
       this._ensureInstanceDirs()
       this.save()
     } catch (err) {
@@ -86,6 +88,30 @@ class ModpackManager {
 
   _ensureLoaded() {
     if (!this._data) this.load()
+  }
+
+  _normalizePlayTime() {
+    if (!this._data?.modpacks) return
+    for (const pack of this._data.modpacks) {
+      const ms = Number(pack.playTimeMs)
+      pack.playTimeMs = Number.isFinite(ms) && ms > 0 ? Math.floor(ms) : 0
+      if (pack.lastPlayedAt != null) {
+        const at = Number(pack.lastPlayedAt)
+        pack.lastPlayedAt = Number.isFinite(at) && at > 0 ? at : null
+      }
+    }
+  }
+
+  addPlayTime(id, ms) {
+    this._ensureLoaded()
+    const pack = this._data.modpacks.find((p) => p.id === id)
+    if (!pack) return null
+    const add = Math.max(0, Math.floor(Number(ms) || 0))
+    if (add <= 0) return { ...pack }
+    pack.playTimeMs = (pack.playTimeMs || 0) + add
+    pack.lastPlayedAt = Date.now()
+    this.save()
+    return { ...pack }
   }
 
   _ensureInstanceDirs() {
@@ -125,6 +151,7 @@ class ModpackManager {
           loader: ConfigManager.getSelectedLoader() || 'fabric',
           isDefault: false,
           createdAt: Date.now(),
+          playTimeMs: 0,
         })
       }
 
@@ -248,6 +275,7 @@ class ModpackManager {
       loader: loader === 'fabric' ? 'fabric' : 'vanilla',
       isDefault: false,
       createdAt: Date.now(),
+      playTimeMs: 0,
     }
 
     this._data.modpacks.push(pack)
@@ -293,6 +321,7 @@ class ModpackManager {
       loader: loader === 'fabric' ? 'fabric' : 'vanilla',
       isDefault: false,
       createdAt: Date.now(),
+      playTimeMs: 0,
       importedFrom: 'modrinth',
       sourceLoader: sourceLoader || loader || 'vanilla',
     }

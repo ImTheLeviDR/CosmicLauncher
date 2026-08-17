@@ -942,6 +942,15 @@
       color: var(--accent);
     }
 
+    .playtime-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 6px;
+      letter-spacing: 0.08em;
+    }
+
     .panel-actions {
       position: fixed;
       top: 72px;
@@ -1555,6 +1564,16 @@
       letter-spacing: 0.1em;
       margin-top: 3px;
       line-height: 1.45;
+    }
+
+    .loader-item-playtime {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+      line-height: 1.45;
+      opacity: 0.9;
     }
 
     .loader-item-actions {
@@ -3051,6 +3070,13 @@
       font-size: 0.75rem;
       color: var(--muted);
     }
+    .modpack-settings-playtime {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--muted);
+      margin-top: 4px;
+      letter-spacing: 0.04em;
+    }
     .modpack-settings-actions {
       display: flex;
       gap: 8px;
@@ -3767,6 +3793,7 @@
           </div>
         </button>
         <div class="version-label" id="versionLabel">Modpack: <span id="versionLabelText"><%= selectedModpack ? selectedModpack.name : 'Latest' %></span></div>
+        <div class="playtime-label" id="playtimeLabel" data-playtime-id="<%= selectedModpack ? selectedModpack.id : 'default' %>">Not played yet</div>
       </div>
 
     </div>
@@ -5424,6 +5451,42 @@
       return `${versionLabel} · ${loaderLabel}`;
     }
 
+    function formatPlayTime(ms) {
+      const totalSeconds = Math.max(0, Math.floor((Number(ms) || 0) / 1000));
+      if (totalSeconds < 60) {
+        return totalSeconds > 0 ? `Played ${totalSeconds}s` : 'Not played yet';
+      }
+      const totalMinutes = Math.floor(totalSeconds / 60);
+      const days = Math.floor(totalMinutes / (60 * 24));
+      const hours = Math.floor((totalMinutes / 60) % 24);
+      const minutes = totalMinutes % 60;
+      const parts = [];
+      if (days > 0) parts.push(`${days}d`);
+      if (hours > 0) parts.push(`${hours}h`);
+      if (minutes > 0 && days === 0) parts.push(`${minutes}m`);
+      if (!parts.length) parts.push('0m');
+      return `Played ${parts.join(' ')}`;
+    }
+
+    function applyPlayTimeUpdates(updates) {
+      if (!Array.isArray(updates) || !updates.length) return;
+      let changed = false;
+      for (const update of updates) {
+        const pack = modpacks.find(p => p.id === update.modpackId);
+        if (!pack) continue;
+        pack.playTimeMs = update.playTimeMs;
+        if (update.lastPlayedAt) pack.lastPlayedAt = update.lastPlayedAt;
+        changed = true;
+        document.querySelectorAll(`[data-playtime-id="${pack.id}"]`).forEach((el) => {
+          el.textContent = formatPlayTime(pack.playTimeMs);
+        });
+      }
+      if (!changed) return;
+      const selected = getSelectedModpack();
+      const playtimeLabel = document.getElementById('playtimeLabel');
+      if (playtimeLabel) playtimeLabel.textContent = formatPlayTime(selected?.playTimeMs);
+    }
+
     function syncSelectedFromModpack(pack) {
       if (!pack) return;
       selectedModpackId = pack.id;
@@ -5474,6 +5537,7 @@
           <div class="modpack-settings-info">
             <div class="modpack-settings-name">${escapeHtml(pack.name)}</div>
             <div class="modpack-settings-meta">${escapeHtml(formatModpackMeta(pack))}${active ? ' · Selected' : ''}</div>
+            <div class="modpack-settings-playtime" data-playtime-id="${pack.id}">${escapeHtml(formatPlayTime(pack.playTimeMs))}</div>
           </div>
           <div class="modpack-settings-actions">
             ${!active ? `<button type="button" class="mod-btn install" data-select="${pack.id}">Select</button>` : ''}
@@ -5867,6 +5931,7 @@
     }
 
     async function initLaunchState() {
+      updateVersionUI();
       await loadVersions();
       await loadLoaderPreference();
       await loadModsSyncState();
@@ -6527,6 +6592,11 @@
       const pack = getSelectedModpack();
       const labelText = document.getElementById('versionLabelText');
       if (labelText) labelText.textContent = pack ? pack.name : 'Latest';
+      const playtimeLabel = document.getElementById('playtimeLabel');
+      if (playtimeLabel) {
+        playtimeLabel.dataset.playtimeId = pack ? pack.id : '';
+        playtimeLabel.textContent = formatPlayTime(pack?.playTimeMs);
+      }
       renderVersionList();
       renderModpackSettingsList();
     }
@@ -6547,6 +6617,7 @@
           <span class="loader-item-info">
             <span class="loader-item-name">${escapeHtml(pack.name)}</span>
             <span class="loader-item-type">${escapeHtml(formatModpackMeta(pack))}</span>
+            <span class="loader-item-playtime" data-playtime-id="${pack.id}">${escapeHtml(formatPlayTime(pack.playTimeMs))}</span>
           </span>
           <span class="loader-item-actions">
             <span class="loader-check" aria-hidden="true">${VERSION_CHECK_ICON}</span>
@@ -7333,6 +7404,11 @@
       gameRunning = false;
       markActiveLaunchExited();
       updatePlayButton();
+      loadModpacks();
+    });
+
+    ipcRenderer.on('playTimeUpdated', (event, data) => {
+      applyPlayTimeUpdates(data?.updates);
     });
 
     /* ── WINDOW CONTROLS ── */

@@ -62,6 +62,12 @@ function compileTemplate() {
 ConfigManager.load();
 ModpackManager.load();
 
+LaunchManager.on('playTime', (data) => {
+    if (mainWindowRef && !mainWindowRef.isDestroyed()) {
+        mainWindowRef.webContents.send('playTimeUpdated', data);
+    }
+});
+
 process.on('uncaughtException', (error) => {
     console.error('Uncaught exception in main process:', error);
 });
@@ -846,6 +852,10 @@ ipcMain.on('startup-ready', () => {
 });
 
 app.whenReady().then(createWindow);
+
+app.on('before-quit', () => {
+    LaunchManager.endAllPlaySessions();
+});
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();

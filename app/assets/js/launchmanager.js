@@ -18,11 +18,15 @@ class LaunchManager {
     this._exitCode = null;
     this._gameRunning = false;
     this._activeGameDir = null;
+    this._playSessions = new Map();
+    this._playFlushTimer = null;
+    this._playTick = 0;
     this.on("progress", () => {});
     this.on("launch", () => {});
     this.on("log", () => {});
     this.on("gameLog", () => {});
     this.on("gameExit", () => {});
+    this.on("playTime", () => {});
   }
 
   isGameRunning() {
@@ -36,19 +40,21 @@ class LaunchManager {
       return false;
     }
 
-    const pid = this.proc.pid;
+    const proc = this.proc;
+    const pid = proc.pid;
     try {
       if (process.platform === "win32") {
         spawn("taskkill", ["/PID", String(pid), "/T", "/F"], { stdio: "ignore" });
       } else {
-        this.proc.kill("SIGTERM");
+        proc.kill("SIGTERM");
       }
     } catch (err) {
       this.log(`Failed to stop game process: ${err.message}`);
     }
 
-    this._gameRunning = false;
-    this.proc = null;
+    this._endPlaySession(pid);
+    this._gameRunning = this._playSessions.size > 0;
+    if (this.proc === proc) this.proc = null;
     this.emit("gameExit", { code: null, signal: "SIGTERM" });
     return true;
   }
@@ -678,7 +684,7 @@ class LaunchManager {
     });
 
     this._gameRunning = true;
-    this._attachGameLogs();
+    this._attachGameLogs(modpackId);
 
     this.proc.unref();
 
@@ -905,7 +911,7 @@ class LaunchManager {
     });
 
     this._gameRunning = true;
-    this._attachGameLogs();
+    this._attachGameLogs(modpackId);
 
     this.proc.unref();
 
@@ -1316,16 +1322,110 @@ class LaunchManager {
     return "java";
   }
 
-  _attachGameLogs() {
+  _startPlaySession(modpackId, proc) {
+    if (!modpackId || !proc || !proc.pid) return;
+    this._playSessions.set(proc.pid, {
+      modpackId,
+      startedAt: Date.now(),
+      flushedMs: 0,
+    });
+    this._ensurePlayFlushTimer();
+    this._emitPlayTime();
+  }
+
+  _ensurePlayFlushTimer() {
+    if (this._playFlushTimer) return;
+    this._playTick = 0;
+    this._playFlushTimer = setInterval(() => {
+      this._playTick += 1;
+      if (this._playTick % 15 === 0) this.flushPlayTime();
+      this._emitPlayTime();
+      if (this._playSessions.size === 0) {
+        clearInterval(this._playFlushTimer);
+        this._playFlushTimer = null;
+      }
+    }, 1000);
+  }
+
+  _livePlaySnapshots() {
+    const extras = new Map();
+    for (const session of this._playSessions.values()) {
+      const elapsed = Math.max(0, Date.now() - session.startedAt);
+      const unflushed = Math.max(0, elapsed - session.flushedMs);
+      extras.set(session.modpackId, (extras.get(session.modpackId) || 0) + unflushed);
+    }
+    const updates = [];
+    for (const [modpackId, extra] of extras) {
+      const pack = ModpackManager.getById(modpackId);
+      updates.push({
+        modpackId,
+        playTimeMs: (pack?.playTimeMs || 0) + extra,
+        lastPlayedAt: pack?.lastPlayedAt || Date.now(),
+      });
+    }
+    return updates;
+  }
+
+  _emitPlayTime() {
+    const updates = this._livePlaySnapshots();
+    if (updates.length) this.emit("playTime", { updates });
+  }
+
+  flushPlayTime() {
+    let saved = false;
+    for (const session of this._playSessions.values()) {
+      const elapsed = Math.max(0, Date.now() - session.startedAt);
+      const delta = elapsed - session.flushedMs;
+      if (delta < 500) continue;
+      ModpackManager.addPlayTime(session.modpackId, delta);
+      session.flushedMs = elapsed;
+      saved = true;
+    }
+    if (saved) this._emitPlayTime();
+    return saved;
+  }
+
+  _endPlaySession(pid) {
+    const session = this._playSessions.get(pid);
+    if (!session) return null;
+    const elapsed = Math.max(0, Date.now() - session.startedAt);
+    const delta = elapsed - session.flushedMs;
+    if (delta > 0) ModpackManager.addPlayTime(session.modpackId, delta);
+    this._playSessions.delete(pid);
+    const pack = ModpackManager.getById(session.modpackId);
+    this.emit("playTime", {
+      updates: [{
+        modpackId: session.modpackId,
+        playTimeMs: pack?.playTimeMs || 0,
+        lastPlayedAt: pack?.lastPlayedAt || Date.now(),
+      }],
+    });
+    if (this._playSessions.size === 0 && this._playFlushTimer) {
+      clearInterval(this._playFlushTimer);
+      this._playFlushTimer = null;
+    }
+    return pack;
+  }
+
+  endAllPlaySessions() {
+    const pids = [...this._playSessions.keys()];
+    for (const pid of pids) this._endPlaySession(pid);
+  }
+
+  _attachGameLogs(modpackId) {
     if (!this.proc) return;
+
+    const proc = this.proc;
+    const pid = proc.pid;
+    this._startPlaySession(modpackId, proc);
 
     const sendLine = (line) => {
       this.emit("gameLog", line);
     };
 
-    if (this.proc.stdout) {
+    if (proc.stdout) {
       let buf = "";
-      this.proc.stdout.on("data", (chunk) => {
+      proc.stdout.on("data", (chunk) => {
         buf += chunk.toString();
         const lines = buf.split("\n");
         buf = lines.pop();
@@ -1333,14 +1433,14 @@ class LaunchManager {
           if (line.trim()) sendLine(line.trimEnd());
         }
       });
-      this.proc.stdout.on("end", () => {
+      proc.stdout.on("end", () => {
         if (buf.trim()) sendLine(buf.trimEnd());
       });
     }
 
-    if (this.proc.stderr) {
+    if (proc.stderr) {
       let buf = "";
-      this.proc.stderr.on("data", (chunk) => {
+      proc.stderr.on("data", (chunk) => {
         buf += chunk.toString();
         const lines = buf.split("\n");
         buf = lines.pop();
@@ -1348,21 +1448,27 @@ class LaunchManager {
           if (line.trim()) sendLine(line.trimEnd());
         }
       });
-      this.proc.stderr.on("end", () => {
+      proc.stderr.on("end", () => {
         if (buf.trim()) sendLine(buf.trimEnd());
       });
     }
 
-    this.proc.on("exit", (code, signal) => {
-      this._gameRunning = false;
-      this.proc = null;
+    proc.on("exit", (code, signal) => {
+      this._endPlaySession(pid);
+      if (this.proc === proc) {
+        this._gameRunning = this._playSessions.size > 0;
+        this.proc = null;
+      }
       this.emit("gameLog", `=== Game exited (code: ${code}, signal: ${signal}) ===`);
       this.emit("gameExit", { code, signal });
     });
 
-    this.proc.on("error", (err) => {
-      this._gameRunning = false;
-      this.proc = null;
+    proc.on("error", (err) => {
+      this._endPlaySession(pid);
+      if (this.proc === proc) {
+        this._gameRunning = this._playSessions.size > 0;
+        this.proc = null;
+      }
       this.emit("gameLog", `=== Game process error: ${err.message} ===`);
       this.emit("gameExit", { code: null, signal: "error" });
     });
@@ -1379,6 +1485,8 @@ class LaunchManager {
       this._gameLogCallback = callback;
     } else if (event === "gameExit") {
       this._gameExitCallback = callback;
+    } else if (event === "playTime") {
+      this._playTimeCallback = callback;
     }
   }
 
@@ -1393,6 +1501,8 @@ class LaunchManager {
       this._gameLogCallback(data);
     } else if (event === "gameExit" && this._gameExitCallback) {
       this._gameExitCallback(data);
+    } else if (event === "playTime" && this._playTimeCallback) {
+      this._playTimeCallback(data);
     }
   }
 }
