@@ -1251,10 +1251,11 @@
     }
 
     .version-popup-panel {
-      width: min(360px, calc(100vw - 48px));
-      max-height: min(480px, calc(100vh - 120px));
+      width: min(720px, calc(100vw - 48px));
+      max-height: min(560px, calc(100vh - 100px));
       background: #12121c;
       border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
       display: flex;
       flex-direction: column;
       transform: translateY(8px);
@@ -1282,17 +1283,17 @@
       align-items: center;
       gap: 8px;
       margin: 0 16px 12px;
-      padding: 4px 10px;
-      background: rgba(0, 0, 0, 0.28);
+      padding: 0 12px;
+      height: 38px;
+      background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border);
+      border-radius: var(--btn-radius);
       flex-shrink: 0;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
     }
 
     .version-popup-search:focus-within {
-      border-color: rgba(232, 98, 42, 0.45);
-      box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.12);
-      background: rgba(255, 255, 255, 0.03);
+      border-color: var(--btn-border-hover);
+      background: rgba(255, 255, 255, 0.06);
     }
 
     .version-popup-search-icon {
@@ -1342,6 +1343,7 @@
     }
 
     .version-popup-empty {
+      grid-column: 1 / -1;
       padding: 24px 16px;
       text-align: center;
       font-family: 'Syne', sans-serif;
@@ -1375,11 +1377,12 @@
       width: 32px;
       height: 32px;
       flex-shrink: 0;
-      background: transparent;
-      border: 1px solid var(--border);
+      background: var(--btn-fill);
+      border: 1px solid var(--btn-border);
+      border-radius: var(--btn-radius);
       color: var(--muted);
       cursor: pointer;
-      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+      transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
     }
 
     .version-popup-close svg {
@@ -1389,16 +1392,20 @@
     }
 
     .version-popup-close:hover {
-      background: rgba(255, 255, 255, 0.05);
+      background: var(--btn-fill-hover);
       color: var(--text);
-      border-color: rgba(255, 255, 255, 0.12);
+      border-color: var(--btn-border-hover);
     }
 
     .version-popup-list {
       overflow-y: auto;
       flex: 1;
       min-height: 0;
-      scroll-behavior: smooth;
+      padding: 0 16px 4px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+      gap: 8px;
+      align-content: start;
     }
 
     .version-popup-list::-webkit-scrollbar {
@@ -1906,11 +1913,14 @@
     }
 
     .settings-body:has(#settingsTabLogs.active),
-    .settings-body:has(#settingsTabModpacks.active) {
+    .settings-body:has(#settingsTabModpacks.active),
+    .settings-body:has(#settingsTabMods.active) {
       overflow: hidden;
     }
 
-    .settings-tab-content#settingsTabModpacks.active {
+    .settings-tab-content#settingsTabModpacks.active,
+    .settings-tab-content#settingsTabMods.active,
+    .settings-tab-content#settingsTabLogs.active {
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -1998,49 +2008,49 @@
 
     .theme-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    @media (min-width: 720px) {
-      .theme-grid {
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-      }
+      grid-template-columns: repeat(auto-fill, minmax(196px, 210px));
+      justify-content: start;
+      gap: 8px;
     }
 
     .theme-card {
       display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      gap: 8px;
-      padding: 10px;
-      background: transparent;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+      height: 58px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.045);
       border: 1px solid var(--border);
-      border-radius: 0;
+      border-radius: 10px;
       cursor: pointer;
       text-align: left;
+      overflow: hidden;
       transition: border-color 0.15s ease, background 0.15s ease;
       color: var(--text);
       font-family: inherit;
+      appearance: none;
+      -webkit-appearance: none;
     }
 
     .theme-card:hover {
-      background: rgba(255, 255, 255, 0.04);
-      border-color: rgba(255, 255, 255, 0.14);
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.14);
     }
 
     .theme-card.active {
-      border-color: var(--accent);
-      background: rgba(255, 255, 255, 0.04);
-      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+      background: color-mix(in srgb, var(--accent) 10%, rgba(255,255,255,0.04));
     }
 
     .theme-preview {
       display: flex;
-      height: 42px;
-      border-radius: 6px;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
       overflow: hidden;
       border: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
     }
 
     .theme-preview-bg {
@@ -2057,10 +2067,14 @@
 
     .theme-name {
       font-family: 'Syne', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 700;
+      letter-spacing: 0;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
     }
 
     .theme-preview.theme-preview-auto {
@@ -2086,23 +2100,124 @@
 
     .theme-card-auto-hint {
       font-family: 'Syne', sans-serif;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       letter-spacing: 0;
       color: var(--muted);
-      line-height: 1.4;
-      min-height: 1.4em;
+      line-height: 1.25;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .theme-card.active .theme-card-auto-hint {
-      color: var(--accent2);
+      color: var(--muted);
     }
 
-    .theme-card.active .theme-name {
+    .theme-card-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .settings-option-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 8px;
+      align-content: start;
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 58px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.045);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-align: left;
+      overflow: visible;
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      width: 100%;
+      cursor: default;
+      position: relative;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .settings-row:has(.loader-wrap.open) {
+      z-index: 60;
+    }
+
+    button.settings-row {
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    button.settings-row:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.14);
+    }
+
+    .settings-row .modpack-card-icon {
+      color: var(--muted);
+    }
+
+    .settings-row-control {
+      margin-left: auto;
+      flex-shrink: 0;
+      min-width: 0;
+    }
+
+    .settings-row-control.loader-wrap {
+      min-width: 158px;
+      z-index: 20;
+    }
+
+    .settings-row .loader-trigger {
+      height: 38px;
+      padding: 0 12px;
+      border-radius: var(--btn-radius);
+      background: rgba(255,255,255,0.04);
+      gap: 8px;
+      width: auto;
+    }
+
+    .settings-row .loader-trigger-type {
+      display: none;
+    }
+
+    .settings-row .loader-trigger-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .settings-row .loader-menu {
+      top: calc(100% + 6px);
+      right: 0;
+      left: auto;
+      min-width: 220px;
+      border-radius: var(--btn-radius);
+      overflow: hidden;
+    }
+
+    .settings-row .open-mods-arrow {
+      margin-left: auto;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      transition: color 0.15s ease, transform 0.15s ease;
+    }
+
+    button.settings-row:hover .open-mods-arrow {
       color: var(--accent2);
+      transform: translateX(2px);
     }
 
     .launch-option-block {
-      margin-bottom: 18px;
+      margin-bottom: 0;
     }
 
     .launch-option-block:last-child {
@@ -2162,11 +2277,13 @@
     .log-panel {
       border: 1px solid var(--border);
       background: rgba(0, 0, 0, 0.35);
+      border-radius: 10px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      height: 420px;
-      flex-shrink: 0;
+      flex: 1;
+      min-height: 0;
+      height: auto;
     }
 
     .log-toolbar {
@@ -2638,32 +2755,47 @@
     }
 
     /* ── MODS UI (Redesigned Grid) ── */
+    #settingsTabMods #updateModsBtn {
+      margin-left: auto;
+    }
+
+    #settingsTabMods:has(#modsViewBrowse.active) #updateModsBtn {
+      display: none;
+    }
+
+    #settingsTabMods:has(#modsViewDetail.active) #modsMainToolbar {
+      display: none;
+    }
+
     .mods-sub-tabs.hidden-detail { display: none; }
 
     .mods-sub-tabs {
       display: flex;
       gap: 0;
-      background: transparent;
+      background: var(--btn-fill);
       padding: 0;
-      border-radius: 0;
-      border: 1px solid var(--border);
-      margin-bottom: 24px;
+      border-radius: var(--btn-radius);
+      border: 1px solid var(--btn-border);
+      margin-bottom: 0;
       width: fit-content;
+      overflow: hidden;
+      height: 38px;
+      flex-shrink: 0;
     }
 
     .mods-sub-tab {
-      padding: 11px 24px;
+      padding: 0 16px;
       font-family: 'Syne', sans-serif;
-      font-size: 0.8125rem;
-      font-weight: 600;
-      letter-spacing: -0.01em;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0;
       color: var(--muted);
       cursor: pointer;
       border-radius: 0;
-      border-right: 1px solid var(--border);
-      transition: background 0.1s ease, color 0.1s ease;
-      line-height: 1.5;
-      min-height: 42px;
+      border-right: 1px solid var(--btn-border);
+      transition: background 0.12s ease, color 0.12s ease;
+      line-height: 1;
+      min-height: 38px;
       display: flex;
       align-items: center;
     }
@@ -2672,11 +2804,28 @@
       border-right: none;
     }
 
-    .mods-sub-tab:hover { color: var(--text); background: rgba(255, 255, 255, 0.05); }
-    .mods-sub-tab.active { background: rgba(255, 255, 255, 0.04); color: var(--text); box-shadow: inset 0 -2px 0 var(--accent); }
+    .mods-sub-tab:hover { color: var(--text); background: rgba(255, 255, 255, 0.08); }
+    .mods-sub-tab.active { background: color-mix(in srgb, var(--accent) 78%, black 22%); color: #fff; }
 
     .mods-view { display: none; }
-    .mods-view.active { display: block; animation: fadeIn 0.3s ease; }
+    .mods-view.active { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; animation: fadeIn 0.3s ease; }
+
+    #settingsTabMods .mods-grid {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    #settingsTabMods .mods-grid::-webkit-scrollbar { width: 6px; }
+    #settingsTabMods .mods-grid::-webkit-scrollbar-track { background: transparent; }
+    #settingsTabMods .mods-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+    #settingsTabMods .mod-detail-content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
 
     .mod-search-sentinel {
       height: 1px;
@@ -2685,14 +2834,16 @@
     }
 
     .mod-search-panel {
-      margin-bottom: 28px;
-      position: sticky;
-      top: -40px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-shrink: 0;
+      position: relative;
       z-index: 6;
-      padding: 0 0 16px;
+      padding: 0;
       background: transparent;
       border: none;
-      transition: padding 0.2s ease, background 0.2s ease;
     }
 
     .mod-search-panel.is-stuck {
@@ -2725,17 +2876,19 @@
     .mod-search-field {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 6px 6px 6px 14px;
-      background: rgba(0, 0, 0, 0.28);
+      gap: 8px;
+      flex: 1;
+      min-width: 180px;
+      height: 38px;
+      padding: 0 8px 0 12px;
+      background: rgba(255,255,255,0.04);
       border: 1px solid var(--border);
-      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      border-radius: var(--btn-radius);
     }
 
     .mod-search-field:focus-within {
-      border-color: rgba(232, 98, 42, 0.45);
-      box-shadow: 0 0 0 3px rgba(232, 98, 42, 0.12);
-      background: rgba(255, 255, 255, 0.03);
+      border-color: var(--btn-border-hover);
+      background: rgba(255, 255, 255, 0.06);
     }
 
     .mod-search-field-icon {
@@ -2765,17 +2918,18 @@
     .mod-search-input {
       flex: 1;
       min-width: 0;
-      padding: 10px 0;
+      padding: 0;
       background: transparent;
       border: none;
       border-radius: 0;
       color: var(--text);
       font-family: 'Syne', sans-serif;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       font-weight: 400;
       letter-spacing: 0;
-      line-height: 1.5;
+      line-height: 1.4;
       outline: none;
+      height: 100%;
     }
 
     .mod-search-input::placeholder {
@@ -2847,7 +3001,23 @@
       flex-shrink: 0;
       transition: background 0.12s ease, opacity 0.15s ease;
       line-height: 1;
-      min-height: 36px;
+      min-height: 38px;
+    }
+
+    .mod-card .mod-toggle-wrap span {
+      display: none;
+    }
+
+    .mod-card .mod-btn {
+      min-height: 30px;
+      height: 30px;
+      padding: 0 10px;
+      font-size: 0.75rem;
+    }
+
+    .mod-search-heading,
+    .mod-search-meta {
+      display: none;
     }
 
     .mod-search-submit:hover:not(:disabled) {
@@ -2927,93 +3097,89 @@
 
     .mods-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 8px;
+      align-content: start;
     }
 
     .mod-card {
       display: flex;
-      flex-direction: column;
-      padding: 16px;
-      background: linear-gradient(160deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+      align-items: center;
+      gap: 10px;
+      height: 58px;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.045);
       border: 1px solid var(--border);
-      border-radius: 14px;
-      transition: all 0.25s ease;
+      border-radius: 10px;
+      transition: border-color 0.15s ease, background 0.15s ease;
       position: relative;
       overflow: hidden;
     }
 
     .mod-card:hover {
-      background: linear-gradient(160deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
-      border-color: rgba(255,255,255,0.15);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.14);
     }
 
-    .mod-card-top { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 12px; }
+    .mod-card-top { display: flex; gap: 10px; align-items: center; min-width: 0; flex: 1; }
 
     .mod-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 10px;
-      background: rgba(0,0,0,0.5);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.32);
       object-fit: cover;
       flex-shrink: 0;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
     .mod-info-main { flex: 1; min-width: 0; }
 
     .mod-title {
       font-family: 'Syne', sans-serif;
-      font-size: 1rem;
+      font-size: 0.84rem;
       font-weight: 700;
       color: var(--text);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      margin-bottom: 4px;
-      letter-spacing: -0.02em;
-      line-height: 1.25;
+      margin-bottom: 0;
+      letter-spacing: 0;
+      line-height: 1.2;
     }
 
     .mod-author-tag {
       font-family: 'Syne', sans-serif;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 600;
-      color: var(--accent2);
-      background: rgba(240, 168, 66, 0.1);
-      padding: 3px 8px;
-      border-radius: 4px;
-      display: inline-block;
-      letter-spacing: 0.01em;
+      color: var(--muted);
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      display: block;
+      letter-spacing: 0;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .mod-desc {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.8125rem;
-      font-weight: 400;
-      color: var(--muted);
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      line-height: 1.5;
-      margin-bottom: 16px;
-      flex: 1;
-    }
+    .mod-desc { display: none; }
 
     .mod-actions {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: auto;
-      border-top: 1px solid rgba(255,255,255,0.05);
-      padding-top: 12px;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 0;
+      border-top: none;
+      padding-top: 0;
+      flex-shrink: 0;
     }
 
-    .mod-meta { font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 400; color: var(--muted); }
+    .mod-meta {
+      display: none;
+    }
 
     .mod-btn {
       display: inline-flex;
@@ -3127,19 +3293,20 @@
     .mods-installed-toolbar {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 16px;
+      gap: 10px;
       margin-bottom: 16px;
       flex-wrap: wrap;
+      flex-shrink: 0;
     }
 
     .modpack-popup-footer {
-      padding: 14px 4px 4px;
+      padding: 12px 16px 16px;
       border-top: 1px solid var(--border);
-      margin-top: 8px;
+      margin-top: 12px;
       display: flex;
       justify-content: flex-end;
       gap: 10px;
+      flex-shrink: 0;
     }
 
     .modpack-settings-list {
@@ -3344,6 +3511,11 @@
       position: relative;
       text-align: left;
       overflow: hidden;
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
       transition: border-color 0.15s ease, background 0.15s ease;
     }
 
@@ -3979,15 +4151,15 @@
     .mods-empty {
       grid-column: 1 / -1;
       text-align: center;
-      padding: 60px 20px;
-      background: rgba(0,0,0,0.2);
-      border: 1px dashed var(--border);
-      border-radius: 16px;
+      padding: 28px 16px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
       color: var(--muted);
       font-family: 'Syne', sans-serif;
-      font-size: 0.875rem;
+      font-size: 0.84rem;
       font-weight: 400;
-      line-height: 1.55;
+      line-height: 1.5;
     }
 
     /* Logs — legacy selectors kept for compatibility */
@@ -4208,7 +4380,7 @@
         </span>
         <input type="search" id="versionSearchInput" class="version-popup-search-input" placeholder="Search modpacks..." autocomplete="off" spellcheck="false" aria-label="Search modpacks">
       </div>
-      <div class="version-popup-list loader-list" id="versionList" role="listbox" aria-label="Modpacks"></div>
+      <div class="version-popup-list" id="versionList" role="listbox" aria-label="Modpacks"></div>
       <div class="modpack-popup-footer">
         <button type="button" class="mod-btn install" id="importModpackPopupBtn" onclick="openImportModpackModal()">Import</button>
         <button type="button" class="mod-btn install" id="createModpackPopupBtn" onclick="openCreateModpackModal()">Create modpack</button>
@@ -4254,13 +4426,14 @@
         <div class="settings-body">
           <!-- Launch Settings Tab -->
           <div class="settings-tab-content active" id="settingsTabLaunch">
-            <div class="settings-section">
-              <div class="settings-section-title">Launch Behavior</div>
-              <div class="settings-section-description">Control what happens after Minecraft starts.</div>
-
-              <div class="launch-option-block">
-                <div class="launch-option-label">Launcher action</div>
-                <div class="loader-wrap" id="launcherActionWrap">
+            <div class="settings-option-grid">
+              <div class="settings-row">
+                <div class="modpack-card-icon" data-icon="launch" aria-hidden="true"></div>
+                <div class="modpack-card-info">
+                  <div class="modpack-card-name">Launcher action</div>
+                  <div class="modpack-card-meta">After Minecraft starts</div>
+                </div>
+                <div class="loader-wrap settings-row-control" id="launcherActionWrap">
                   <button type="button" class="loader-trigger" id="launcherActionTrigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Launcher action">
                     <div class="loader-trigger-info">
                       <span class="loader-trigger-name" id="launcherActionTriggerName"><%= launcherAction === 'exit' ? 'Exit launcher' : launcherAction === 'nothing' ? 'Do nothing' : 'Hide launcher' %></span>
@@ -4304,29 +4477,35 @@
                 </div>
               </div>
 
-              <div class="launch-option-row">
-                <div class="launch-option-copy">
-                  <div class="launch-option-label">Allow multiple instances</div>
-                  <div class="launch-option-desc">Run more than one Minecraft session at the same time.</div>
+              <div class="settings-row">
+                <div class="modpack-card-icon" data-icon="grid" aria-hidden="true"></div>
+                <div class="modpack-card-info">
+                  <div class="modpack-card-name">Multiple instances</div>
+                  <div class="modpack-card-meta">Run more than one session</div>
                 </div>
-                <div class="mod-toggle-wrap <%= allowMultipleInstances ? 'on' : '' %>" id="multipleInstancesToggle" data-enabled="<%= allowMultipleInstances ? 'true' : 'false' %>">
-                  <div class="mod-switch"></div>
-                  <span><%= allowMultipleInstances ? 'On' : 'Off' %></span>
+                <div class="settings-row-control">
+                  <div class="mod-toggle-wrap <%= allowMultipleInstances ? 'on' : '' %>" id="multipleInstancesToggle" data-enabled="<%= allowMultipleInstances ? 'true' : 'false' %>">
+                    <div class="mod-switch"></div>
+                    <span><%= allowMultipleInstances ? 'On' : 'Off' %></span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="settings-section">
-              <div class="settings-section-title">Local Files</div>
-              <div class="settings-section-description">Open folders for the currently selected modpack.</div>
-              <button class="open-mods-btn" onclick="openModsFolder()">
-                <div class="open-mods-icon" data-icon="folder" aria-hidden="true"></div>
-                <span>Open Mods Folder</span>
+              <button type="button" class="settings-row" onclick="openModsFolder()">
+                <div class="modpack-card-icon" data-icon="folder" aria-hidden="true"></div>
+                <div class="modpack-card-info">
+                  <div class="modpack-card-name">Mods folder</div>
+                  <div class="modpack-card-meta">Open the current pack's mods</div>
+                </div>
                 <span class="open-mods-arrow" data-icon="chevronRight" aria-hidden="true"></span>
               </button>
-              <button class="open-mods-btn" style="margin-top:10px" onclick="openInstanceFolder()">
-                <div class="open-mods-icon" data-icon="folder" aria-hidden="true"></div>
-                <span>Open Instance Folder</span>
+
+              <button type="button" class="settings-row" onclick="openInstanceFolder()">
+                <div class="modpack-card-icon" data-icon="folder" aria-hidden="true"></div>
+                <div class="modpack-card-info">
+                  <div class="modpack-card-name">Instance folder</div>
+                  <div class="modpack-card-meta">Open this pack's Minecraft folder</div>
+                </div>
                 <span class="open-mods-arrow" data-icon="chevronRight" aria-hidden="true"></span>
               </button>
             </div>
@@ -4401,27 +4580,21 @@
 
           <!-- Appearance Tab -->
           <div class="settings-tab-content" id="settingsTabAppearance">
-            <div class="settings-section">
-              <div class="settings-section-title">Theme</div>
-              <div class="settings-section-description">Pick a color theme for the launcher. Your choice is saved automatically.</div>
-              <div class="theme-grid" id="themeGrid"></div>
-            </div>
+            <div class="theme-grid" id="themeGrid"></div>
           </div>
 
           <!-- Mods Tab -->
           <div class="settings-tab-content" id="settingsTabMods">
-            
-            <div class="mods-sub-tabs" id="modsSubTabs">
-              <div class="mods-sub-tab active" id="modsTabInstalledBtn" onclick="switchModsTab('installed')">Installed</div>
-              <div class="mods-sub-tab" id="modsTabBrowseBtn" onclick="switchModsTab('browse')">Browse</div>
+            <div class="mods-installed-toolbar modpacks-toolbar" id="modsMainToolbar">
+              <div class="mods-sub-tabs" id="modsSubTabs">
+                <div class="mods-sub-tab active" id="modsTabInstalledBtn" onclick="switchModsTab('installed')">Installed</div>
+                <div class="mods-sub-tab" id="modsTabBrowseBtn" onclick="switchModsTab('browse')">Browse</div>
+              </div>
+              <button type="button" class="mod-btn install" id="updateModsBtn" onclick="updateAllMods()">Update mods</button>
             </div>
 
             <!-- Installed View -->
             <div id="modsViewInstalled" class="mods-view active">
-              <div class="mods-installed-toolbar">
-                <div class="settings-section-description" style="margin:0">Mods for the selected modpack. Click a mod for details and versions.</div>
-                <button type="button" class="mod-btn install" id="updateModsBtn" onclick="updateAllMods()">Update mods</button>
-              </div>
               <div id="installedModsList" class="mods-grid">
                 <% const modEntries = Object.entries(installedMods); %>
                 <% if (modEntries.length === 0) { %>
@@ -4436,13 +4609,12 @@
                           <div class="mod-author-tag"><%= mod.loaders ? mod.loaders.join(', ') : 'Unknown' %></div>
                         </div>
                       </div>
-                      <div class="mod-desc">Supports: <%= mod.gameVersions ? mod.gameVersions.join(', ') : 'Unknown versions' %></div>
                       <div class="mod-actions" onclick="event.stopPropagation()">
                         <div class="mod-toggle-wrap <%= mod.enabled ? 'on' : '' %>" data-id="<%= id %>" data-enabled="<%= mod.enabled %>">
                           <div class="mod-switch"></div>
                           <span><%= mod.enabled ? 'Enabled' : 'Disabled' %></span>
                         </div>
-                        <button class="mod-btn remove" data-id="<%= id %>"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
+                        <button class="mod-btn remove" data-id="<%= id %>" title="Remove"><span class="mod-remove-icon" aria-hidden="true"></span></button>
                       </div>
                     </div>
                   <% }); %>
@@ -4452,30 +4624,21 @@
 
             <!-- Browse View -->
             <div id="modsViewBrowse" class="mods-view">
-              <div class="mod-search-sentinel" aria-hidden="true"></div>
               <div class="mod-search-panel" id="modSearchPanel">
-                <div class="mod-search-heading">
-                  <div class="settings-section-title">Browse Modrinth</div>
-                  <div class="settings-section-description">Find mods for the selected modpack. Click a result for details and version picking.</div>
-                </div>
                 <div class="mod-search-field">
                   <span class="mod-search-field-icon" data-icon="search" aria-hidden="true"></span>
-                  <input type="search" id="modSearchInput" class="mod-search-input" placeholder="Search mods, authors, or keywords..." autocomplete="off" spellcheck="false">
+                  <input type="search" id="modSearchInput" class="mod-search-input" placeholder="Search mods..." autocomplete="off" spellcheck="false">
                   <button type="button" class="mod-search-clear" id="modSearchClear" aria-label="Clear search">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
                   </button>
-                  <button type="button" class="mod-search-submit" id="modSearchSubmit" onclick="searchMods()">
-                    <span class="mod-search-submit-icon" data-icon="search" aria-hidden="true"></span>
-                    <span class="mod-search-submit-label">Search</span>
-                  </button>
                 </div>
-                <div class="mod-search-meta">
-                  <span class="mod-search-hint">Press <kbd>Enter</kbd> to search · Click a mod for versions</span>
-                  <span class="mod-search-powered">Powered by Modrinth</span>
-                </div>
+                <button type="button" class="mod-search-submit" id="modSearchSubmit" onclick="searchMods()">
+                  <span class="mod-search-submit-icon" data-icon="search" aria-hidden="true"></span>
+                  <span class="mod-search-submit-label">Search</span>
+                </button>
               </div>
               <div id="modSearchResults" class="mods-grid">
-                <div class="mods-empty">Discover new mods by searching above.</div>
+                <div class="mods-empty">Search Modrinth to find mods for this pack.</div>
               </div>
             </div>
 
@@ -4494,14 +4657,7 @@
 
           <!-- Logs Tab -->
           <div class="settings-tab-content" id="settingsTabLogs">
-            <div class="settings-section">
-              <div class="settings-log-header">
-                <div>
-                  <div class="settings-section-title">Launcher Console</div>
-                  <div class="settings-section-description" style="margin-bottom:0">Real-time output from the launcher and game process.</div>
-                </div>
-              </div>
-              <div class="log-panel">
+            <div class="log-panel">
                 <div class="log-toolbar">
                   <div class="log-toolbar-primary">
                     <div class="log-instance-wrap" id="logInstanceWrap">
@@ -4548,7 +4704,6 @@
                   <span id="logLineCount">0 entries</span>
                 </div>
               </div>
-            </div>
           </div>
 
         </div>
@@ -5135,13 +5290,12 @@
             <div class="mod-author-tag">${mod.loaders ? mod.loaders.join(', ') : 'Unknown'}</div>
           </div>
         </div>
-        <div class="mod-desc">Supports: ${mod.gameVersions ? mod.gameVersions.join(', ') : 'Unknown versions'}</div>
         <div class="mod-actions" onclick="event.stopPropagation()">
           <div class="mod-toggle-wrap ${mod.enabled ? 'on' : ''}" data-id="${id}" data-enabled="${mod.enabled}">
             <div class="mod-switch"></div>
             <span>${mod.enabled ? 'Enabled' : 'Disabled'}</span>
           </div>
-          <button class="mod-btn remove" data-id="${id}"><span class="mod-remove-icon" aria-hidden="true"></span> Remove</button>
+          <button class="mod-btn remove" data-id="${id}" title="Remove"><span class="mod-remove-icon" aria-hidden="true"></span></button>
         </div>
       </div>`;
     }
@@ -5824,8 +5978,10 @@
       const autoCard = `
         <button type="button" class="theme-card${selectedTheme === 'auto' ? ' active' : ''}" data-theme="auto" aria-pressed="${selectedTheme === 'auto' ? 'true' : 'false'}">
           <span class="theme-preview theme-preview-auto" aria-hidden="true"></span>
-          <span class="theme-name">Auto</span>
-          <span class="theme-card-auto-hint" id="autoThemeHint">Matches your skin</span>
+          <span class="theme-card-info">
+            <span class="theme-name">Auto</span>
+            <span class="theme-card-auto-hint" id="autoThemeHint">Matches your skin</span>
+          </span>
         </button>
       `;
 
@@ -5836,7 +5992,9 @@
             <span class="theme-preview-accent" style="background:${theme.accent}"></span>
             <span class="theme-preview-accent2" style="background:${theme.accent2}"></span>
           </span>
-          <span class="theme-name">${theme.label}</span>
+          <span class="theme-card-info">
+            <span class="theme-name">${theme.label}</span>
+          </span>
         </button>
       `).join('');
 
@@ -6877,23 +7035,7 @@
     }
 
     function initModSearchSticky() {
-      const sentinel = document.querySelector('.mod-search-sentinel');
-      const panel = document.getElementById('modSearchPanel');
-      const scrollRoot = document.querySelector('.settings-body');
-      if (!sentinel || !panel || !scrollRoot) return;
-
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          const browseView = document.getElementById('modsViewBrowse');
-          if (!browseView?.classList.contains('active')) {
-            panel.classList.remove('is-stuck');
-            return;
-          }
-          panel.classList.toggle('is-stuck', !entry.isIntersecting);
-        },
-        { root: scrollRoot, threshold: 0 }
-      );
-      observer.observe(sentinel);
+      return;
     }
 
     async function searchMods() {
@@ -6935,9 +7077,7 @@
                 <div class="mod-author-tag">${escapeHtml(mod.author || 'Modrinth')}</div>
               </div>
             </div>
-            <div class="mod-desc">${escapeHtml(mod.description || 'No description provided.')}</div>
             <div class="mod-actions" onclick="event.stopPropagation()">
-              <span class="mod-meta">v${escapeHtml(mod.latest_version || 'Unknown')}</span>
               ${browseInstallButtonHtml(projectId, mod.title, isInstalled)}
             </div>
           `;
@@ -7145,19 +7285,19 @@
 
       list.innerHTML = filtered.map(pack => {
         const isActive = pack.id === selectedModpackId;
-        return `<button type="button" class="loader-item${isActive ? ' active' : ''}" data-modpack="${pack.id}" role="option" aria-selected="${isActive ? 'true' : 'false'}">
-          <span class="loader-item-info">
-            <span class="loader-item-name">${escapeHtml(pack.name)}</span>
-            <span class="loader-item-type">${escapeHtml(formatModpackMeta(pack))}</span>
-            <span class="loader-item-playtime" data-playtime-id="${pack.id}">${escapeHtml(formatPlayTime(pack.playTimeMs))}</span>
-          </span>
-          <span class="loader-item-actions">
-            <span class="loader-check" aria-hidden="true">${VERSION_CHECK_ICON}</span>
-          </span>
+        const play = formatPlayTimeCompact(pack.playTimeMs);
+        const meta = play ? `${formatModpackMeta(pack)} · ${play}` : formatModpackMeta(pack);
+        return `<button type="button" class="modpack-card${isActive ? ' active' : ''}" data-modpack="${pack.id}" role="option" aria-selected="${isActive ? 'true' : 'false'}">
+          <div class="modpack-card-icon" data-icon="mods" aria-hidden="true"></div>
+          <div class="modpack-card-info">
+            <div class="modpack-card-name">${escapeHtml(pack.name)}</div>
+            <div class="modpack-card-meta"><span data-icon="loader" aria-hidden="true"></span><span data-playtime-id="${pack.id}">${escapeHtml(meta)}</span></div>
+          </div>
         </button>`;
       }).join('');
 
-      list.querySelectorAll('.loader-item[data-modpack]').forEach(item => {
+      initSettingsIcons(list);
+      list.querySelectorAll('.modpack-card[data-modpack]').forEach(item => {
         item.addEventListener('click', async (e) => {
           e.stopPropagation();
           if (item.dataset.modpack === selectedModpackId) {
