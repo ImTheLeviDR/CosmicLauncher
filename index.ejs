@@ -4165,15 +4165,22 @@
       left: 0;
       right: 0;
       bottom: 0;
-      z-index: 80;
+      z-index: 95;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 28px 24px 24px;
       overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.55s ease, visibility 0.55s ease;
+    }
+
+    body.needs-onboarding:not(.booting) .onboard-overlay:not(.leaving) {
       opacity: 1;
       visibility: visible;
-      transition: opacity 0.55s ease, visibility 0.55s ease;
+      pointer-events: auto;
     }
 
     .onboard-overlay.leaving {
@@ -4695,7 +4702,6 @@
     </div>
   </div>
 
-  <% if (!onboardingCompleted) { %>
   <% const onboardAccount = (selectedUuid && accounts[selectedUuid]) ? accounts[selectedUuid] : null; %>
   <div class="onboard-overlay" id="onboardOverlay" role="dialog" aria-modal="true" aria-labelledby="onboardTitle">
     <div class="onboard-orbs" aria-hidden="true">
@@ -4779,7 +4785,6 @@
       </div>
     </div>
   </div>
-  <% } %>
 
   <canvas class="particles-canvas" id="particles"></canvas>
 
@@ -5099,6 +5104,15 @@
               <div class="settings-section-description">Pick a color theme for the launcher. Your choice is saved automatically.</div>
               <div class="theme-grid" id="themeGrid"></div>
             </div>
+            <div class="settings-section">
+              <div class="settings-section-title">Onboarding</div>
+              <div class="settings-section-description">Replay the first-run setup, including theme, account, and Modrinth import.</div>
+              <button type="button" class="open-mods-btn" id="replayOnboardingBtn" onclick="replayOnboarding()">
+                <div class="open-mods-icon" data-icon="sparkles" aria-hidden="true"></div>
+                <span>Replay onboarding</span>
+                <span class="open-mods-arrow" data-icon="chevronRight" aria-hidden="true"></span>
+              </button>
+            </div>
           </div>
 
           <!-- Mods Tab -->
@@ -5392,6 +5406,7 @@
       copy: uiIcon('<rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>'),
       terminal: uiIcon('<polyline points="4 17 10 11 4 5"></polyline><line x1="12" x2="20" y1="19" y2="19"></line>'),
       search: uiIcon('<circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>'),
+      sparkles: uiIcon('<path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path><path d="M20 2v4"></path><path d="M22 4h-4"></path><circle cx="4" cy="20" r="2"></circle>'),
       download: uiIcon('<path d="M12 3v12"></path><path d="m8 11 4 4 4-4"></path><path d="M5 21h14"></path>'),
       loader: uiIcon('<path d="M21 12a9 9 0 1 1-6.219-8.56"></path>'),
     };
@@ -6548,6 +6563,13 @@
     }
 
     let updateOnboardAccount = function() {};
+    let startOnboardingReplay = null;
+
+    async function replayOnboarding() {
+      if (typeof startOnboardingReplay === 'function') {
+        await startOnboardingReplay();
+      }
+    }
 
     function initOnboarding() {
       const overlay = document.getElementById('onboardOverlay');
@@ -6695,10 +6717,28 @@
           console.error('Failed to save onboarding state:', err);
         }
         setTimeout(() => {
-          overlay.remove();
           checkLauncherUpdates(false);
         }, 560);
       }
+
+      async function startOnboardingReplayInner() {
+        closeSettings();
+        overlay.classList.remove('leaving');
+        importLoaded = false;
+        importedIds.clear();
+        if (searchEl) searchEl.value = '';
+        if (listEl) listEl.innerHTML = '<div class="import-instance-empty">Looking for Modrinth App...</div>';
+        setPage(0, 1);
+        updateOnboardAccount();
+        document.body.classList.add('needs-onboarding');
+        try {
+          if (ipcRenderer) await ipcRenderer.invoke('onboarding:reset');
+        } catch (err) {
+          console.error('Failed to reset onboarding state:', err);
+        }
+      }
+
+      startOnboardingReplay = startOnboardingReplayInner;
 
       nextBtn.addEventListener('click', () => {
         if (page >= total - 1) {

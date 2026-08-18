@@ -373,6 +373,11 @@ ipcMain.handle('onboarding:complete', () => {
     return { success: true, completed: true }
 })
 
+ipcMain.handle('onboarding:reset', () => {
+    ConfigManager.setOnboardingCompleted(false)
+    return { success: true, completed: false }
+})
+
 ipcMain.handle('launcher:getVersion', () => {
     return { success: true, version: app.getVersion() }
 })
