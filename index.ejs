@@ -4187,10 +4187,16 @@
       pointer-events: auto;
     }
 
-    .onboard-overlay.leaving {
-      opacity: 0;
-      visibility: hidden;
+    .onboard-overlay.launching {
       pointer-events: none;
+      animation: layoutFade 1.3s ease-in-out forwards;
+    }
+
+    body.needs-onboarding.onboard-entering .particles-canvas {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: none;
+      z-index: 120;
     }
 
     .onboard-orbs {
@@ -6773,22 +6779,61 @@
         });
       }
 
-      async function finishOnboarding() {
-        overlay.classList.add('leaving');
+      async function finishOnboarding({ animated = false } = {}) {
+        nextBtn.disabled = true;
+        skipBtn.disabled = true;
+        backBtn.disabled = true;
+
+        if (animated) {
+          document.body.classList.add('onboard-entering');
+          const rect = nextBtn.getBoundingClientRect();
+          if (window.spawnParticles) {
+            window.spawnParticles(rect.left + rect.width / 2, rect.top + rect.height / 2);
+          }
+          const launchSound = document.getElementById('launchSound');
+          if (launchSound) {
+            launchSound.currentTime = 0;
+            launchSound.volume = 0.4;
+            launchSound.play().catch(() => {});
+          }
+          overlay.classList.add('launching');
+          const launchOverlay = document.getElementById('launchOverlay');
+          launchOverlay?.classList.add('fading');
+          if (window.triggerStarExplosion) window.triggerStarExplosion();
+          await new Promise((resolve) => setTimeout(resolve, 1400));
+        } else {
+          overlay.classList.add('leaving');
+        }
+
         document.body.classList.remove('needs-onboarding');
         try {
           if (ipcRenderer) await ipcRenderer.invoke('onboarding:complete');
         } catch (err) {
           console.error('Failed to save onboarding state:', err);
         }
+
+        if (animated) {
+          overlay.classList.remove('launching');
+          overlay.classList.add('leaving');
+          document.getElementById('launchOverlay')?.classList.remove('fading');
+          document.body.classList.remove('onboard-entering');
+          if (window.resetStars) window.resetStars();
+          if (window.triggerOpenAnimation) window.triggerOpenAnimation();
+        }
+
         setTimeout(() => {
           checkLauncherUpdates(false);
-        }, 560);
+        }, animated ? 900 : 560);
       }
 
       async function startOnboardingReplayInner() {
         closeSettings();
-        overlay.classList.remove('leaving');
+        overlay.classList.remove('leaving', 'launching');
+        nextBtn.disabled = false;
+        skipBtn.disabled = false;
+        backBtn.disabled = false;
+        document.body.classList.remove('onboard-entering');
+        document.getElementById('launchOverlay')?.classList.remove('fading');
         importLoaded = false;
         importedIds.clear();
         if (searchEl) searchEl.value = '';
@@ -6807,7 +6852,7 @@
 
       nextBtn.addEventListener('click', () => {
         if (page >= total - 1) {
-          finishOnboarding();
+          finishOnboarding({ animated: true });
           return;
         }
         setPage(page + 1, 1);
