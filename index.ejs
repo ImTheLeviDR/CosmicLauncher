@@ -3145,11 +3145,15 @@
       background: color-mix(in srgb, var(--accent) 88%, black 12%);
     }
 
-    .mod-btn.install.installed,
-    .mod-btn.install:disabled {
+    .mod-btn.install.installed {
       background: rgba(80, 170, 90, 0.22);
       border-color: rgba(102, 221, 102, 0.28);
       color: #7ee07e;
+      cursor: default;
+    }
+
+    .mod-btn.install:disabled:not(.installed) {
+      opacity: 0.55;
       cursor: default;
     }
 
@@ -6702,7 +6706,7 @@
               <div class="onboard-instance-meta">${escapeHtml(meta)}</div>
               ${warning}
             </div>
-            <button type="button" class="mod-btn install" data-onboard-import="${escapeHtml(item.id)}" ${imported ? 'disabled' : ''}>${imported ? 'Imported' : 'Import'}</button>
+            <button type="button" class="mod-btn install${imported ? ' installed' : ''}" data-onboard-import="${escapeHtml(item.id)}" ${imported ? 'disabled' : ''}>${imported ? 'Imported' : 'Import'}</button>
           </div>`;
         }).join('');
 
@@ -6710,8 +6714,11 @@
           btn.addEventListener('click', async () => {
             const id = btn.getAttribute('data-onboard-import');
             btn.disabled = true;
+            btn.classList.add('installed');
             btn.textContent = 'Importing...';
-            listEl.querySelectorAll('[data-onboard-import]').forEach((other) => { other.disabled = true; });
+            listEl.querySelectorAll('[data-onboard-import]').forEach((other) => {
+              if (other !== btn) other.disabled = true;
+            });
             try {
               const result = await ipcRenderer.invoke('modpacks:importModrinth', id);
               if (!result.success) {
@@ -7118,13 +7125,17 @@
           btn.addEventListener('click', async () => {
             const id = btn.getAttribute('data-import');
             btn.disabled = true;
+            btn.classList.add('installed');
             btn.textContent = 'Importing...';
-            listEl.querySelectorAll('[data-import]').forEach((other) => { other.disabled = true; });
+            listEl.querySelectorAll('[data-import]').forEach((other) => {
+              if (other !== btn) other.disabled = true;
+            });
             try {
               const result = await ipcRenderer.invoke('modpacks:importModrinth', id);
               if (!result.success) {
                 showModal('Import failed', result.error || 'Could not import that instance', true);
                 btn.disabled = false;
+                btn.classList.remove('installed');
                 btn.textContent = 'Import';
                 listEl.querySelectorAll('[data-import]').forEach((other) => { other.disabled = false; });
                 return;
@@ -7136,6 +7147,7 @@
             } catch (err) {
               showModal('Import failed', err.message, true);
               btn.disabled = false;
+              btn.classList.remove('installed');
               btn.textContent = 'Import';
               listEl.querySelectorAll('[data-import]').forEach((other) => { other.disabled = false; });
             }
