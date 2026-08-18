@@ -4602,49 +4602,97 @@
       display: none !important;
     }
 
-    .onboard-ready-grid {
-      width: 100%;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 4px;
+    .onboard-summary {
+      width: min(440px, 100%);
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--panel) 80%, transparent);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+      text-align: left;
       animation: onboardFadeUp 0.7s 0.18s both;
     }
 
-    .onboard-ready-card {
-      padding: 16px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.035);
-      text-align: left;
+    .onboard-summary-hero {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%);
+      border-bottom: 1px solid var(--border);
     }
 
-    .onboard-ready-label {
-      display: block;
+    .onboard-summary-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 0 22px var(--player-glow);
+    }
+
+    .onboard-summary-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .onboard-summary-sub {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .onboard-summary-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 13px 18px;
+    }
+
+    .onboard-summary-row + .onboard-summary-row {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .onboard-summary-row[hidden] {
+      display: none !important;
+    }
+
+    .onboard-summary-key {
       font-family: 'Space Mono', monospace;
-      font-size: 0.64rem;
+      font-size: 0.66rem;
       font-weight: 700;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: var(--accent2);
-      margin-bottom: 6px;
+      color: var(--muted);
     }
 
-    .onboard-ready-value {
-      display: block;
+    .onboard-summary-val {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       font-family: 'Syne', sans-serif;
-      font-size: 0.92rem;
+      font-size: 0.88rem;
       font-weight: 700;
       color: var(--text);
-      line-height: 1.3;
+      text-align: right;
+    }
+
+    .onboard-summary-swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      flex-shrink: 0;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
     }
 
     @media (max-width: 720px) {
       .onboard-theme-grid.theme-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .onboard-ready-grid {
-        grid-template-columns: 1fr;
       }
       .onboard-footer {
         flex-direction: column;
@@ -4750,21 +4798,31 @@
         </section>
 
         <section class="onboard-page" data-page="4">
-          <p class="onboard-kicker">Cosmic Launcher</p>
+          <p class="onboard-kicker">All set</p>
           <h1 class="onboard-title">Ready to launch</h1>
-          <p class="onboard-copy">Your setup is saved. The home screen is next — launch Minecraft, manage packs, and browse mods whenever you want.</p>
-          <div class="onboard-ready-grid">
-            <div class="onboard-ready-card">
-              <span class="onboard-ready-label">Theme</span>
-              <span class="onboard-ready-value">Colors apply across the launcher</span>
+          <p class="onboard-copy">Here is your setup. Everything stays editable in Settings.</p>
+          <div class="onboard-summary">
+            <div class="onboard-summary-hero">
+              <img src="" alt="" class="onboard-summary-avatar" id="onboardSummaryAvatar">
+              <div>
+                <div class="onboard-summary-name" id="onboardSummaryName">Steve</div>
+                <div class="onboard-summary-sub" id="onboardSummarySub">No account yet</div>
+              </div>
             </div>
-            <div class="onboard-ready-card">
-              <span class="onboard-ready-label">Account</span>
-              <span class="onboard-ready-value" id="onboardReadyAccount">Sign in anytime from the header</span>
+            <div class="onboard-summary-row">
+              <span class="onboard-summary-key">Theme</span>
+              <span class="onboard-summary-val">
+                <span class="onboard-summary-swatch" id="onboardSummarySwatch" aria-hidden="true"></span>
+                <span id="onboardSummaryTheme">Cosmic</span>
+              </span>
             </div>
-            <div class="onboard-ready-card">
-              <span class="onboard-ready-label">Packs</span>
-              <span class="onboard-ready-value">Create, import, and launch from home</span>
+            <div class="onboard-summary-row">
+              <span class="onboard-summary-key">Modpacks</span>
+              <span class="onboard-summary-val" id="onboardSummaryPacks">1 ready to play</span>
+            </div>
+            <div class="onboard-summary-row" id="onboardSummaryImportRow" hidden>
+              <span class="onboard-summary-key">Imported</span>
+              <span class="onboard-summary-val" id="onboardSummaryImports">1 from Modrinth</span>
             </div>
           </div>
         </section>
@@ -6632,13 +6690,36 @@
       };
 
       function updateOnboardReady() {
-        const readyAccount = document.getElementById('onboardReadyAccount');
-        if (!readyAccount) return;
+        const avatar = document.getElementById('onboardSummaryAvatar');
+        const nameOut = document.getElementById('onboardSummaryName');
+        const subOut = document.getElementById('onboardSummarySub');
+        const swatch = document.getElementById('onboardSummarySwatch');
+        const themeOut = document.getElementById('onboardSummaryTheme');
+        const packsOut = document.getElementById('onboardSummaryPacks');
+        const importRow = document.getElementById('onboardSummaryImportRow');
+        const importsOut = document.getElementById('onboardSummaryImports');
+        if (!nameOut) return;
+
         const nameEl = document.getElementById('activeProfileName');
         const uuid = nameEl ? nameEl.dataset.uuid : '';
         const name = nameEl ? nameEl.textContent : '';
         const signedIn = Boolean(uuid) && name && name !== 'Account' && name !== 'Select Account';
-        readyAccount.textContent = signedIn ? `Playing as ${name}` : 'Sign in anytime from the header';
+
+        nameOut.textContent = signedIn ? name : 'No account yet';
+        subOut.textContent = signedIn ? 'Microsoft account' : 'Sign in anytime from the header';
+        if (avatar) setProfileAvatarImg(avatar, signedIn ? uuid : null, signedIn ? name : 'Steve', true);
+
+        const themeId = selectedTheme === 'auto' ? resolvedAutoTheme : selectedTheme;
+        const themeDef = COLOR_THEMES.find((item) => item.id === themeId) || COLOR_THEMES[0];
+        if (themeOut) themeOut.textContent = selectedTheme === 'auto' ? `Auto · ${themeDef.label}` : themeDef.label;
+        if (swatch) swatch.style.background = `linear-gradient(135deg, ${themeDef.accent}, ${themeDef.accent2})`;
+
+        const packCount = Array.isArray(modpacks) ? modpacks.length : 1;
+        if (packsOut) packsOut.textContent = `${packCount} ready to play`;
+
+        const importCount = importedIds.size;
+        if (importRow) importRow.hidden = importCount === 0;
+        if (importsOut) importsOut.textContent = `${importCount} from Modrinth`;
       }
 
       function renderOnboardImports(filter = '') {
