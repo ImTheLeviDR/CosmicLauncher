@@ -4602,92 +4602,76 @@
       display: none !important;
     }
 
-    .onboard-summary {
-      width: min(440px, 100%);
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      background: color-mix(in srgb, var(--panel) 80%, transparent);
-      backdrop-filter: blur(18px);
-      overflow: hidden;
-      text-align: left;
-      animation: onboardFadeUp 0.7s 0.18s both;
+    .onboard-page-final {
+      justify-content: center;
     }
 
-    .onboard-summary-hero {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 18px;
-      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .onboard-summary-avatar {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
+    .onboard-final-avatar {
+      width: 76px;
+      height: 76px;
+      border-radius: 22px;
       object-fit: cover;
-      flex-shrink: 0;
-      box-shadow: 0 0 22px var(--player-glow);
+      margin-bottom: 26px;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.09),
+        0 16px 40px rgba(0, 0, 0, 0.45),
+        0 0 46px var(--player-glow);
+      animation: onboardFadeUp 0.7s 0.04s both;
     }
 
-    .onboard-summary-name {
+    .onboard-final-title {
       font-family: 'Syne', sans-serif;
-      font-size: 1.05rem;
-      font-weight: 800;
+      font-size: clamp(1.75rem, 3.2vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.15;
       color: var(--text);
-      line-height: 1.2;
+      margin-bottom: 10px;
+      animation: onboardFadeUp 0.7s 0.1s both;
     }
 
-    .onboard-summary-sub {
+    .onboard-final-copy {
       font-family: 'Syne', sans-serif;
-      font-size: 0.8rem;
+      font-size: 0.95rem;
+      font-weight: 400;
       color: var(--muted);
-      margin-top: 3px;
+      line-height: 1.5;
+      max-width: 460px;
+      margin-bottom: 26px;
+      animation: onboardFadeUp 0.7s 0.16s both;
     }
 
-    .onboard-summary-row {
+    .onboard-final-meta {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 13px 18px;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      animation: onboardFadeUp 0.7s 0.22s both;
     }
 
-    .onboard-summary-row + .onboard-summary-row {
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .onboard-summary-row[hidden] {
-      display: none !important;
-    }
-
-    .onboard-summary-key {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.66rem;
-      font-weight: 700;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    .onboard-summary-val {
+    .onboard-final-item {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      font-family: 'Syne', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: var(--text);
-      text-align: right;
+      gap: 7px;
+      white-space: nowrap;
     }
 
-    .onboard-summary-swatch {
-      width: 16px;
-      height: 16px;
-      border-radius: 5px;
+    .onboard-final-sep {
+      color: var(--muted);
+      opacity: 0.5;
+    }
+
+    .onboard-final-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
       flex-shrink: 0;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
     }
 
     @media (max-width: 720px) {
@@ -4797,34 +4781,11 @@
           </div>
         </section>
 
-        <section class="onboard-page" data-page="4">
-          <p class="onboard-kicker">All set</p>
-          <h1 class="onboard-title">Ready to launch</h1>
-          <p class="onboard-copy">Here is your setup. Everything stays editable in Settings.</p>
-          <div class="onboard-summary">
-            <div class="onboard-summary-hero">
-              <img src="" alt="" class="onboard-summary-avatar" id="onboardSummaryAvatar">
-              <div>
-                <div class="onboard-summary-name" id="onboardSummaryName">Steve</div>
-                <div class="onboard-summary-sub" id="onboardSummarySub">No account yet</div>
-              </div>
-            </div>
-            <div class="onboard-summary-row">
-              <span class="onboard-summary-key">Theme</span>
-              <span class="onboard-summary-val">
-                <span class="onboard-summary-swatch" id="onboardSummarySwatch" aria-hidden="true"></span>
-                <span id="onboardSummaryTheme">Cosmic</span>
-              </span>
-            </div>
-            <div class="onboard-summary-row">
-              <span class="onboard-summary-key">Modpacks</span>
-              <span class="onboard-summary-val" id="onboardSummaryPacks">1 ready to play</span>
-            </div>
-            <div class="onboard-summary-row" id="onboardSummaryImportRow" hidden>
-              <span class="onboard-summary-key">Imported</span>
-              <span class="onboard-summary-val" id="onboardSummaryImports">1 from Modrinth</span>
-            </div>
-          </div>
+        <section class="onboard-page onboard-page-final" data-page="4">
+          <img src="" alt="" class="onboard-final-avatar" id="onboardSummaryAvatar">
+          <h1 class="onboard-final-title">Ready to launch</h1>
+          <p class="onboard-final-copy">Everything is set up. Change any of it later in Settings.</p>
+          <p class="onboard-final-meta" id="onboardSummaryMeta"></p>
         </section>
       </div>
 
@@ -6691,35 +6652,31 @@
 
       function updateOnboardReady() {
         const avatar = document.getElementById('onboardSummaryAvatar');
-        const nameOut = document.getElementById('onboardSummaryName');
-        const subOut = document.getElementById('onboardSummarySub');
-        const swatch = document.getElementById('onboardSummarySwatch');
-        const themeOut = document.getElementById('onboardSummaryTheme');
-        const packsOut = document.getElementById('onboardSummaryPacks');
-        const importRow = document.getElementById('onboardSummaryImportRow');
-        const importsOut = document.getElementById('onboardSummaryImports');
-        if (!nameOut) return;
+        const metaOut = document.getElementById('onboardSummaryMeta');
+        if (!metaOut) return;
 
         const nameEl = document.getElementById('activeProfileName');
         const uuid = nameEl ? nameEl.dataset.uuid : '';
         const name = nameEl ? nameEl.textContent : '';
         const signedIn = Boolean(uuid) && name && name !== 'Account' && name !== 'Select Account';
-
-        nameOut.textContent = signedIn ? name : 'No account yet';
-        subOut.textContent = signedIn ? 'Microsoft account' : 'Sign in anytime from the header';
         if (avatar) setProfileAvatarImg(avatar, signedIn ? uuid : null, signedIn ? name : 'Steve', true);
 
         const themeId = selectedTheme === 'auto' ? resolvedAutoTheme : selectedTheme;
         const themeDef = COLOR_THEMES.find((item) => item.id === themeId) || COLOR_THEMES[0];
-        if (themeOut) themeOut.textContent = selectedTheme === 'auto' ? `Auto · ${themeDef.label}` : themeDef.label;
-        if (swatch) swatch.style.background = `linear-gradient(135deg, ${themeDef.accent}, ${themeDef.accent2})`;
-
+        const themeLabel = selectedTheme === 'auto' ? `Auto · ${themeDef.label}` : themeDef.label;
         const packCount = Array.isArray(modpacks) ? modpacks.length : 1;
-        if (packsOut) packsOut.textContent = `${packCount} ready to play`;
-
         const importCount = importedIds.size;
-        if (importRow) importRow.hidden = importCount === 0;
-        if (importsOut) importsOut.textContent = `${importCount} from Modrinth`;
+
+        const parts = [
+          escapeHtml(signedIn ? name : 'No account yet'),
+          `<span class="onboard-final-swatch" style="background:linear-gradient(135deg, ${themeDef.accent}, ${themeDef.accent2})" aria-hidden="true"></span>${escapeHtml(themeLabel)}`,
+          `${packCount} modpack${packCount === 1 ? '' : 's'}`,
+        ];
+        if (importCount) parts.push(`${importCount} imported`);
+
+        metaOut.innerHTML = parts
+          .map((part) => `<span class="onboard-final-item">${part}</span>`)
+          .join('<span class="onboard-final-sep" aria-hidden="true">·</span>');
       }
 
       function renderOnboardImports(filter = '') {
