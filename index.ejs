@@ -196,7 +196,16 @@
     body.booting .titlebar,
     body.booting .layout,
     body.booting .panel-actions,
-    body.booting .particles-canvas {
+    body.booting .particles-canvas,
+    body.booting .onboard-overlay {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    body.needs-onboarding .layout,
+    body.needs-onboarding .panel-actions,
+    body.needs-onboarding .particles-canvas {
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
@@ -4148,10 +4157,516 @@
         filter: blur(8px) brightness(2);
       }
     }
+
+    /* ── Onboarding ── */
+    .onboard-overlay {
+      position: fixed;
+      top: 52px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 80;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 24px 24px;
+      overflow: hidden;
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.55s ease, visibility 0.55s ease;
+    }
+
+    .onboard-overlay.leaving {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .onboard-orbs {
+      position: absolute;
+      inset: -20%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .onboard-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.55;
+      will-change: transform;
+    }
+
+    .onboard-orb.orb-a {
+      width: 42vmax;
+      height: 42vmax;
+      left: -8%;
+      top: -12%;
+      background: color-mix(in srgb, var(--accent) 55%, transparent);
+      animation: onboardOrbA 18s ease-in-out infinite;
+    }
+
+    .onboard-orb.orb-b {
+      width: 36vmax;
+      height: 36vmax;
+      right: -10%;
+      bottom: -16%;
+      background: color-mix(in srgb, var(--accent2) 48%, transparent);
+      animation: onboardOrbB 22s ease-in-out infinite;
+    }
+
+    .onboard-orb.orb-c {
+      width: 24vmax;
+      height: 24vmax;
+      left: 42%;
+      top: 38%;
+      background: color-mix(in srgb, var(--accent) 22%, #7c5cff 40%);
+      animation: onboardOrbC 16s ease-in-out infinite;
+    }
+
+    @keyframes onboardOrbA {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(8%, 10%) scale(1.12); }
+    }
+
+    @keyframes onboardOrbB {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-10%, -8%) scale(1.18); }
+    }
+
+    @keyframes onboardOrbC {
+      0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+      50% { transform: translate(-6%, 8%) scale(1.25); opacity: 0.7; }
+    }
+
+    .onboard-shell {
+      position: relative;
+      z-index: 1;
+      width: min(760px, 100%);
+      max-height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .onboard-pages {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      align-items: stretch;
+    }
+
+    .onboard-page {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+      min-height: 0;
+    }
+
+    .onboard-page.active {
+      display: flex;
+      animation: onboardIn 0.62s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .onboard-page.active.from-back {
+      animation-name: onboardInBack;
+    }
+
+    @keyframes onboardIn {
+      from { opacity: 0; transform: translateY(28px) scale(0.985); filter: blur(10px); }
+      to { opacity: 1; transform: none; filter: none; }
+    }
+
+    @keyframes onboardInBack {
+      from { opacity: 0; transform: translateY(-18px) scale(0.99); filter: blur(8px); }
+      to { opacity: 1; transform: none; filter: none; }
+    }
+
+    .onboard-kicker {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 10px;
+      animation: onboardFadeUp 0.7s 0.05s both;
+    }
+
+    .onboard-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 4.6vw, 3.35rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.08;
+      margin-bottom: 12px;
+      background: linear-gradient(115deg, var(--text) 12%, var(--accent2) 52%, var(--accent) 92%);
+      background-size: 180% 180%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: onboardFadeUp 0.75s 0.12s both, onboardShine 10s ease-in-out infinite;
+    }
+
+    @keyframes onboardShine {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .onboard-copy {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.98rem;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 520px;
+      margin-bottom: 28px;
+      animation: onboardFadeUp 0.75s 0.2s both;
+    }
+
+    @keyframes onboardFadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .onboard-logo-wrap {
+      position: relative;
+      width: 108px;
+      height: 108px;
+      margin: 8px 0 28px;
+      animation: onboardLogoIn 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .onboard-logo-ring,
+    .onboard-logo-ring-2 {
+      position: absolute;
+      inset: -14px;
+      border-radius: 50%;
+      border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+      animation: onboardSpin 18s linear infinite;
+    }
+
+    .onboard-logo-ring-2 {
+      inset: -26px;
+      border-color: color-mix(in srgb, var(--accent2) 28%, transparent);
+      animation-duration: 28s;
+      animation-direction: reverse;
+    }
+
+    .onboard-logo {
+      width: 108px;
+      height: 108px;
+      border-radius: 28px;
+      object-fit: cover;
+      box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent),
+        0 18px 50px var(--glow),
+        0 0 80px var(--glow);
+      animation: onboardFloat 4.8s ease-in-out infinite;
+    }
+
+    @keyframes onboardLogoIn {
+      from { opacity: 0; transform: scale(0.7) rotate(-8deg); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @keyframes onboardFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes onboardSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    .onboard-theme-grid {
+      width: 100%;
+      animation: onboardFadeUp 0.7s 0.18s both;
+    }
+
+    .onboard-theme-grid.theme-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .onboard-account-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: min(420px, 100%);
+      padding: 16px 18px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--panel) 80%, transparent);
+      backdrop-filter: blur(18px);
+      text-align: left;
+      margin-bottom: 18px;
+      animation: onboardFadeUp 0.7s 0.16s both;
+    }
+
+    .onboard-account-card img {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      object-fit: cover;
+      box-shadow: 0 0 24px var(--player-glow);
+    }
+
+    .onboard-account-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .onboard-account-meta {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .onboard-ms-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 44px;
+      padding: 0 20px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      animation: onboardFadeUp 0.7s 0.22s both;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+
+    .onboard-ms-btn:hover {
+      background: rgba(255,255,255,0.14);
+      border-color: rgba(255,255,255,0.28);
+      transform: translateY(-1px);
+    }
+
+    .onboard-ms-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .onboard-import {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      flex: 1;
+      animation: onboardFadeUp 0.7s 0.16s both;
+    }
+
+    .onboard-import-search {
+      width: 100%;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.32);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    .onboard-import-search:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--glow);
+    }
+
+    .onboard-import-list {
+      overflow-y: auto;
+      max-height: min(38vh, 340px);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 4px;
+      text-align: left;
+    }
+
+    .onboard-import-list::-webkit-scrollbar { width: 6px; }
+    .onboard-import-list::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.16);
+      border-radius: 4px;
+    }
+
+    .onboard-instance {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 13px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.035);
+      transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+    }
+
+    .onboard-instance:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.14);
+      transform: translateY(-1px);
+    }
+
+    .onboard-instance.imported {
+      border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+      background: color-mix(in srgb, var(--accent) 10%, rgba(255,255,255,0.03));
+    }
+
+    .onboard-instance-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .onboard-instance-meta {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .onboard-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-top: 4px;
+    }
+
+    .onboard-dots {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .onboard-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: rgba(255,255,255,0.16);
+      transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s ease;
+    }
+
+    .onboard-dot.active {
+      width: 26px;
+      background: var(--accent);
+      box-shadow: 0 0 16px var(--glow);
+    }
+
+    .onboard-dot.done {
+      background: color-mix(in srgb, var(--accent2) 70%, white 10%);
+    }
+
+    .onboard-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .onboard-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 0 18px;
+      border-radius: 10px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .onboard-btn.ghost {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+    }
+
+    .onboard-btn.ghost:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+    }
+
+    .onboard-btn.primary {
+      background: var(--accent);
+      border: 1px solid color-mix(in srgb, var(--accent) 70%, white 18%);
+      color: #fff;
+      min-width: 128px;
+      box-shadow: 0 10px 28px var(--glow);
+    }
+
+    .onboard-btn.primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .onboard-btn.primary:active {
+      transform: translateY(0);
+    }
+
+    .onboard-btn:disabled {
+      opacity: 0.55;
+      cursor: default;
+      transform: none;
+    }
+
+    .onboard-check {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 22px;
+      background: color-mix(in srgb, var(--accent) 18%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+      box-shadow: 0 0 40px var(--glow);
+      animation: onboardLogoIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .onboard-check svg {
+      width: 34px;
+      height: 34px;
+      color: var(--accent2);
+    }
+
+    @media (max-width: 720px) {
+      .onboard-theme-grid.theme-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .onboard-footer {
+        flex-direction: column;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .onboard-orb,
+      .onboard-logo,
+      .onboard-logo-ring,
+      .onboard-logo-ring-2,
+      .onboard-title,
+      .onboard-page.active {
+        animation: none;
+      }
+    }
   </style>
 </head>
 
-<body class="booting">
+<body class="booting<%= onboardingCompleted ? '' : ' needs-onboarding' %>">
 
   <canvas id="nebula"></canvas>
   <div class="grain"></div>
@@ -4179,6 +4694,92 @@
       </div>
     </div>
   </div>
+
+  <% if (!onboardingCompleted) { %>
+  <% const onboardAccount = (selectedUuid && accounts[selectedUuid]) ? accounts[selectedUuid] : null; %>
+  <div class="onboard-overlay" id="onboardOverlay" role="dialog" aria-modal="true" aria-labelledby="onboardTitle">
+    <div class="onboard-orbs" aria-hidden="true">
+      <span class="onboard-orb orb-a"></span>
+      <span class="onboard-orb orb-b"></span>
+      <span class="onboard-orb orb-c"></span>
+    </div>
+    <div class="onboard-shell">
+      <div class="onboard-pages" id="onboardPages">
+        <section class="onboard-page active" data-page="0">
+          <div class="onboard-logo-wrap" aria-hidden="true">
+            <span class="onboard-logo-ring"></span>
+            <span class="onboard-logo-ring-2"></span>
+            <img class="onboard-logo" src="<%= assetRoot %>app/assets/logo.png" alt="">
+          </div>
+          <p class="onboard-kicker">Cosmic Launcher</p>
+          <h1 class="onboard-title" id="onboardTitle">Welcome to the cosmos</h1>
+          <p class="onboard-copy">A beautiful, lightweight Minecraft launcher. A few quick steps and you are ready to play.</p>
+        </section>
+
+        <section class="onboard-page" data-page="1">
+          <p class="onboard-kicker">Appearance</p>
+          <h1 class="onboard-title">Pick your colors</h1>
+          <p class="onboard-copy">Themes update live. You can change this anytime in Settings.</p>
+          <div class="theme-grid onboard-theme-grid" id="onboardThemeGrid"></div>
+        </section>
+
+        <section class="onboard-page" data-page="2">
+          <p class="onboard-kicker">Account</p>
+          <h1 class="onboard-title"><%= onboardAccount ? 'You are signed in' : 'Sign in to play' %></h1>
+          <p class="onboard-copy"><%= onboardAccount ? 'This Microsoft account will be used to launch Minecraft. You can add more later.' : 'Cosmic uses your Microsoft account to launch Minecraft. You can skip and add it later.' %></p>
+          <div class="onboard-account-card" id="onboardAccountCard" <%= onboardAccount ? '' : 'hidden' %>>
+            <img src="" alt="" id="onboardAccountImg" data-uuid="<%= onboardAccount ? selectedUuid : '' %>" data-name="<%= onboardAccount ? onboardAccount.displayName : 'Steve' %>">
+            <div>
+              <div class="onboard-account-name" id="onboardAccountName"><%= onboardAccount ? onboardAccount.displayName : 'Steve' %></div>
+              <div class="onboard-account-meta" id="onboardAccountMeta">Microsoft account</div>
+            </div>
+          </div>
+          <button type="button" class="onboard-ms-btn" id="onboardLoginBtn">
+            <svg viewBox="0 0 21 21" aria-hidden="true">
+              <rect x="1" y="1" width="9" height="9" fill="#f25022"></rect>
+              <rect x="11" y="1" width="9" height="9" fill="#7fba00"></rect>
+              <rect x="1" y="11" width="9" height="9" fill="#00a4ef"></rect>
+              <rect x="11" y="11" width="9" height="9" fill="#ffb900"></rect>
+            </svg>
+            <span id="onboardLoginLabel"><%= onboardAccount ? 'Use a different account' : 'Sign in with Microsoft' %></span>
+          </button>
+        </section>
+
+        <section class="onboard-page" data-page="3">
+          <p class="onboard-kicker">Modrinth</p>
+          <h1 class="onboard-title">Bring your instances</h1>
+          <p class="onboard-copy">Import any instance from the Modrinth App — mods, worlds, resource packs, and settings. Skip if you want a fresh start.</p>
+          <div class="onboard-import">
+            <input id="onboardImportSearch" class="onboard-import-search" type="search" placeholder="Search Modrinth instances..." autocomplete="off" spellcheck="false">
+            <div class="onboard-import-list" id="onboardImportList">
+              <div class="import-instance-empty">Looking for Modrinth App...</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="onboard-page" data-page="4">
+          <div class="onboard-check" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <p class="onboard-kicker">Ready</p>
+          <h1 class="onboard-title">You are all set</h1>
+          <p class="onboard-copy">Create packs, browse mods, and launch Minecraft. Welcome to Cosmic.</p>
+        </section>
+      </div>
+
+      <div class="onboard-footer">
+        <div class="onboard-dots" id="onboardDots" aria-hidden="true"></div>
+        <div class="onboard-actions">
+          <button type="button" class="onboard-btn ghost" id="onboardSkip" hidden>Skip</button>
+          <button type="button" class="onboard-btn ghost" id="onboardBack" hidden>Back</button>
+          <button type="button" class="onboard-btn primary" id="onboardNext">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% } %>
 
   <canvas class="particles-canvas" id="particles"></canvas>
 
@@ -5106,7 +5707,11 @@
         } else if (window.triggerOpenAnimation) {
           window.triggerOpenAnimation();
         }
-        setTimeout(() => checkLauncherUpdates(false), 900);
+        setTimeout(() => {
+          if (!document.body.classList.contains('needs-onboarding')) {
+            checkLauncherUpdates(false);
+          }
+        }, 900);
       }
     }
 
@@ -5556,8 +6161,11 @@
       // Listen for account added
       ipcRenderer.on('accountAdded', async (event, data) => {
         if (data.success) {
-          showModal('Success', 'Logged in as ' + data.account.displayName);
+          if (!document.body.classList.contains('needs-onboarding')) {
+            showModal('Success', 'Logged in as ' + data.account.displayName);
+          }
           refreshProfileList();
+          if (typeof updateOnboardAccount === 'function') updateOnboardAccount();
         } else {
           console.error('Login failed:', data.error);
           showModal('Login Failed', data.error.desc || 'An unknown error occurred', true);
@@ -5881,7 +6489,9 @@
 
       selectedTheme = theme;
       document.querySelectorAll('.theme-card').forEach((card) => {
-        card.classList.toggle('active', card.dataset.theme === theme);
+        const active = card.dataset.theme === theme;
+        card.classList.toggle('active', active);
+        card.setAttribute('aria-pressed', active ? 'true' : 'false');
       });
 
       if (theme === 'auto') {
@@ -5897,17 +6507,17 @@
       }
     }
 
-    function renderThemeGrid() {
-      const grid = document.getElementById('themeGrid');
+    function renderThemeCards(grid, { includeAuto = true } = {}) {
       if (!grid) return;
 
-      const autoCard = `
+      const hintId = grid.id === 'onboardThemeGrid' ? 'onboardAutoThemeHint' : 'autoThemeHint';
+      const autoCard = includeAuto ? `
         <button type="button" class="theme-card${selectedTheme === 'auto' ? ' active' : ''}" data-theme="auto" aria-pressed="${selectedTheme === 'auto' ? 'true' : 'false'}">
           <span class="theme-preview theme-preview-auto" aria-hidden="true"></span>
           <span class="theme-name">Auto</span>
-          <span class="theme-card-auto-hint" id="autoThemeHint">Matches your skin</span>
+          <span class="theme-card-auto-hint" id="${hintId}">Matches your skin</span>
         </button>
-      `;
+      ` : '';
 
       const colorCards = COLOR_THEMES.map((theme) => `
         <button type="button" class="theme-card${theme.id === selectedTheme ? ' active' : ''}" data-theme="${theme.id}" aria-pressed="${theme.id === selectedTheme ? 'true' : 'false'}">
@@ -5921,17 +6531,200 @@
       `).join('');
 
       grid.innerHTML = autoCard + colorCards;
-
       grid.querySelectorAll('.theme-card').forEach((card) => {
         card.onclick = () => applyTheme(card.dataset.theme, true);
       });
+    }
 
+    function renderThemeGrid() {
+      renderThemeCards(document.getElementById('themeGrid'), { includeAuto: true });
+      renderThemeCards(document.getElementById('onboardThemeGrid'), { includeAuto: false });
       updateAutoThemeHint();
     }
 
     function initThemePicker() {
       renderThemeGrid();
       applyTheme(selectedTheme, false);
+    }
+
+    let updateOnboardAccount = function() {};
+
+    function initOnboarding() {
+      const overlay = document.getElementById('onboardOverlay');
+      if (!overlay) return;
+
+      const pages = [...overlay.querySelectorAll('.onboard-page')];
+      const dotsEl = document.getElementById('onboardDots');
+      const nextBtn = document.getElementById('onboardNext');
+      const backBtn = document.getElementById('onboardBack');
+      const skipBtn = document.getElementById('onboardSkip');
+      const loginBtn = document.getElementById('onboardLoginBtn');
+      const searchEl = document.getElementById('onboardImportSearch');
+      const listEl = document.getElementById('onboardImportList');
+      const total = pages.length;
+      const optionalPages = new Set([2, 3]);
+      let page = 0;
+      let importLoaded = false;
+      let importInstances = [];
+      const importedIds = new Set();
+
+      dotsEl.innerHTML = pages.map((_, i) => `<span class="onboard-dot${i === 0 ? ' active' : ''}"></span>`).join('');
+      const dots = [...dotsEl.querySelectorAll('.onboard-dot')];
+
+      function setPage(next, direction = 1) {
+        page = Math.max(0, Math.min(total - 1, next));
+        pages.forEach((el, i) => {
+          const active = i === page;
+          el.classList.toggle('active', active);
+          el.classList.toggle('from-back', active && direction < 0);
+        });
+        dots.forEach((dot, i) => {
+          dot.classList.toggle('active', i === page);
+          dot.classList.toggle('done', i < page);
+        });
+        backBtn.hidden = page === 0;
+        skipBtn.hidden = !optionalPages.has(page);
+        nextBtn.textContent = page === total - 1 ? 'Enter Cosmic' : 'Continue';
+        if (page === 3) loadOnboardImports();
+      }
+
+      updateOnboardAccount = function() {
+        const nameEl = document.getElementById('activeProfileName');
+        const card = document.getElementById('onboardAccountCard');
+        const img = document.getElementById('onboardAccountImg');
+        const nameOut = document.getElementById('onboardAccountName');
+        const metaOut = document.getElementById('onboardAccountMeta');
+        const title = overlay.querySelector('[data-page="2"] .onboard-title');
+        const copy = overlay.querySelector('[data-page="2"] .onboard-copy');
+        const label = document.getElementById('onboardLoginLabel');
+        const uuid = nameEl ? nameEl.dataset.uuid : '';
+        const name = nameEl ? nameEl.textContent : '';
+        const signedIn = Boolean(uuid) && name && name !== 'Account' && name !== 'Select Account';
+
+        if (title) title.textContent = signedIn ? 'You are signed in' : 'Sign in to play';
+        if (copy) {
+          copy.textContent = signedIn
+            ? 'This Microsoft account will be used to launch Minecraft. You can add more later.'
+            : 'Cosmic uses your Microsoft account to launch Minecraft. You can skip and add it later.';
+        }
+        if (label) label.textContent = signedIn ? 'Use a different account' : 'Sign in with Microsoft';
+        if (card) card.hidden = !signedIn;
+        if (signedIn && nameOut) nameOut.textContent = name;
+        if (signedIn && metaOut) metaOut.textContent = 'Microsoft account';
+        if (signedIn && img) setProfileAvatarImg(img, uuid, name, true);
+      };
+
+      function renderOnboardImports(filter = '') {
+        const query = filter.trim().toLowerCase();
+        const filtered = importInstances.filter((item) => {
+          const haystack = `${item.name} ${item.version || ''} ${item.loaderLabel || ''}`.toLowerCase();
+          return !query || haystack.includes(query);
+        });
+        if (!filtered.length) {
+          const empty = importInstances.length
+            ? 'No instances match that search.'
+            : 'No Modrinth instances found.';
+          listEl.innerHTML = `<div class="import-instance-empty">${empty}</div>`;
+          return;
+        }
+        listEl.innerHTML = filtered.map((item) => {
+          const imported = importedIds.has(item.id);
+          const meta = [item.version || 'Unknown version', item.loaderLabel || 'Unknown loader', formatPlayTime(item.playTimeMs)].join(' · ');
+          const warning = item.supported ? '' : `<div class="import-instance-warning">Cosmic launches Vanilla and Fabric. Files will still be copied.</div>`;
+          return `<div class="onboard-instance${imported ? ' imported' : ''}">
+            <div>
+              <div class="onboard-instance-name">${escapeHtml(item.name)}</div>
+              <div class="onboard-instance-meta">${escapeHtml(meta)}</div>
+              ${warning}
+            </div>
+            <button type="button" class="mod-btn install" data-onboard-import="${escapeHtml(item.id)}" ${imported ? 'disabled' : ''}>${imported ? 'Imported' : 'Import'}</button>
+          </div>`;
+        }).join('');
+
+        listEl.querySelectorAll('[data-onboard-import]').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const id = btn.getAttribute('data-onboard-import');
+            btn.disabled = true;
+            btn.textContent = 'Importing...';
+            listEl.querySelectorAll('[data-onboard-import]').forEach((other) => { other.disabled = true; });
+            try {
+              const result = await ipcRenderer.invoke('modpacks:importModrinth', id);
+              if (!result.success) {
+                showModal('Import failed', result.error || 'Could not import that instance', true);
+                renderOnboardImports(searchEl.value);
+                return;
+              }
+              importedIds.add(id);
+              await selectModpack(result.pack.id);
+              const extra = result.indexedMods ? ` · ${result.indexedMods} mods indexed` : '';
+              showToast('Instance imported', `${result.pack.name}${extra}`);
+              renderOnboardImports(searchEl.value);
+            } catch (err) {
+              showModal('Import failed', err.message, true);
+              renderOnboardImports(searchEl.value);
+            }
+          });
+        });
+      }
+
+      function loadOnboardImports() {
+        if (importLoaded || !ipcRenderer) return;
+        importLoaded = true;
+        ipcRenderer.invoke('modpacks:listModrinth').then((result) => {
+          if (!result.success) {
+            listEl.innerHTML = `<div class="import-instance-empty">${escapeHtml(result.error || 'Could not read Modrinth instances.')}</div>`;
+            return;
+          }
+          if (!result.foundApp) {
+            listEl.innerHTML = '<div class="import-instance-empty">Modrinth App was not found on this computer. You can import later from Modpacks.</div>';
+            return;
+          }
+          importInstances = result.instances || [];
+          renderOnboardImports(searchEl.value);
+        }).catch((err) => {
+          listEl.innerHTML = `<div class="import-instance-empty">${escapeHtml(err.message)}</div>`;
+        });
+      }
+
+      async function finishOnboarding() {
+        overlay.classList.add('leaving');
+        document.body.classList.remove('needs-onboarding');
+        try {
+          if (ipcRenderer) await ipcRenderer.invoke('onboarding:complete');
+        } catch (err) {
+          console.error('Failed to save onboarding state:', err);
+        }
+        setTimeout(() => {
+          overlay.remove();
+          checkLauncherUpdates(false);
+        }, 560);
+      }
+
+      nextBtn.addEventListener('click', () => {
+        if (page >= total - 1) {
+          finishOnboarding();
+          return;
+        }
+        setPage(page + 1, 1);
+      });
+      backBtn.addEventListener('click', () => setPage(page - 1, -1));
+      skipBtn.addEventListener('click', () => setPage(page + 1, 1));
+      if (loginBtn) {
+        loginBtn.addEventListener('click', () => addMicrosoftAccount());
+      }
+      if (searchEl) {
+        searchEl.addEventListener('input', () => renderOnboardImports(searchEl.value));
+      }
+
+      overlay.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' || e.repeat) return;
+        if (e.target && e.target.tagName === 'INPUT') return;
+        e.preventDefault();
+        nextBtn.click();
+      });
+
+      updateOnboardAccount();
+      setPage(0, 1);
     }
 
 /* ── MODPACK + LOADER STATE ── */
@@ -7606,6 +8399,7 @@
     initVersionSearch();
     loadLaunchOptions();
     initThemePicker();
+    initOnboarding();
     initLoaderSwitcher();
     initLauncherActionSwitcher();
     initMultipleInstancesToggle();

@@ -53,6 +53,7 @@ function compileTemplate() {
         installedMods,
         assetRoot,
         launcherVersion: app.getVersion(),
+        onboardingCompleted: ConfigManager.isOnboardingCompleted(),
     }, { filename: EJS_FILE });
 
     const compiledPath = getCompiledHtmlPath();
@@ -361,6 +362,15 @@ ipcMain.handle('getTheme', () => {
 ipcMain.handle('saveTheme', (event, theme) => {
     const saved = ConfigManager.setTheme(theme)
     return { success: saved, theme: ConfigManager.getTheme() }
+})
+
+ipcMain.handle('onboarding:status', () => {
+    return { success: true, completed: ConfigManager.isOnboardingCompleted() }
+})
+
+ipcMain.handle('onboarding:complete', () => {
+    ConfigManager.setOnboardingCompleted(true)
+    return { success: true, completed: true }
 })
 
 ipcMain.handle('launcher:getVersion', () => {

@@ -38,7 +38,8 @@ const DEFAULT_CONFIG = {
     launcherAction: 'hide',
     allowMultipleInstances: false,
     theme: 'cosmic',
-    dismissedLauncherUpdate: null
+    dismissedLauncherUpdate: null,
+    onboardingCompleted: false
 }
 
 let config = null
@@ -243,6 +244,16 @@ exports.getDismissedLauncherUpdate = function(){
 exports.setDismissedLauncherUpdate = function(version){
     config.dismissedLauncherUpdate = version ? String(version) : null
     exports.save()
+}
+
+exports.isOnboardingCompleted = function(){
+    return config.onboardingCompleted === true
+}
+
+exports.setOnboardingCompleted = function(completed){
+    config.onboardingCompleted = completed === true
+    exports.save()
+    return config.onboardingCompleted
 }
 
 exports.cacheVersionManifest = function(manifest) {
