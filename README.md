@@ -7,13 +7,14 @@ A Minecraft launcher for Windows and Linux. Sign in with Microsoft, keep separat
 Installers are published on [GitHub Releases](https://github.com/ImTheLeviDR/CosmicLauncher/releases).
 
 - **Windows:** `Cosmic.Launcher.Setup.{version}.exe` (x64 + 32-bit NSIS installer)
-- **Linux:** `Cosmic.Launcher-{version}-x64.AppImage`
+- **Linux:** `Cosmic.Launcher-{version}-x64.deb` (Debian/Ubuntu x64)
 
-On Linux, mark the AppImage executable before running it:
+On Linux:
 
 ```bash
-chmod +x Cosmic.Launcher-*-x64.AppImage
-./Cosmic.Launcher-*-x64.AppImage
+sudo dpkg -i Cosmic.Launcher-*-x64.deb
+# or
+sudo apt install ./Cosmic.Launcher-*-x64.deb
 ```
 
 You need a Microsoft account with a Minecraft Java Edition license, and Java available on your system (`java` on PATH, or `JAVA_HOME`).
@@ -27,7 +28,7 @@ npm install
 npm run build
 ```
 
-On Windows, `npm run build` produces the NSIS installer and also builds the Linux AppImage through WSL. Use `npm run build:win` or `npm run build:linux` for a single platform.
+On Windows, `npm run build` produces the NSIS installer and also builds the Linux `.deb` through WSL. Use `npm run build:win` or `npm run build:linux` for a single platform.
 
 ## License
 

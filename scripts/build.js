@@ -62,8 +62,8 @@ function buildMac() {
 }
 
 function buildLinuxNative() {
-  console.log('Building Linux AppImage...')
-  run('npx', ['electron-builder', '--linux', 'AppImage', '--x64'])
+  console.log('Building Linux .deb...')
+  run('npx', ['electron-builder', '--linux', 'deb', '--x64'])
 }
 
 function buildLinuxViaWsl() {
@@ -71,7 +71,7 @@ function buildLinuxViaWsl() {
   const wslSrc = toWslPath(repoRoot)
   const scriptPath = path.join(__dirname, 'build-linux.sh')
   const script = fs.readFileSync(scriptPath, 'utf8').replace(/\r\n/g, '\n')
-  console.log(`Building Linux AppImage via WSL (${wslSrc})...`)
+  console.log(`Building Linux .deb via WSL (${wslSrc})...`)
   const result = spawnSync('wsl.exe', ['-e', 'bash', '-s', wslSrc], {
     cwd: repoRoot,
     stdio: ['pipe', 'inherit', 'inherit'],

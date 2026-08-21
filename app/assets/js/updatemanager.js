@@ -65,9 +65,10 @@ function pickInstallerAsset(assets, version) {
     if (!Array.isArray(assets)) return null
 
     if (process.platform === 'linux') {
-        const expected = `Cosmic.Launcher-${version}-x64.AppImage`
-        return assets.find((asset) => assetName(asset) === expected)
-            || assets.find((asset) => /\.AppImage$/i.test(assetName(asset)))
+        const expectedX64 = `Cosmic.Launcher-${version}-x64.deb`
+        const expectedAmd64 = `Cosmic.Launcher-${version}-amd64.deb`
+        return assets.find((asset) => assetName(asset) === expectedX64)
+            || assets.find((asset) => assetName(asset) === expectedAmd64)
             || assets.find((asset) => /\.deb$/i.test(assetName(asset)))
             || null
     }
