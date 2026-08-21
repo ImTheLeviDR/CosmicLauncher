@@ -46,7 +46,11 @@ class LaunchManager {
       if (process.platform === "win32") {
         spawn("taskkill", ["/PID", String(pid), "/T", "/F"], { stdio: "ignore" });
       } else {
-        proc.kill("SIGTERM");
+        try {
+          process.kill(-pid, "SIGTERM");
+        } catch (_) {
+          proc.kill("SIGTERM");
+        }
       }
     } catch (err) {
       this.log(`Failed to stop game process: ${err.message}`);
@@ -77,12 +81,6 @@ class LaunchManager {
   }
 
   getVanillaMinecraftDirectory() {
-    const minecraftPath = path.join(
-      os.homedir(),
-      "AppData",
-      "Roaming",
-      ".minecraft",
-    );
     if (process.platform === "darwin") {
       return path.join(
         os.homedir(),
@@ -94,7 +92,7 @@ class LaunchManager {
     if (process.platform === "linux") {
       return path.join(os.homedir(), ".minecraft");
     }
-    return minecraftPath;
+    return path.join(os.homedir(), "AppData", "Roaming", ".minecraft");
   }
 
   migrateOptions(gameDir) {
@@ -1292,15 +1290,15 @@ class LaunchManager {
   }
 
   findJava() {
+    const javaName = process.platform === "win32" ? "java.exe" : "java";
     const javaHome = process.env.JAVA_HOME;
     if (javaHome) {
-      const javaExe = path.join(
-        javaHome,
-        "bin",
-        "java" + (process.platform === "windows" ? ".exe" : ""),
-      );
-      this.log(`Using JAVA_HOME: ${javaExe}`);
-      return javaExe;
+      const javaExe = path.join(javaHome, "bin", javaName);
+      if (fs.existsSync(javaExe)) {
+        this.log(`Using JAVA_HOME: ${javaExe}`);
+        return javaExe;
+      }
+      this.log(`JAVA_HOME is set but ${javaExe} was not found`);
     }
 
     if (process.platform === "win32") {
@@ -1315,6 +1313,32 @@ class LaunchManager {
 
         const javaPath2 = path.join(pf, "Java", "bin", "java.exe");
         if (fs.existsSync(javaPath2)) return javaPath2;
+      }
+    }
+
+    if (process.platform === "linux") {
+      const candidates = [
+        "/usr/bin/java",
+        "/usr/lib/jvm/default-java/bin/java",
+        "/usr/lib/jvm/java-21-openjdk-amd64/bin/java",
+        "/usr/lib/jvm/java-17-openjdk-amd64/bin/java",
+        "/usr/lib/jvm/java-21-openjdk/bin/java",
+        "/usr/lib/jvm/java-17-openjdk/bin/java",
+        path.join(os.homedir(), ".sdkman", "candidates", "java", "current", "bin", "java"),
+      ];
+      try {
+        const jvmRoot = "/usr/lib/jvm";
+        if (fs.existsSync(jvmRoot)) {
+          for (const name of fs.readdirSync(jvmRoot)) {
+            candidates.push(path.join(jvmRoot, name, "bin", "java"));
+          }
+        }
+      } catch (_) {}
+      for (const candidate of candidates) {
+        if (fs.existsSync(candidate)) {
+          this.log(`Using Java: ${candidate}`);
+          return candidate;
+        }
       }
     }
 

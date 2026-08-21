@@ -57,12 +57,30 @@ function fetchJson(url) {
     })
 }
 
+function assetName(asset) {
+    return asset?.name || ''
+}
+
 function pickInstallerAsset(assets, version) {
     if (!Array.isArray(assets)) return null
+
+    if (process.platform === 'linux') {
+        const expected = `Cosmic.Launcher-${version}-x64.AppImage`
+        return assets.find((asset) => assetName(asset) === expected)
+            || assets.find((asset) => /\.AppImage$/i.test(assetName(asset)))
+            || assets.find((asset) => /\.deb$/i.test(assetName(asset)))
+            || null
+    }
+
+    if (process.platform === 'darwin') {
+        return assets.find((asset) => /\.dmg$/i.test(assetName(asset)))
+            || null
+    }
+
     const expected = `Cosmic.Launcher.Setup.${version}.exe`
-    return assets.find((asset) => asset?.name === expected)
-        || assets.find((asset) => /\.exe$/i.test(asset?.name || '') && /setup/i.test(asset.name))
-        || assets.find((asset) => /\.exe$/i.test(asset?.name || ''))
+    return assets.find((asset) => assetName(asset) === expected)
+        || assets.find((asset) => /\.exe$/i.test(assetName(asset)) && /setup/i.test(assetName(asset)))
+        || assets.find((asset) => /\.exe$/i.test(assetName(asset)))
         || null
 }
 

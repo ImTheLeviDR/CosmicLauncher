@@ -799,37 +799,37 @@ function createTray() {
     ]);
     
     tray.setContextMenu(contextMenu);
-    
-    tray.on('click', () => {
-        if (mainWindowRef) {
-            if (mainWindowRef.isVisible()) {
-                mainWindowRef.hide();
-            } else {
-                if (mainWindowRef.isDestroyed()) {
-                    mainWindowRef = new BrowserWindow({
-                        width: 960,
-                        height: 640,
-                        frame: false,
-                        maximizable: false,
-                        transparent: false,
-                        show: false,
-                        backgroundColor: '#0a0a1a',
-                        webPreferences: {
-                            nodeIntegration: true,
-                            contextIsolation: false,
-                            preload: path.join(__dirname, 'preload.js')
-                        }
-                    });
-                    mainWindowRef.loadFile(compileTemplate());
-                    createTray();
-                } else {
-                    mainWindowRef.show();
-                    mainWindowRef.focus();
-                    mainWindowRef.webContents.send('triggerOpenAnimation');
+
+    const toggleFromTray = () => {
+        if (!mainWindowRef) return
+        if (mainWindowRef.isVisible()) {
+            mainWindowRef.hide();
+        } else if (mainWindowRef.isDestroyed()) {
+            mainWindowRef = new BrowserWindow({
+                width: 960,
+                height: 640,
+                frame: false,
+                maximizable: false,
+                transparent: false,
+                show: false,
+                backgroundColor: '#0a0a1a',
+                webPreferences: {
+                    nodeIntegration: true,
+                    contextIsolation: false,
+                    preload: path.join(__dirname, 'preload.js')
                 }
-            }
+            });
+            mainWindowRef.loadFile(compileTemplate());
+            createTray();
+        } else {
+            mainWindowRef.show();
+            mainWindowRef.focus();
+            mainWindowRef.webContents.send('triggerOpenAnimation');
         }
-    });
+    };
+
+    tray.on('click', toggleFromTray);
+    tray.on('double-click', toggleFromTray);
 }
 
 function showMainWindowWithAnimation() {

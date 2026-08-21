@@ -2,13 +2,14 @@ const fs = require('fs-extra')
 const os = require('os')
 const path = require('path')
 
+const homeDir = process.env.HOME || os.homedir()
 let dataPath
 if (process.platform === 'win32') {
-    dataPath = path.join(process.env.APPDATA, '.cosmiclauncher')
+    dataPath = path.join(process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming'), '.cosmiclauncher')
 } else if (process.platform === 'darwin') {
-    dataPath = path.join(process.env.HOME, 'Library', 'Application Support', 'CosmicLauncher')
+    dataPath = path.join(homeDir, 'Library', 'Application Support', 'CosmicLauncher')
 } else {
-    dataPath = path.join(process.env.HOME, '.cosmiclauncher')
+    dataPath = path.join(homeDir, '.cosmiclauncher')
 }
 
 const configPath = path.join(dataPath, 'config.json')
