@@ -1,6 +1,6 @@
 {
   "name": "cosmic-launcher",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Cosmic Launcher - A beautiful Minecraft launcher",
   "author": "ImTheLeviDR",
   "homepage": "https://github.com/ImTheLeviDR/CosmicLauncher",
@@ -76,7 +76,7 @@
           ]
         }
       ],
-      "icon": "app/assets/logo.png",
+      "icon": "app/assets/icons",
       "category": "Game",
       "synopsis": "A Minecraft launcher",
       "maintainer": "ImTheLeviDR",

@@ -12,6 +12,17 @@ const ModrinthImporter = require('./app/assets/js/modrinthimporter');
 const UpdateManager = require('./app/assets/js/updatemanager');
 const { AZURE_CLIENT_ID, MSFT_OPCODE, MSFT_REPLY_TYPE, MSFT_ERROR, SHELL_OPCODE } = require('./app/assets/js/ipcconstants');
 
+if (process.platform === 'linux') {
+    app.setName('cosmic-launcher');
+    app.setDesktopName('cosmic-launcher.desktop');
+}
+
+function getAppIconPath(size) {
+    const sized = path.join(__dirname, 'app', 'assets', 'icons', `${size}x${size}.png`);
+    if (fs.existsSync(sized)) return sized;
+    return path.join(__dirname, 'app', 'assets', 'logo.png');
+}
+
 const EJS_FILE = path.join(__dirname, 'index.ejs');
 
 function getCompiledHtmlPath() {
@@ -110,7 +121,7 @@ async function openMicrosoftLogin() {
         width: 520,
         height: 600,
         frame: true,
-        icon: path.join(__dirname, 'app', 'assets', 'logo.png')
+        icon: getAppIconPath(256)
     })
 
     msftAuthWindow.on('closed', () => {
@@ -182,7 +193,7 @@ ipcMain.on(MSFT_OPCODE.OPEN_LOGIN, (ipcEvent, ...arguments_) => {
         width: 520,
         height: 600,
         frame: true,
-        icon: path.join(__dirname, 'app', 'assets', 'logo.png')
+        icon: getAppIconPath(256)
     })
 
     msftAuthWindow.on('closed', () => {
@@ -232,7 +243,7 @@ ipcMain.on(MSFT_OPCODE.OPEN_LOGOUT, (ipcEvent, uuid, isLastAccount) => {
         width: 520,
         height: 600,
         frame: true,
-        icon: path.join(__dirname, 'app', 'assets', 'logo.png')
+        icon: getAppIconPath(256)
     })
 
     msftLogoutWindow.on('closed', () => {
@@ -753,28 +764,19 @@ let win
 let tray
 
 function createTray() {
-    let iconPath
-    if (process.platform === 'darwin') {
-        iconPath = path.join(__dirname, 'app', 'assets', 'logo.png')
-    } else {
-        iconPath = path.join(__dirname, 'app', 'assets', 'logo.png')
-    }
+    const traySize = process.platform === 'darwin' ? 22 : process.platform === 'linux' ? 24 : 16
+    const iconPath = getAppIconPath(traySize === 16 ? 16 : 24)
     let trayIcon;
     try {
         trayIcon = nativeImage.createFromPath(iconPath);
         if (trayIcon.isEmpty()) {
-            if (process.platform === 'darwin') {
-                trayIcon = nativeImage.createEmpty()
-            } else {
-                trayIcon = nativeImage.createEmpty()
-            }
+            trayIcon = nativeImage.createEmpty()
         }
     } catch(e) {
         trayIcon = nativeImage.createEmpty();
     }
-    
-    const iconSize = process.platform === 'darwin' ? 22 : 16
-    tray = new Tray(trayIcon.resize({ width: iconSize, height: iconSize }))
+
+    tray = new Tray(trayIcon.resize({ width: traySize, height: traySize }))
     tray.setToolTip('Cosmic Launcher');
     
     const contextMenu = Menu.buildFromTemplate([
@@ -813,6 +815,7 @@ function createTray() {
                 transparent: false,
                 show: false,
                 backgroundColor: '#0a0a1a',
+                icon: getAppIconPath(256),
                 webPreferences: {
                     nodeIntegration: true,
                     contextIsolation: false,
@@ -848,7 +851,7 @@ function createWindow() {
         transparent: false,
         show: false,
         backgroundColor: '#0a0a1a',
-        icon: path.join(__dirname, 'app', 'assets', 'logo.png'),
+        icon: getAppIconPath(256),
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
