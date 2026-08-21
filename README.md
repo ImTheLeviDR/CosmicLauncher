@@ -7,14 +7,14 @@ A Minecraft launcher for Windows and Linux. Sign in with Microsoft, keep separat
 Installers are published on [GitHub Releases](https://github.com/ImTheLeviDR/CosmicLauncher/releases).
 
 - **Windows:** `Cosmic.Launcher.Setup.{version}.exe` (x64 + 32-bit NSIS installer)
-- **Linux:** `Cosmic.Launcher-{version}-x64.deb` (Debian/Ubuntu x64)
+- **Linux:** `Cosmic.Launcher-{version}-amd64.deb` (Debian/Ubuntu x64)
 
 On Linux:
 
 ```bash
-sudo dpkg -i Cosmic.Launcher-*-x64.deb
+sudo dpkg -i Cosmic.Launcher-*-amd64.deb
 # or
-sudo apt install ./Cosmic.Launcher-*-x64.deb
+sudo apt install ./Cosmic.Launcher-*-amd64.deb
 ```
 
 You need a Microsoft account with a Minecraft Java Edition license, and Java available on your system (`java` on PATH, or `JAVA_HOME`).

@@ -44,7 +44,7 @@ Expected output in `dist/`:
 - `Cosmic.Launcher.Setup.{version}.exe` (NSIS installer, x64 + ia32)
 - `Cosmic.Launcher.Setup.{version}.exe.blockmap`
 - `latest.yml`
-- `Cosmic.Launcher-{version}-x64.deb`
+- `Cosmic.Launcher-{version}-amd64.deb`
 - `latest-linux.yml`
 
 `dist/` is gitignored — do not commit build artifacts.
@@ -68,7 +68,7 @@ Existing releases use:
 | Title | `v{version}` |
 | Prerelease | `true` |
 | Windows asset | `Cosmic.Launcher.Setup.{version}.exe` |
-| Linux asset | `Cosmic.Launcher-{version}-x64.deb` |
+| Linux asset | `Cosmic.Launcher-{version}-amd64.deb` |
 | Body | `## What's Changed` bullets + compare link |
 
 If electron-builder still writes `Cosmic Launcher Setup {version}.exe`, copy it to the GitHub asset name before upload:
@@ -103,7 +103,7 @@ Create the release with Windows and Linux assets:
 
 ```powershell
 $env:GH_TOKEN = (( "protocol=https`nhost=github.com`n" | git credential fill | Select-String '^password=').Line -split '=',2)[1]
-& "C:\Program Files\GitHub CLI\gh.exe" release create v0.1.7 "dist/Cosmic.Launcher.Setup.0.1.7.exe" "dist/Cosmic.Launcher-0.1.7-x64.deb" --title "v0.1.7" --prerelease --notes-file "dist/release-notes-v0.1.7.md"
+& "C:\Program Files\GitHub CLI\gh.exe" release create v0.1.7 "dist/Cosmic.Launcher.Setup.0.1.7.exe" "dist/Cosmic.Launcher-0.1.7-amd64.deb" --title "v0.1.7" --prerelease --notes-file "dist/release-notes-v0.1.7.md"
 ```
 
 ## GitHub CLI auth (Windows)
@@ -131,7 +131,7 @@ Release progress:
 - [ ] Version bump committed and pushed
 - [ ] npm run build succeeded (Windows installer + Linux .deb via WSL)
 - [ ] Windows asset named Cosmic.Launcher.Setup.{version}.exe
-- [ ] Linux asset named Cosmic.Launcher-{version}-x64.deb
+- [ ] Linux asset named Cosmic.Launcher-{version}-amd64.deb
 - [ ] Annotated tag v{version} created and pushed
 - [ ] GitHub prerelease created with Windows and Linux assets
 - [ ] Release URL returned to user
