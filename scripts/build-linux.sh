@@ -23,6 +23,22 @@ if ! command -v node >/dev/null || ! command -v npm >/dev/null; then
   exit 1
 fi
 
+install_fakeroot_wrapper() {
+  local prefix="$1"
+  local libdir="$prefix/usr/lib/x86_64-linux-gnu/libfakeroot"
+  local sysv="$prefix/usr/bin/fakeroot-sysv"
+  local faked="$prefix/usr/bin/faked-sysv"
+  local lib="$libdir/libfakeroot-sysv.so"
+  if [[ ! -x "$sysv" || ! -x "$faked" || ! -f "$lib" ]]; then
+    return 1
+  fi
+  cat > "$prefix/usr/bin/fakeroot" <<EOF
+#!/bin/sh
+exec "$sysv" -l "$lib" -f "$faked" "\$@"
+EOF
+  chmod +x "$prefix/usr/bin/fakeroot"
+}
+
 ensure_fakeroot() {
   if command -v fakeroot >/dev/null 2>&1; then
     echo "Using fakeroot at $(command -v fakeroot)"
@@ -31,25 +47,23 @@ ensure_fakeroot() {
 
   local prefix="${XDG_CACHE_HOME:-$HOME/.cache}/cosmic-fakeroot"
   mkdir -p "$prefix"
-  if [[ -x "$prefix/usr/bin/fakeroot" ]]; then
-    export PATH="$prefix/usr/bin:$PATH"
-    export LD_LIBRARY_PATH="$prefix/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}"
-    echo "Using bundled fakeroot at $prefix/usr/bin/fakeroot"
-    return 0
+
+  if [[ ! -x "$prefix/usr/bin/fakeroot-sysv" ]]; then
+    echo "Installing fakeroot into $prefix (no sudo)"
+    local tmp
+    tmp="$(mktemp -d)"
+    (
+      cd "$tmp"
+      apt-get download fakeroot libfakeroot
+      dpkg-deb -x fakeroot_*.deb "$prefix"
+      dpkg-deb -x libfakeroot_*.deb "$prefix"
+    )
+    rm -rf "$tmp"
   fi
 
-  echo "Installing fakeroot into $prefix (no sudo)"
-  local tmp
-  tmp="$(mktemp -d)"
-  (
-    cd "$tmp"
-    apt-get download fakeroot libfakeroot
-    dpkg-deb -x fakeroot_*.deb "$prefix"
-    dpkg-deb -x libfakeroot_*.deb "$prefix"
-  )
-  rm -rf "$tmp"
+  install_fakeroot_wrapper "$prefix"
   export PATH="$prefix/usr/bin:$PATH"
-  export LD_LIBRARY_PATH="$prefix/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}"
+  export LD_LIBRARY_PATH="$prefix/usr/lib/x86_64-linux-gnu/libfakeroot:${LD_LIBRARY_PATH:-}"
   if ! command -v fakeroot >/dev/null 2>&1; then
     echo "Could not provide fakeroot, which is required to build .deb packages." >&2
     exit 1
